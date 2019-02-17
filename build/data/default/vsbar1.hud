@@ -1,0 +1,8 @@
+scrollbar
+hsbar1_rail.png:hsbar1_idle.png:hsbar1_selected.png
+1920:1080:2
+
+
+HUD elements type
+name1:name2:name3
+refrendererx:refrenderery:rail_width(pxl)

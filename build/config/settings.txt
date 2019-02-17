@@ -1,0 +1,32 @@
+# ---------- Configuration File ----------
+
+
+# If a specific setting is not defined here, the default one will be loaded.
+
+high-dpi = false
+vsync = false
+cpu-relieve = true
+resizable = true
+borderless = false
+fullscreen = false
+
+texture-filtering = high
+priority = normal
+trig-precision = normal
+
+fps = 60.000
+brightness = 0.700
+music-vol = 1.000
+effects-vol = 0.800
+voice-vol = 1.000
+general-vol = 1.000
+mouse-sensitivity = 0.500
+
+render-resolution = 3840 x 2160
+resolution = 1280 x 720
+
+driver = default
+language = english
+
+
+# Modified the 08-11-2018 05:00:41 by the Pearl Engine.
