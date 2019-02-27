@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 #include <math.h>
 #include <iostream>
 #include <SDL2/SDL.h>

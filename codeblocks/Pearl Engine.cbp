@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Pearl Engine" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Pearl Engine" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Pearl Engine" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="D:/Program Files (x86)/CodeBlocks/SDL2/include" />
+		</Compiler>
+		<Linker>
+			<Add library="mingw32" />
+			<Add library="SDL2main" />
+			<Add library="SDL2.dll" />
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="winmm" />
+			<Add library="dxguid" />
+			<Add directory="D:/Program Files (x86)/CodeBlocks/SDL2/lib" />
+		</Linker>
+		<ExtraCommands>
+			<Add after="XCOPY $(#sdl2)\bin\*.dll $(TARGET_OUTPUT_DIR) /D /Y" />
+		</ExtraCommands>
+		<Unit filename="../../src/PRL.h" />
+		<Unit filename="../../src/PRL_HUD.cpp" />
+		<Unit filename="../../src/PRL_HUD.h" />
+		<Unit filename="../../src/PRL_animation.cpp" />
+		<Unit filename="../../src/PRL_animation.h" />
+		<Unit filename="../../src/PRL_camera.cpp" />
+		<Unit filename="../../src/PRL_camera.h" />
+		<Unit filename="../../src/PRL_collision.cpp" />
+		<Unit filename="../../src/PRL_collision.h" />
+		<Unit filename="../../src/PRL_configuration.cpp" />
+		<Unit filename="../../src/PRL_configuration.h" />
+		<Unit filename="../../src/PRL_defines.h" />
+		<Unit filename="../../src/PRL_display.cpp" />
+		<Unit filename="../../src/PRL_display.h" />
+		<Unit filename="../../src/PRL_game_functions.cpp" />
+		<Unit filename="../../src/PRL_game_functions.h" />
+		<Unit filename="../../src/PRL_global_variables.h" />
+		<Unit filename="../../src/PRL_input.cpp" />
+		<Unit filename="../../src/PRL_input.h" />
+		<Unit filename="../../src/PRL_math.cpp" />
+		<Unit filename="../../src/PRL_math.h" />
+		<Unit filename="../../src/PRL_menu_functions.cpp" />
+		<Unit filename="../../src/PRL_screenshots.h" />
+		<Unit filename="../../src/PRL_sreenshots.cpp" />
+		<Unit filename="../../src/PRL_timer.cpp" />
+		<Unit filename="../../src/PRL_timer.h" />
+		<Unit filename="../../src/PRL_tool_programs.cpp" />
+		<Unit filename="../../src/PRL_tool_programs.h" />
+		<Unit filename="../../src/PRL_types.h" />
+		<Unit filename="../../src/main.cpp" />
+		<Unit filename="../../src/tools.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

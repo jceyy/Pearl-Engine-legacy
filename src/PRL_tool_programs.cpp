@@ -2,6 +2,8 @@
 #include "PRL_input.h"
 #include "PRL_display.h"
 #include "PRL_animation.h"
+#include <cstring>
+
 
 #define WINDOW_NAME "PRL Animation Tester v1.2"
 #define KEYS_STRING "   KEYS - A+Z (or Q+W): zoom, BACKSPACE: zoom reset, SPACE: pause-play, ENTER: hide keys from title"

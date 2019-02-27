@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <iostream>
+#include <cstring>
 
 #include "PRL_input.h"
 #include "PRL_types.h"
