@@ -605,7 +605,7 @@ void PRL_Collidable :: setCollidableType(PRL_CollType type)
 
 void PRL_Collidable :: updateAbsolutePointCluster() ///////////////////////////// PROBLEM WITH currentFrame[0] (temporary solution)
 {
-    absoluteCluster.setFixedPoint(currentFrame[0],
+    absoluteCluster.setAnchorPoint(currentFrame[0],
                                    {dspDst.x + relativeCluster->getFixedPoint(currentFrame[0]).x,
                                    dspDst.y + relativeCluster->getFixedPoint(currentFrame[0]).y});
     int i(0), points_number(relativeCluster->getActionPointsNumber());

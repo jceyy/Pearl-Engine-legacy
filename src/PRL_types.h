@@ -2,6 +2,7 @@
 #define PRL_TYPES_H_INCLUDED
 
 #include <SDL2/SDL.h>
+
 #define PRL_Rect SDL_Rect
 
 typedef struct PRL_FRect PRL_FRect;

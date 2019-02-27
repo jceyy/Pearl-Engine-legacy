@@ -61,13 +61,7 @@ protected:
     bool dspIsActive;
     double dspAngle;
 
-    //! Updates the int dst and src (SDL_Rect) FULL rectangles (including w and h) from the float ones. SDL_Rect is currently used by SDL for rendering
-    void updateDisplayRect(); // from float to int - to be depreciated as long as SDL 2.x uses float as coordinates
-
 private:
-    //! Variables used exclusively for displaying textures on the renderer since current version of SDL2 works with integer coordinates.
-    SDL_Rect dspSrc_int, dspDst_int;
-
     //! Used only by displayer: address of the displayable in the displayer
     size_t dspDisplayerAddress;
     bool dspDisplayerAdded;
@@ -107,5 +101,8 @@ public:
     /// Get how many displayer objects are currently in use.
 	static int getDsprCount();
 };
+
+    //! Updates the int dst and src (SDL_Rect) FULL rectangles (including w and h) from the float ones. SDL_Rect is currently used by SDL for rendering
+    void rect2FRect(PRL_FRect const& frect, SDL_Rect& rect); // from float to int - to be depreciated as long as SDL 2.x uses float as coordinates
 
 #endif // PRL_CLASS_DISPLAYABLE_H_INCLUDED

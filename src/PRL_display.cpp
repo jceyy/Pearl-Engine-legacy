@@ -10,14 +10,14 @@ using std::cerr;
 using std::endl;
 
 
-/** ********************************************* **/
-/**              PRL_Displayable                  **/
-/** ********************************************* **/
+/* ********************************************* */
+/*              PRL_Displayable                  */
+/* ********************************************* */
 
 int PRL_Displayable :: dspCount = 0;
 
-PRL_Displayable :: PRL_Displayable() : dspSrc({0}), dspDst({0}), dspTexture(nullptr), dspRenderer(renderer_GLOBAL[0]), dspIsActive(true),
-dspAngle(0.0), dspSrc_int({0}), dspDst_int({0}), dspDisplayerAddress(0), dspDisplayerAdded(false)
+PRL_Displayable :: PRL_Displayable() : dspSrc({0, 0, 0, 0}), dspDst({0, 0, 0, 0}), dspTexture(nullptr), dspRenderer(renderer_GLOBAL[0]), dspIsActive(true),
+dspAngle(0.0), dspDisplayerAddress(0), dspDisplayerAdded(false)
 {
     dspCount++;
 }
@@ -120,15 +120,10 @@ int PRL_Displayable :: getDspCount()
     return dspCount;
 }
 
-void PRL_Displayable :: updateDisplayRect()
-{
-    dspDst_int = {(int) floor(dspDst.x), (int) floor(dspDst.y), (int) floor(dspDst.w), (int) floor(dspDst.h)};
-    dspSrc_int = {(int) floor(dspSrc.x), (int) floor(dspSrc.y), (int) floor(dspSrc.w), (int) floor(dspSrc.h)};
-}
 
-/** ********************************************* **/
-/**               PRL_Displayer                   **/
-/** ********************************************* **/
+/* ********************************************* */
+/*               PRL_Displayer                   */
+/* ********************************************* */
 
 int PRL_Displayer :: dsprCount = 0;
 
@@ -201,14 +196,22 @@ size_t PRL_Displayer :: getObjectsNumber() const
     return object.size();
 }
 
+void rect2FRect(PRL_FRect const& frect, SDL_Rect& rect)
+{
+    rect = {(int) floor(frect.x), (int) floor(frect.y), (int) floor(frect.w), (int) floor(frect.h)};
+}
+
 int PRL_Displayer :: display() const
 {
-    for (int i(0); i < object.size(); i++)
+    SDL_Rect src, dst;
+    for (size_t i(0); i < object.size(); i++)
     {
         if (object[i]->dspIsActive)
         {
-            if (SDL_RenderCopyEx(object[i]->dspRenderer, object[i]->dspTexture, &(object[i]->dspSrc_int),
-                &(object[i]->dspDst_int), object[i]->dspAngle, NULL, SDL_FLIP_NONE) != 0)
+            rect2FRect(object[i]->dspSrc, src);
+            rect2FRect(object[i]->dspDst, dst);
+            if (SDL_RenderCopyEx(object[i]->dspRenderer, object[i]->dspTexture, &src,
+                &dst, object[i]->dspAngle, NULL, SDL_FLIP_NONE) != 0)
             {
                 PRL_SetError(SDL_GetError());
                 #if PRL_AUTO_WRITE_ERRORS == 1
@@ -223,19 +226,20 @@ int PRL_Displayer :: display() const
 
 int PRL_Displayer :: displayWithCamera() const
 {
-    SDL_Rect dst;
+    SDL_Rect src, dst;
     double zoom = camera->getZoom();
 
-    for (int i(0); i < object.size(); i++)
+    for (size_t i(0); i < object.size(); i++)
     {
         if (object[i]->dspIsActive)
         {
+            rect2FRect(object[i]->dspSrc, src);
             dst.x = zoom * (object[i]->dspDst.x - camera->getUpLeftCorner().x);
             dst.y = zoom * (object[i]->dspDst.y - camera->getUpLeftCorner().y);
             dst.w = zoom * object[i]->dspDst.w;
             dst.h = zoom * object[i]->dspDst.h;
 
-            if (SDL_RenderCopyEx(object[i]->dspRenderer, object[i]->dspTexture, &(object[i]->dspSrc_int),
+            if (SDL_RenderCopyEx(object[i]->dspRenderer, object[i]->dspTexture, &src,
                 &dst, object[i]->dspAngle, NULL, SDL_FLIP_NONE) != 0)
             {
                 PRL_SetError(SDL_GetError());

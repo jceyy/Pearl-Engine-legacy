@@ -29,7 +29,7 @@ enum PRL_HitBoxType
 
 //! Class used to store points.
 /*!
-This class provides methods to manipulate action points and fixed points. Please note that the points are stored as float numbers, and any integer point added will be converted into a float one.
+This class provides a convenient way to store points. Please note that the points are stored as float numbers, and any integer point added will be converted into a float one.
 */
 class PRL_FPointList
 {
@@ -177,10 +177,10 @@ public:
 
 //! A class containing points and hit boxes.
 /*!
-This class contains 2 types of points: action points and fixed points.
+This class contains 2 types of points: action points and anchor points.
 Action points are points used to specify location on an animation associated with specific actions (i.e. the foot of a player in 2D combat game).
 Fixed points are points used when an animation has a changing size. It defines the static reference point in the animation.
-So, if the animation is not translating on the screen, the fixed point will remain at the same place.
+So, if the animation is not translating on the screen, the anchor point will remain at the same place.
 */
 class PRL_FPointCluster
 {
@@ -199,11 +199,11 @@ private:
     Each action point has the same number during the whole animation: the action point number is constant frame to frame.
     */
     std::vector <std::vector <PRL_FPoint>> actionPoints;
-    //! Vector containing the fixed points.
+    //! Vector containing the anchor points.
     /*!
-    There is only 1 fixed point per frame, so the vector is simple.
+    There is only 1 anchor point per frame, so the vector is simple.
     */
-    std::vector <PRL_FPoint> fixedPoints;
+    std::vector <PRL_FPoint> anchorPoints;
 
 public:
     //! Constructor.
@@ -213,7 +213,7 @@ public:
 
     //! Get how many frames are loaded.
     /*!
-    This should give the same than the number of fixed points (1 per frame).
+    This should give the same than the number of anchor points (1 per frame).
     */
     int getFramesNumber() const; // HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE DOXY_STOP
     //! Get the number of action points at each frame
@@ -224,16 +224,68 @@ public:
     PRL_HitBox const& getHitBox(int frame, int hitBoxNumber) const;
     //! Get the desired action point at the desired frame
     PRL_FPoint const& getActionPoint(int frame, int actionPointNumber) const;
-    //! Get the fixed point at the desired frame
+    //! Get the anchor point at the desired frame
     PRL_FPoint const& getFixedPoint(int frame) const;
     //! Set the desired hitbox at the desired frame
     void setHitBox(int frame, int hitBoxNumber, PRL_HitBox const& hitbox);
     //! Set the desired action point at the desired frame
     void setActionPoint(int frame, int actionPointNumber, PRL_FPoint const& point);
-    //! Set the fixed point at the desired frame
-    void setFixedPoint(int frame, PRL_FPoint const& point);
+    //! Set the anchor point at the desired frame
+    void setAnchorPoint(int frame, PRL_FPoint const& point);
 };
 
+
+/* ********************************************* */
+/*                 PRL_Animation                 */
+/* ********************************************* */
+
+
+class PRL_Animation
+{
+public:
+    PRL_Animation();
+    ~PRL_Animation();
+
+    /// Need the path of the animation's .anim file
+    int load(const char file_path[]);
+    /// Need the path of the animation's .anim file
+    int load(std::string& file_path);
+    /// Number between 0 and framesNumber-1
+    SDL_Texture* getTexture(size_t which) const;
+
+    /// Return the size {width, height, width, height}
+    PRL_Point getSize(size_t which) const; // no bound checking, in term of current render resolution
+    /// Return the source size (real one without scaling) {width, height, width, height}
+    PRL_Point getSrcSize(size_t which) const;
+    /// Return {width, height, width, height}
+    PRL_Point getTargetResolution() const;
+    /// Return the total number of frames of the animation
+    int getFramesNumber() const;
+    /// Set the renderer to be used. By default renderer_GLOBAL[0]. Use this function before load(const char file_path[])
+    void setRenderer(const SDL_Renderer *newRenderer); // in constructor!
+    /// Return the frame rate
+    float getFrameRate() const;
+
+    /// Tell whether the animation has already been loaded or not
+    bool isLoaded() const;
+    /// Get the point cluster
+    PRL_FPointCluster *getPointCluster() const; // change to reference?
+
+private:
+    static int animations_count;
+    std::vector <SDL_Texture*> texture;
+    std::vector <PRL_Point> dstSizes;
+    std::vector <PRL_Point> srcSizes;
+    PRL_Point rect, srcRect; // actual size of the frames under the following form: rect = {w, h, w, h};
+    PRL_Point reference_renderer; // size under the following form: reference_renderer = {w, h, w, h};
+    int framesNumber; // total number of frames
+    SDL_Renderer *renderer; // the used renderer
+    PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
+
+    float frameRate; // FPS
+
+    bool loaded; // whether it is loaded or not
+};
 
 
 

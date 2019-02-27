@@ -103,7 +103,6 @@ renderingMethod(PRL_TEXTRENDER_BLENDED), referenceRenderer({config_GLOBAL.render
 {
     text = "";
     dspSrc.x = dspSrc.y = 0;
-    updateDisplayRect();
     #if PRL_MULTITHREADING == 1
     isFirstRenderingDone = false;
     #endif // PRL_MULTITHREADING
@@ -314,7 +313,6 @@ void PRL_TextLabel :: renderText()
             dspDst.w = dspSrc.w = surface->w + 2*factor*(borderSz+spaceBetweenBorderAndText);
             dspDst.h = dspSrc.h = surface->h + 2*factor*(borderSz+spaceBetweenBorderAndText);
             dspSrc.x = dspSrc.y = 0;
-            updateDisplayRect();
         }
     }
     else
@@ -323,7 +321,6 @@ void PRL_TextLabel :: renderText()
         dspDst.h = surface->h;
         dspSrc.w = surface->w;
         dspSrc.h = surface->h;
-        updateDisplayRect();
         dspTexture = texture;
     }
 
@@ -361,7 +358,6 @@ void PRL_TextLabel :: update()
         {
             dspDst.x = input->getMouseF().x - relativeClickDistance.x;
             dspDst.y = input->getMouseF().y - relativeClickDistance.y;
-            updateDisplayRect();
         }
     }
     renderText();
@@ -380,7 +376,6 @@ referenceRenderer({config_GLOBAL.renderResolution.x, config_GLOBAL.renderResolut
 {
     text = "";
     dspSrc.x = dspSrc.y = 0;
-    updateDisplayRect();
     #if PRL_MULTITHREADING == 1
     isFirstRenderingDone = false;
     #endif // PRL_MULTITHREADING
@@ -625,7 +620,6 @@ void PRL_TextBoxSimple :: renderText()
             dspDst.w = dspSrc.w = surface->w + 2*factor*(borderSz+spaceBetweenBorderAndText);
             dspDst.h = dspSrc.h = surface->h + 2*factor*(borderSz+spaceBetweenBorderAndText);
             dspSrc.x = dspSrc.y = 0;
-            updateDisplayRect();
         }
     }
     else
@@ -634,7 +628,6 @@ void PRL_TextBoxSimple :: renderText()
         dspDst.h = surface->h;
         dspSrc.w = surface->w;
         dspSrc.h = surface->h;
-        updateDisplayRect();
         dspTexture = texture;
     }
 
@@ -735,7 +728,6 @@ void PRL_TextBoxSimple :: update()
         {
             dspDst.x = input->getMouseF().x - relativeClickDistance.x;
             dspDst.y = input->getMouseF().y - relativeClickDistance.y;
-            updateDisplayRect();
         }
     }
     renderText();
@@ -754,7 +746,6 @@ referenceRenderer({config_GLOBAL.renderResolution.x, config_GLOBAL.renderResolut
 {
     text = "";
     dspSrc.x = dspSrc.y = 0;
-    updateDisplayRect();
     #if PRL_MULTITHREADING == 1
     isFirstRenderingDone = false;
     #endif // PRL_MULTITHREADING
@@ -1282,7 +1273,6 @@ void PRL_TextBox :: update()
         {
             dspDst.x = input->getMouseF().x - relativeClickDistance.x;
             dspDst.y = input->getMouseF().y - relativeClickDistance.y;
-            updateDisplayRect();
         }
     }
     renderText();
@@ -1323,7 +1313,6 @@ void PRL_VScrollBar :: setPosition(int x, int y) // overloading PRL_Displayable 
 {
     dspDst.x = x;
     dspDst.y = y;
-    updateDisplayRect();
 
     miny = y;
     positionHasBeenProvided = true;
@@ -1333,7 +1322,6 @@ void PRL_VScrollBar :: setPosition(float x, float y) // overloading PRL_Displaya
 {
     dspDst.x = x;
     dspDst.y = y;
-    updateDisplayRect();
 
     miny = y;
     positionHasBeenProvided = true;
@@ -1345,7 +1333,6 @@ void PRL_VScrollBar :: setCenterPosition(float x, float y) // overloading PRL_Di
     {
         dspDst.x = x - dspDst.w/2.0;
         dspDst.y = y - dspDst.h/2.0;
-        updateDisplayRect();
 
         miny = y;
     }
@@ -1357,7 +1344,6 @@ void PRL_VScrollBar :: setCenterPosition(int x, int y) // overloading PRL_Displa
     {
         dspDst.x = x - dspDst.w/2.0;
         dspDst.y = y - dspDst.h/2.0;
-        updateDisplayRect();
 
         miny = y;
     }
@@ -1537,7 +1523,6 @@ int PRL_VScrollBar :: load(const char file[])
     dspDst.h = length;
     dspSrc.w = dspDst.w;// / xratio;
     dspSrc.h = dspDst.h;// / yratio;
-    updateDisplayRect();
 
     barPos.x = barPos.y = 0;
     railPos.w *= xratio; // apply the scaling
@@ -1652,7 +1637,6 @@ void PRL_HScrollBar :: setPosition(int x, int y) // overloading PRL_Displayable 
 {
     dspDst.x = x;
     dspDst.y = y;
-    updateDisplayRect();
 
     minx = x;
     positionHasBeenProvided = true;
@@ -1662,7 +1646,6 @@ void PRL_HScrollBar :: setPosition(float x, float y) // overloading PRL_Displaya
 {
     dspDst.x = x;
     dspDst.y = y;
-    updateDisplayRect();
 
     minx = x;
     positionHasBeenProvided = true;
@@ -1674,7 +1657,6 @@ void PRL_HScrollBar :: setCenterPosition(float x, float y) // overloading PRL_Di
     {
         dspDst.x = x - dspDst.w/2.0;
         dspDst.y = y - dspDst.h/2.0;
-        updateDisplayRect();
 
         minx = x;
     }
@@ -1686,7 +1668,6 @@ void PRL_HScrollBar :: setCenterPosition(int x, int y) // overloading PRL_Displa
     {
         dspDst.x = x - dspDst.w/2.0;
         dspDst.y = y - dspDst.h/2.0;
-        updateDisplayRect();
 
         minx = x;
     }
@@ -1865,7 +1846,6 @@ int PRL_HScrollBar :: load(const char file[])
     dspDst.h = barPos.h;
     dspSrc.w = dspDst.w;// / xratio;
     dspSrc.h = dspDst.h;// / yratio;
-    updateDisplayRect();
 
     barPos.x = barPos.y = 0;
 

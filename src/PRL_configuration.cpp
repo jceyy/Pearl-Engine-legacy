@@ -192,8 +192,6 @@ void printLaunchDiag() // print the launch diagnosis
 
     cout << "Texture filtering: " << ito3scale(stoi(config_GLOBAL.textureFiltering)) << endl;
     cout << "Process priority: " << ito3scale((int)config_GLOBAL.processPriority) << endl;
-    cout << "Trigonometric precision (the allowed min. being \"" << ito5scale(PRL_MIN_TRIG_PRECISION) << "\"): ";
-    cout << ito5scale(config_GLOBAL.trigoPrecision) << endl;
     cout << endl;
 
     cout << "Frames per second: " << config_GLOBAL.fps << endl;
@@ -207,8 +205,9 @@ void printLaunchDiag() // print the launch diagnosis
 
     cout << "Language: " << config_GLOBAL.language << endl;
     cout << endl;
-
-    /// controllers plugged in?
+    // IDEAS:
+    // controllers plugged in?
+    // Letterboxing / ...
 }
 
 int PRL_CreateWindowAndRenderer()
@@ -301,7 +300,7 @@ int PRL_CreateWindowAndRenderer()
         return PRL_ERROR;
     }
 
-    SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "1"); //(e.g. "0", "1", or "direct3d", "opengl", etc.)
+    //SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "1"); //(e.g. "0", "1", or "direct3d", "opengl", etc.)
 
     return 0;
 }

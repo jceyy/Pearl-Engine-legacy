@@ -227,7 +227,7 @@ PRL_FPointCluster :: ~PRL_FPointCluster()
 
 int PRL_FPointCluster :: getFramesNumber() const
 {
-    return fixedPoints.size();
+    return anchorPoints.size();
 }
 
 int PRL_FPointCluster :: getActionPointsNumber() const
@@ -252,7 +252,7 @@ PRL_FPoint const& PRL_FPointCluster :: getActionPoint(int frame, int actionPoint
 
 PRL_FPoint const& PRL_FPointCluster :: getFixedPoint(int frame) const
 {
-    return (PRL_FPoint const&) fixedPoints[frame];
+    return (PRL_FPoint const&) anchorPoints[frame];
 }
 
 void PRL_FPointCluster :: setHitBox(int frame, int hitBoxNumber, PRL_HitBox const& hitbox)
@@ -265,9 +265,9 @@ void PRL_FPointCluster :: setActionPoint(int frame, int actionPointNumber, PRL_F
     actionPoints[frame][actionPointNumber] = point;
 }
 
-void PRL_FPointCluster :: setFixedPoint(int frame, PRL_FPoint const& point)
+void PRL_FPointCluster :: setAnchorPoint(int frame, PRL_FPoint const& point)
 {
-    fixedPoints[frame] = point;
+    anchorPoints[frame] = point;
 }
 
 
@@ -670,7 +670,6 @@ void PRL_AnimatedSimple :: startAnim()
     dspDst.h = dst.y;
     dspSrc.w = src.x;
     dspSrc.h = src.y;
-    updateDisplayRect();
 }
 
 void PRL_AnimatedSimple :: restartAnim()
@@ -687,7 +686,6 @@ void PRL_AnimatedSimple :: restartAnim()
     dspDst.h = dst.y;
     dspSrc.w = src.x;
     dspSrc.h = src.y;
-    updateDisplayRect();
 }
 
 void PRL_AnimatedSimple :: pauseAnim()
@@ -1157,7 +1155,6 @@ void PRL_AnimationVideo :: updateAnim()
                 dspTexture = texture[0];
                 dspDst = {referenceFramePosition.x + (referenceFramePosition.w-rect[0].w)/2, referenceFramePosition.y + (referenceFramePosition.h-rect[0].h)/2, rect[0].w, rect[0].h};
                 dspSrc = {0, 0, rect[0].w, rect[0].h};
-                updateDisplayRect();
 
                 dump_texture = texture[0];
 
@@ -1239,7 +1236,6 @@ void PRL_AnimationVideo :: setPosition(int x, int y)
         referenceFramePosition.h = rect[0].h;
         dspDst = {(float) x, (float) y, rect[0].w, rect[0].h};
         dspSrc = {0.0, 0.0, rect[0].w, rect[0].h};
-        updateDisplayRect();
     }
 }
 
