@@ -246,7 +246,7 @@ public:
 	/// Need the path of the animation's .anim file
 	PRL_Animation(const char file_path[]);
 	/// Need the path of the animation's .anim file
-	PRL_Animation(std::string& file_path);
+	PRL_Animation(const std::string& file_path);
 	~PRL_Animation();
 
 	SDL_Texture* getTexture(size_t which) const;
@@ -271,6 +271,8 @@ public:
 
 private:
 	static int animations_count;
+
+	std::string animationPath;
 	std::vector <SDL_Texture*> texture;
 	std::vector <std::vector <SDL_Texture*> > mask;
 	std::vector <std::vector <PRL_FRect> > maskPos;
