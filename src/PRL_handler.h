@@ -4,21 +4,38 @@
 class PRL_Handler
 {
 public:
-    PRL_Config config;
 
-    void loadAnimation();
+	PRL_Handler();
+	~PRL_Handler();
 
-    void loadSprite();
+	PRL_Config config;
+	
 
-    void free();
+	void loadAnimation(const std::string& file_path);
 
-    void createText();
+	void loadSprite(const std::string& file_path);
 
-    void createTextbox();
+	void free(); // Function overloading to cover multiple type of objects
 
-    // Updater, Collider, Displayer, Physic system
+	void freeall(); // Frees everything in the PRL_handler
+
+	void createText();
+
+	void createTextbox();
+
+	void freeUnusedAnimations();
+
+	void freeUnusedSprites();
+
+	// Updater, Collider, Displayer, Physic system
+
+	static int getHandlerCount();
 
 private:
+	static int handlerCount;
+
+	std::vector <SDL_Renderer*> renderer;
+	std::vector <SDL_Window*> window;
 
 // Threads/ networking, out screen update
 

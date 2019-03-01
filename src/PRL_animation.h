@@ -243,48 +243,48 @@ public:
 class PRL_Animation
 {
 public:
-    PRL_Animation();
-    ~PRL_Animation();
+	/// Need the path of the animation's .anim file
+	PRL_Animation(const char file_path[]);
+	/// Need the path of the animation's .anim file
+	PRL_Animation(std::string& file_path);
+	~PRL_Animation();
 
-    /// Need the path of the animation's .anim file
-    int load(const char file_path[]);
-    /// Need the path of the animation's .anim file
-    int load(std::string& file_path);
-    /// Number between 0 and framesNumber-1
-    SDL_Texture* getTexture(size_t which) const;
+	SDL_Texture* getTexture(size_t which) const;
 
-    /// Return the size {width, height, width, height}
-    PRL_Point getSize(size_t which) const; // no bound checking, in term of current render resolution
-    /// Return the source size (real one without scaling) {width, height, width, height}
-    PRL_Point getSrcSize(size_t which) const;
-    /// Return {width, height, width, height}
-    PRL_Point getTargetResolution() const;
-    /// Return the total number of frames of the animation
-    int getFramesNumber() const;
-    /// Set the renderer to be used. By default renderer_GLOBAL[0]. Use this function before load(const char file_path[])
-    void setRenderer(const SDL_Renderer *newRenderer); // in constructor!
-    /// Return the frame rate
-    float getFrameRate() const;
+	/// Return the size {width, height, width, height}
+	PRL_Point getSize(size_t which) const; // no bound checking, in term of current render resolution
+	/// Return the source size (real one without scaling) {width, height, width, height}
+	PRL_Point getSrcSize(size_t which) const;
+	/// Return {width, height, width, height}
+	PRL_Point getTargetResolution() const;
+	/// Return the total number of frames of the animation
+	int getFramesNumber() const;
+	/// Set the renderer to be used. By default renderer_GLOBAL[0]. Use this function before load(const char file_path[])
+	void setRenderer(const SDL_Renderer *newRenderer); // in constructor!
+	/// Return the frame rate
+	float getFrameRate() const;
 
-    /// Tell whether the animation has already been loaded or not
-    bool isLoaded() const;
-    /// Get the point cluster
-    PRL_FPointCluster *getPointCluster() const; // change to reference?
+	/// Tell whether the animation has already been loaded or not
+	bool isLoaded() const;
+	/// Get the point cluster
+	PRL_FPointCluster *getPointCluster() const; // change to reference?
 
 private:
-    static int animations_count;
-    std::vector <SDL_Texture*> texture;
-    std::vector <PRL_Point> dstSizes;
-    std::vector <PRL_Point> srcSizes;
-    PRL_Point rect, srcRect; // actual size of the frames under the following form: rect = {w, h, w, h};
-    PRL_Point reference_renderer; // size under the following form: reference_renderer = {w, h, w, h};
-    int framesNumber; // total number of frames
-    SDL_Renderer *renderer; // the used renderer
-    PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
+	static int animations_count;
+	std::vector <SDL_Texture*> texture;
+	std::vector <std::vector <SDL_Texture*> > mask;
+	std::vector <std::vector <PRL_FRect> > maskPos;
+	std::vector <PRL_Point> dstSize;
+	std::vector <PRL_Point> srcSize;
+	PRL_Point rect, srcRect; // actual size of the frames under the following form: rect = {w, h, w, h};
+	PRL_Point reference_renderer; // size under the following form: reference_renderer = {w, h, w, h};
+	int framesNumber; // total number of frames
+	SDL_Renderer *renderer; // the used renderer
+	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
 
-    float frameRate; // FPS
+	float frameRate; // FPS
 
-    bool loaded; // whether it is loaded or not
+	bool loaded; // whether it is loaded or not
 };
 
 
