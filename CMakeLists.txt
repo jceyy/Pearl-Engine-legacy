@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
 project(PearlEngine)
+if (NOT DEFINED CMAKE_CXX_FLAGS)
+	set(CMAKE_CXX_FLAGS "-Wall -std=c++11")
+endif(NOT DEFINED CMAKE_CXX_FLAGS)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
