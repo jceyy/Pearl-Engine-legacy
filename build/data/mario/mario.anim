@@ -1,0 +1,17 @@
+DISPLAY
+60
+1920x1080
+mario0.png
+mario1.png
+mario2.png
+MASK
+0
+HB_RECT
+0
+HB_CIRCLE
+0
+HB_POLY
+0
+ACTION_POINT
+0
+FIXED_POINT n
