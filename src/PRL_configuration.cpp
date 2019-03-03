@@ -376,7 +376,7 @@ int PRL_Init()
     SDL_SetRenderTarget(renderer_GLOBAL, targetTexture_GLOBAL);
     #endif
 
-    if (SDL_SetWindowBrightness(window_GLOBAL[0], config_GLOBAL.brightness) != 0)
+    if (SDL_SetWindowBrightness(handler.window[0], config_GLOBAL.brightness) != 0)
     {
         #if PRL_USE_WARNINGS == 1
         cout << __CERR_REF__ << "In PRL_Init, unable to set the brightness: " << SDL_GetError() << endl;

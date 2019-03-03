@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include "PRL_configuration.h"
-#include "PRL_timer.h"
+#include "PRL_time.h"
 #include "PRL_camera.h"
 #include "PRL_display.h"
 #include "PRL_defines.h"
@@ -19,3 +19,4 @@ extern PRL_Config config_GLOBAL;
 extern PRL_Handler handler;
 
 #endif // PRL_GLOBAL_VARIABLES_H_INCLUDED
+

@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 #include "PRL_defines.h"
 #include "PRL_types.h"
-#include "PRL_timer.h"
+#include "PRL_time.h"
 #include "PRL_camera.h"
 
 
