@@ -32,6 +32,8 @@ add_executable(
 
 	src/PRL_game_functions.cpp
 
+	src/PRL_handler.cpp
+
 	src/PRL_HUD.cpp
 
 	src/PRL_input.cpp
@@ -42,7 +44,7 @@ add_executable(
 
 	src/PRL_sreenshots.cpp
 
-	src/PRL_timer.cpp
+	src/PRL_time.cpp
 
 	src/PRL_tool_programs.cpp
 )
