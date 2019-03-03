@@ -14,13 +14,14 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#include "PRL_timer.h"
+#include "PRL_time.h"
 #include "PRL_global_variables.h"
 
 #include "PRL_configuration.h"
 #include "PRL_math.h"
 #include "PRL_tool_programs.h"
 
+#include "PRL_handler.h"
 #include "PRL_input.h"
 #include "PRL_defines.h"
 
@@ -38,6 +39,8 @@ PRL_Config config_GLOBAL;
 PRL_Timer timer_GLOBAL;
 PRL_Camera camera_GLOBAL[PRL_MAX_CAMERAS_GLOBAL];
 PRL_Displayer displayer_GLOBAL[PRL_MAX_DISPLAYERS_GLOBAL];
+
+PRL_Handler handler;
 
 // convert a bool into a char string
 inline const char* const btoc(bool b)
@@ -77,22 +80,6 @@ inline const char* const ito5scale(int n)
 
 }
 
-// returns a time stamp
-std::string PRL_TimeStamp()
-{
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer[80];
-
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-    std::string str(buffer);
-
-    return str;
-}
-
 void PRL_SetError(std::string const& msg)
 {
     PRL_ErrorHandling::setError(msg);
@@ -117,14 +104,14 @@ void printLaunchDiag() // print the launch diagnosis
 {
     int i(0), joy_num = SDL_NumJoysticks();
     SDL_RendererInfo info;
-    SDL_GetRendererInfo(renderer_GLOBAL[0], &info);
+    SDL_GetRendererInfo(handler.renderer[0], &info);
     SDL_DisplayMode current;
     const SDL_version *linkv = IMG_Linked_Version();
 
     cout << "Platform detection: " << SDL_GetPlatform() << endl << endl;
 
     cout << "--- Program compilation properties ---" << endl << endl;
-    cout << "Program compiled on " << config_GLOBAL.getCompilationTime() << " using:" << endl;
+    cout << "Program compiled on " << handler.config.getCompilationTime() << " using:" << endl;
     cout << "SDL version: " << SDL_MAJOR_VERSION << "." << SDL_MINOR_VERSION << "." << SDL_PATCHLEVEL << endl;
     cout << "SDL_TTF version: " << TTF_MAJOR_VERSION << "." << TTF_MINOR_VERSION << "." << TTF_PATCHLEVEL << endl;
     cout << "SDL_IMG version: " << (int) linkv->major << "." << (int) linkv->minor << "." << (int) linkv->patch << endl;
@@ -175,35 +162,35 @@ void printLaunchDiag() // print the launch diagnosis
 
     cout << endl << endl;
     cout << "--- Loaded Settings ---" << endl << endl;
-    cout << "Display resolution: " << config_GLOBAL.resolution.x << "x" << config_GLOBAL.resolution.y << endl;
-    cout << "Renderer resolution: " << config_GLOBAL.renderResolution.x << "x" << config_GLOBAL.renderResolution.y << endl;
+    cout << "Display resolution: " << handler.config.getResolution().x << "x" << handler.config.getResolution().y << endl;
+    cout << "Renderer resolution: " << handler.config.getRenderResolution().x << "x" << handler.config.getRenderResolution().y << endl;
     cout << "Video driver: " << SDL_GetCurrentVideoDriver() << endl;
     cout << "Renderer name: " << info.name << endl;
     cout << "Renderer max. texture size: " << info.max_texture_width << " x " << info.max_texture_height << endl;
     cout << endl;
 
-    cout << "Using high-DPI: " << btoc(config_GLOBAL.highDpi) << endl;
-    cout << "Using vSync: " << btoc(config_GLOBAL.vsync) << endl;
-    cout << "Using full-screen: " << btoc(config_GLOBAL.fullscreen) << endl;
-    cout << "Using CPU-relieve: " << btoc(config_GLOBAL.cpuRelieve) << endl;
-    cout << "Resizable window: " << btoc(config_GLOBAL.resizable) << endl;
-    cout << "Borderless window: " << btoc(config_GLOBAL.borderless) << endl;
+    cout << "Using high-DPI: " << btoc(handler.config.getHighDpi()) << endl;
+    cout << "Using vSync: " << btoc(handler.config.getVsync()) << endl;
+    cout << "Using full-screen: " << btoc(handler.config.getFullscreen()) << endl;
+    cout << "Using CPU-relieve: " << btoc(handler.config.getCpuRelieve()) << endl;
+    cout << "Resizable window: " << btoc(handler.config.getResizable()) << endl;
+    cout << "Borderless window: " << btoc(handler.config.getBorderless()) << endl;
     cout << endl;
 
-    cout << "Texture filtering: " << ito3scale(stoi(config_GLOBAL.textureFiltering)) << endl;
-    cout << "Process priority: " << ito3scale((int)config_GLOBAL.processPriority) << endl;
+    cout << "Texture filtering: " << ito3scale(stoi(handler.config.getTextureFiltering())) << endl;
+    cout << "Process priority: " << ito3scale((int)handler.config.getProcessPriority()) << endl;
     cout << endl;
 
-    cout << "Frames per second: " << config_GLOBAL.fps << endl;
-    cout << "Brightness: " << config_GLOBAL.brightness << endl;
-    cout << "Music volume: " << config_GLOBAL.musicVol << endl;
-    cout << "Effects volume: " << config_GLOBAL.effectsVol << endl;
-    cout << "Voice volume: " << config_GLOBAL.voiceVol << endl;
-    cout << "General volume: " << config_GLOBAL.generalVol << endl;
-    cout << "Mouse sensitivity: " << config_GLOBAL.mouseSensitivity << endl;
+    cout << "Frames per second: " << handler.config.getFps() << endl;
+    cout << "Brightness: " << handler.config.getBrightness() << endl;
+    cout << "Music volume: " << handler.config.getMusicVol() << endl;
+    cout << "Effects volume: " << handler.config.getEffectsVol() << endl;
+    cout << "Voice volume: " << handler.config.getVoiceVol() << endl;
+    cout << "General volume: " << handler.config.getGeneralVol() << endl;
+    cout << "Mouse sensitivity: " << handler.config.getMouseSensitivity() << endl;
     cout << endl;
 
-    cout << "Language: " << config_GLOBAL.language << endl;
+    cout << "Language: " << handler.config.getLanguage() << endl;
     cout << endl;
     // IDEAS:
     // controllers plugged in?
@@ -213,7 +200,7 @@ void printLaunchDiag() // print the launch diagnosis
 int PRL_CreateWindowAndRenderer()
 {
     // SYSTEM
-    if (SDL_SetThreadPriority(config_GLOBAL.processPriority) != 0)
+    if (SDL_SetThreadPriority(handler.config.getProcessPriority()) != 0)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to change the process priority: " << SDL_GetError() << endl;
@@ -226,16 +213,16 @@ int PRL_CreateWindowAndRenderer()
     Uint32 flagw1, flagw2, flagw3, flagw4, flagw5, flagw6;
     flagw1 = flagw2 = flagw3 = flagw4 = flagw5 = flagw6 = SDL_WINDOW_SHOWN;
 
-    if (config_GLOBAL.fullscreen == true)
+    if (handler.config.getFullscreen() == true)
         flagw1 = SDL_WINDOW_FULLSCREEN;
 
-    if (config_GLOBAL.highDpi == true)
+    if (handler.config.getHighDpi() == true)
         flagw2 = SDL_WINDOW_ALLOW_HIGHDPI;
 
-    if (config_GLOBAL.resizable == true)
+    if (handler.config.getResizable() == true)
         flagw3 = SDL_WINDOW_RESIZABLE;
 
-    if (config_GLOBAL.borderless == true)
+    if (handler.config.getBorderless() == true)
         flagw4 = SDL_WINDOW_BORDERLESS;
 
     if (PRL_CONFIG_WINDOW_ALLWAYS_ON_THE_TOP)
@@ -246,10 +233,10 @@ int PRL_CreateWindowAndRenderer()
 
     Uint32 flagsw = flagw1|flagw2|flagw3|flagw4|flagw5|flagw6;
 
-    window_GLOBAL[0] = SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                             config_GLOBAL.resolution.x, config_GLOBAL.resolution.y, flagsw);
+    handler.window.push_back(SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                             config_GLOBAL.resolution.x, config_GLOBAL.resolution.y, flagsw));
 
-    if (window_GLOBAL[0] == NULL)
+    if (handler.window[0] == nullptr)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to create the window: " << SDL_GetError() << endl;
@@ -260,20 +247,18 @@ int PRL_CreateWindowAndRenderer()
 
 
     // RENDERER
-    Uint32 flagr1(0), flagr2(0);
+    Uint32 flagr1(0), flagr2(SDL_RENDERER_ACCELERATED);
 
-    if(config_GLOBAL.vsync == true)
+    if(handler.config.getVsync() == true)
         flagr1 = SDL_RENDERER_PRESENTVSYNC;
 
-    if (config_GLOBAL.driver_name != "software")
-        flagr2 = SDL_RENDERER_ACCELERATED;
-    else
+    if (handler.config.getDriverName() == "software")
         flagr2 = SDL_RENDERER_SOFTWARE;
 
     Uint32 flags_rend = flagr1 | flagr2;
 
-    renderer_GLOBAL[0] = SDL_CreateRenderer(window_GLOBAL[0], config_GLOBAL.driver_index, flags_rend);
-    if (renderer_GLOBAL[0] == NULL)
+    handler.renderer.push_back(SDL_CreateRenderer(handler.window[0], handler.config.getDriverIndex(), flags_rend));
+    if (handler.renderer[0] == NULL)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to create the renderer: " << SDL_GetError() << endl;
@@ -282,7 +267,7 @@ int PRL_CreateWindowAndRenderer()
         return PRL_ERROR;
     }
 
-    if (SDL_RenderSetLogicalSize(renderer_GLOBAL[0], config_GLOBAL.renderResolution.x, config_GLOBAL.renderResolution.y) != 0)
+    if (SDL_RenderSetLogicalSize(handler.renderer[0], handler.config.getRenderResolution().x, handler.config.getRenderResolution().y) != 0)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to set the logical size: " << SDL_GetError() << endl;
@@ -291,7 +276,7 @@ int PRL_CreateWindowAndRenderer()
         return PRL_ERROR;
     }
 
-    if(SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, config_GLOBAL.textureFiltering.c_str()) != SDL_TRUE)
+    if(SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, handler.config.getTextureFiltering().c_str()) != SDL_TRUE)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to set the texture filtering: " << SDL_GetError() << endl;
@@ -365,14 +350,14 @@ int PRL_Init()
         return PRL_ERROR;
     }
 
-    if (config_GLOBAL.loadSettings() != 0)
+    if (handler.config.loadSettings() != 0)
     {
         #if PRL_USE_WARNINGS == 1
         cout << __CERR_REF__ << "In PRL_Init, could not load the settings: " << PRL_GetError() << endl;
         #endif // PRL_USE_WARNINGS
     }
 
-    if (config_GLOBAL.loadLng() != 0)
+    if (handler.config.loadLng() != 0)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_Init, could not load the language file: " << PRL_GetError() << endl;
@@ -432,6 +417,8 @@ void PRL_Quit()
 {
     cout << PRL_TimeStamp() << " Quiting..." << endl;
     SDL_EnableScreenSaver();
+
+    handler.freeall();
 
     for (int i(0); i < PRL_MAX_RENDERER_GLOBAL; i++)
     {
@@ -521,72 +508,32 @@ int PRL_Config :: getSettingsNumber() const
 
 void PRL_Config :: loadDefault()
 {
-    settingsNumber = 20;
+    settingsNumber = 19;
 
-    _highDpi = false;
-    _fullscreen = false;
-    _vsync = false;
-    _cpuRelieve = true;
-    _resizable = false;
-    _borderless = false;
+    highDpi = false;
+    fullscreen = false;
+    vsync = false;
+    cpuRelieve = true;
+    resizable = false;
+    borderless = false;
 
-    _textureFiltering_int = 0;
-    _driver_index = -1;
-    _processPriority = SDL_THREAD_PRIORITY_NORMAL;
-    _trigoPrecision = 2;
+    textureFiltering_int = 0;
+    driverIndex = -1;
+    processPriority = SDL_THREAD_PRIORITY_NORMAL;
+    fps = 30.0;
+    brightness = 1.0;
+    musicVol = 1.0;
+    effectsVol = 1.0;
+    voiceVol = 1.0;
+    generalVol = 1.0;
+    mouseSensitivity = 1.0;
 
-    _fps = 30.0;
-    _brightness = 1.0;
-    _musicVol = 1.0;
-    _effectsVol = 1.0;
-    _voiceVol = 1.0;
-    _generalVol = 1.0;
-    _mouseSensitivity = 1.0;
+    resolution = {720, 360};
+    renderResolution = {720, 360};
 
-    _resolution = {720, 360};
-    _renderResolution = {720, 360};
-
-    _textureFiltering = "0";
-    _language = "english";
-    _driver_name = "default";
-
-    _cos_default = cos3;
-    _sin_default = sin3;
-
-    makePublic();
-}
-
-void PRL_Config :: makePublic()
-{
-    highDpi = _highDpi;
-    fullscreen = _fullscreen;
-    vsync = _vsync;
-    cpuRelieve = _cpuRelieve;
-    resizable = _resizable;
-    borderless = _borderless;
-
-    textureFiltering_int = _textureFiltering_int;
-    driver_index = _driver_index;
-    processPriority = _processPriority;
-    trigoPrecision = _trigoPrecision;
-
-    fps = _fps;
-    brightness = _brightness;
-    musicVol = _musicVol;
-    effectsVol = _effectsVol;
-    voiceVol = _voiceVol;
-    generalVol = _generalVol;
-    mouseSensitivity = _mouseSensitivity;
-
-    resolution = _resolution;
-    renderResolution = _renderResolution;
-
-    textureFiltering = _textureFiltering;
-    language = _language;
-    driver_name = _driver_name;
-
-    cos_default = _cos_default;
-    sin_default = _sin_default;
+    textureFiltering = "0";
+    language = "english";
+    driverName = "default";
 }
 
 int PRL_Config :: extractSetting(std::string const& fullLine, std::string& setting, bool keep_spaces) const
@@ -702,8 +649,6 @@ void checkBounds(float min, float max, float& var)
 
 int PRL_Config :: loadSettings()
 {
-    loadDefault(); // load the default settings first
-
     string fullLine(""), temp("");
     ifstream file(PRL_CONFIG_FILE_PATH);
 
@@ -724,157 +669,100 @@ int PRL_Config :: loadSettings()
         // Booleans
         if (fullLine.find("high-dpi") != string::npos)
         {
-           extractBool(temp, _highDpi);
+           extractBool(temp, highDpi);
         }
         else if (fullLine.find("vsync") != string::npos)
         {
-            extractBool(temp, _vsync);
+            extractBool(temp, vsync);
         }
         else if (fullLine.find("fullscreen") != string::npos)
         {
-            extractBool(temp, _fullscreen);
+            extractBool(temp, fullscreen);
         }
         else if (fullLine.find("cpu-relieve") != string::npos)
         {
-            extractBool(temp, _cpuRelieve);
+            extractBool(temp, cpuRelieve);
         }
         else if (fullLine.find("resizable") != string::npos)
         {
-            extractBool(temp, _resizable);
+            extractBool(temp, resizable);
         }
         else if (fullLine.find("borderless") != string::npos)
         {
-            extractBool(temp, _borderless);
+            extractBool(temp, borderless);
         }
 
         // Integers
         else if (fullLine.find("priority") != string::npos)
         {
             if (temp == "0" || temp == "low")
-                _processPriority = SDL_THREAD_PRIORITY_LOW;
+                processPriority = SDL_THREAD_PRIORITY_LOW;
             else if (temp == "1" || temp == "normal")
-                _processPriority = SDL_THREAD_PRIORITY_NORMAL;
+                processPriority = SDL_THREAD_PRIORITY_NORMAL;
             else if (temp == "2" || temp == "high")
-                _processPriority = SDL_THREAD_PRIORITY_HIGH;
-        }
-        else if (fullLine.find("trig-precision") != string::npos)
-        {
-            if (temp == "0" || temp == "verylow")
-                _trigoPrecision = 0;
-
-            else if (temp == "1" || temp == "low")
-                _trigoPrecision = 1;
-
-            else if (temp == "2" || temp == "normal")
-                _trigoPrecision = 2;
-
-            else if (temp == "3" || temp == "high")
-                _trigoPrecision = 3;
-
-            else if (temp == "4" || temp == "veryhigh")
-                _trigoPrecision = 4;
-
-            else if (temp == "5" || temp == "ultra")
-                _trigoPrecision = 5;
-
-
-            if (_trigoPrecision < PRL_MIN_TRIG_PRECISION) _trigoPrecision = PRL_MIN_TRIG_PRECISION;
-            if (_trigoPrecision > 5) _trigoPrecision = 5; // just in the case where the define would have been badly changed
-
-            switch (_trigoPrecision)
-            {
-            case 0:
-                _sin_default = sin1;
-                _cos_default = cos1;
-                break;
-
-            case 1:
-                _sin_default = sin2;
-                _cos_default = cos2;
-                break;
-
-            case 2:
-                _sin_default = sin3;
-                _cos_default = cos3;
-                break;
-
-            case 3:
-                _sin_default = sin4;
-                _cos_default = cos4;
-                break;
-
-            case 4:
-                _sin_default = sin5;
-                _cos_default = cos5;
-                break;
-
-            case 5:
-                _sin_default = sin6;
-                _cos_default = cos6;
-                break;
-            }
+                processPriority = SDL_THREAD_PRIORITY_HIGH;
         }
 
         // Floats
         else if (fullLine.find("fps") != string::npos)
         {
-            extractFloat(temp, _fps);
-            if (_fps > PRL_MAX_FPS) _fps = PRL_MAX_FPS;
+            extractFloat(temp, fps);
+            if (fps > PRL_MAX_FPS) fps = PRL_MAX_FPS;
         }
         else if (fullLine.find("brightness") != string::npos)
         {
-            extractFloat(temp, _brightness);
-            checkBounds(0.0, 1.0, _brightness);
+            extractFloat(temp, brightness);
+            checkBounds(0.0, 1.0, brightness);
         }
         else if (fullLine.find("music-vol") != string::npos)
         {
-            extractFloat(temp, _musicVol);
-            checkBounds(0.0, 1.0, _musicVol);
+            extractFloat(temp, musicVol);
+            checkBounds(0.0, 1.0, musicVol);
         }
         else if (fullLine.find("effects-vol") != string::npos)
         {
-            extractFloat(temp, _effectsVol);
-            checkBounds(0.0, 1.0, _effectsVol);
+            extractFloat(temp, effectsVol);
+            checkBounds(0.0, 1.0, effectsVol);
         }
         else if (fullLine.find("voice-vol") != string::npos)
         {
-            extractFloat(temp, _voiceVol);
-            checkBounds(0.0, 1.0, _voiceVol);
+            extractFloat(temp, voiceVol);
+            checkBounds(0.0, 1.0, voiceVol);
         }
         else if (fullLine.find("general-vol") != string::npos)
         {
-            extractFloat(temp, _generalVol);
-            checkBounds(0.0, 1.0, _generalVol);
+            extractFloat(temp, generalVol);
+            checkBounds(0.0, 1.0, generalVol);
         }
         else if (fullLine.find("mouse-sensitivity") != string::npos)
         {
-            extractFloat(temp, _mouseSensitivity);
-            checkBounds(0.0, 1.0, _mouseSensitivity);
+            extractFloat(temp, mouseSensitivity);
+            checkBounds(0.0, 1.0, mouseSensitivity);
         }
 
         // Points
         else if (fullLine.find("render-resolution") != string::npos)
         {
-            extractPoint(temp, _renderResolution);
-            if (_renderResolution.x < 0) _renderResolution.x *= (-1);
-            if (_renderResolution.y < 0) _renderResolution.y *= (-1);
+            extractPoint(temp, renderResolution);
+            if (renderResolution.x < 0) renderResolution.x *= (-1);
+            if (renderResolution.y < 0) renderResolution.y *= (-1);
         }
         else if (fullLine.find("resolution") != string::npos)
         {
-            extractPoint(temp, _resolution);
-            if (_resolution.x < 0) _resolution.x *= (-1);
-            if (_resolution.y < 0) _resolution.y *= (-1);
+            extractPoint(temp, resolution);
+            if (resolution.x < 0) resolution.x *= (-1);
+            if (resolution.y < 0) resolution.y *= (-1);
         }
 
         // Strings
         else if (fullLine.find("texture-filtering") != string::npos)
         {
             if (temp == "0" || temp == "nearest" || temp == "low")
-                _textureFiltering = "0";
+                textureFiltering = "0";
             else if (temp == "1" || temp == "linear" || temp == "normal")
-                _textureFiltering = "1";
+                textureFiltering = "1";
             else if (temp == "2" || temp == "best" || temp == "anisotropic" || temp == "high")
-                _textureFiltering = "2";
+                textureFiltering = "2";
 
         }
         else if (fullLine.find("driver") != string::npos)
@@ -886,33 +774,30 @@ int PRL_Config :: loadSettings()
             {
                 if (temp == info.name)
                 {
-                    _driver_name = info.name;
-                    _driver_index = i;
+                    driverName = info.name;
+                    driverIndex = i;
                 }
             }
 
             if (i == 0)
             {
-                _driver_name = "default";
-                    _driver_index = (-1);
+                driverName = "default";
+				driverIndex = (-1);
             }
         }
         else if (fullLine.find("language") != string::npos)
         {
-            _language = temp;
+            language = temp;
         }
     }
 
     file.close(); // close the configuration file
-
-    makePublic(); // make the loaded settings publicly available
-
     return 0;
 }
 
 int PRL_Config :: loadLng()
 {
-    std::string fullLine(""), path = std::string(PRL_CONFIG_FOLDER) + std::string("/") + std::string(_language) + std::string(".lng");
+    std::string fullLine(""), path = std::string(PRL_CONFIG_FOLDER) + std::string("/") + std::string(language) + std::string(".lng");
     std::string key(""), value("");
 
     size_t i(0);
@@ -975,43 +860,42 @@ int PRL_Config :: writeSettings() const
 
 
     // Booleans
-    filew << "high-dpi = " << btoc(_highDpi) << endl;
-    filew << "vsync = " << btoc(_vsync) << endl;
-    filew << "cpu-relieve = " << btoc(_cpuRelieve) << endl;
-    filew << "resizable = " << btoc(_resizable) << endl;
-    filew << "borderless = " << btoc(_borderless) << endl;
+    filew << "high-dpi = " << btoc(highDpi) << endl;
+    filew << "vsync = " << btoc(vsync) << endl;
+    filew << "cpu-relieve = " << btoc(cpuRelieve) << endl;
+    filew << "resizable = " << btoc(resizable) << endl;
+    filew << "borderless = " << btoc(borderless) << endl;
     filew << endl;
 
     // Integers
-    filew << "texture-filtering = " << ito3scale(stoi(_textureFiltering)) << endl;
-    filew << "priority = " << ito3scale((int) _processPriority) << endl;
-    filew << "trig-precision = " << ito5scale(_trigoPrecision) << endl;
+    filew << "texture-filtering = " << ito3scale(stoi(textureFiltering)) << endl;
+    filew << "priority = " << ito3scale((int) processPriority) << endl;
     filew << endl;
 
     // Floats
-    filew << "fps = " << to_string(_fps).substr(0, 6 + (int)fps / 100) << endl; // keep 3 numbers after the decimal point
-    filew << "brightness = " << to_string(_brightness).substr(0, 5) << endl;
-    filew << "music-vol = " << to_string(_musicVol).substr(0, 5) << endl;
-    filew << "effects-vol = " << to_string(_effectsVol).substr(0, 5) << endl;
-    filew << "voice-vol = " << to_string(_voiceVol).substr(0, 5) << endl;
-    filew << "general-vol = " << to_string(_generalVol).substr(0, 5) << endl;
-    filew << "mouse-sensitivity = " << to_string(_mouseSensitivity).substr(0, 5) << endl;
+    filew << "fps = " << to_string(fps).substr(0, 6 + (int)fps / 100) << endl; // keep 3 numbers after the decimal point
+    filew << "brightness = " << to_string(brightness).substr(0, 5) << endl;
+    filew << "music-vol = " << to_string(musicVol).substr(0, 5) << endl;
+    filew << "effects-vol = " << to_string(effectsVol).substr(0, 5) << endl;
+    filew << "voice-vol = " << to_string(voiceVol).substr(0, 5) << endl;
+    filew << "general-vol = " << to_string(generalVol).substr(0, 5) << endl;
+    filew << "mouse-sensitivity = " << to_string(mouseSensitivity).substr(0, 5) << endl;
     filew << endl;
 
     // Points
-    filew << "render-resolution = " << to_string(_renderResolution.x);
-    filew << " x " << to_string(_renderResolution.y) << endl;
+    filew << "render-resolution = " << to_string(renderResolution.x);
+    filew << " x " << to_string(renderResolution.y) << endl;
 
-    filew << "resolution = " << to_string(_resolution.x);
-    filew << " x " << to_string(_resolution.y) << endl;
+    filew << "resolution = " << to_string(resolution.x);
+    filew << " x " << to_string(resolution.y) << endl;
     filew << endl;
 
     // Strings
-    filew << "driver = " << _driver_name << endl;
-    filew << "language = " << _language << endl;
+    filew << "driver = " << driverName << endl;
+    filew << "language = " << language << endl;
     filew << endl << endl;
 
-    filew << "# Modified the " << PRL_TimeStamp() << " by the Pearl Engine." << endl;
+    filew << "# Modified the " << PRL_TimeStamp() << " by Pearl Engine." << endl;
 
     filew.close();
     return 0;
@@ -1037,10 +921,114 @@ int PRL_Config :: getText(std::string key, std::string& txt) const
     return 0;
 }
 
+bool PRL_Config :: getHighDpi() const
+{
+	return highDpi;
+}
+
+bool PRL_Config :: getFullscreen() const
+{
+	return fullscreen;
+}
+
+bool PRL_Config :: getVsync() const
+{
+	return vsync;
+}
+bool PRL_Config :: getCpuRelieve() const
+{
+	return cpuRelieve;
+}
+
+bool PRL_Config :: getResizable() const
+{
+	return resizable;
+}
+
+bool PRL_Config :: getBorderless() const
+{
+	return borderless;
+}
+
+int PRL_Config :: getTextureFiltering_int() const
+{
+	return textureFiltering_int;
+}
+
+int PRL_Config :: getDriverIndex() const
+{
+	return driverIndex;
+}
+
+SDL_ThreadPriority PRL_Config :: getProcessPriority() const
+{
+	return processPriority;
+}
+
+float PRL_Config :: getFps() const
+{
+	return fps;
+}
+
+float PRL_Config :: getBrightness() const
+{
+	return brightness;
+}
+
+float PRL_Config :: getMusicVol() const
+{
+	return musicVol;
+}
+
+float PRL_Config :: getEffectsVol() const
+{
+	return effectsVol;
+}
+
+float PRL_Config :: getVoiceVol() const
+{
+	return voiceVol;
+}
+
+float PRL_Config :: getGeneralVol() const
+{
+	return generalVol;
+}
+
+float PRL_Config :: getMouseSensitivity() const
+{
+	return mouseSensitivity;
+}
+
+PRL_Point PRL_Config :: getResolution() const
+{
+	return resolution;
+}
+
+PRL_Point PRL_Config :: getRenderResolution() const
+{
+	return renderResolution;
+}
+
+string PRL_Config :: getTextureFiltering() const
+{
+	return textureFiltering;
+}
+
+string PRL_Config :: getLanguage() const
+{
+	return language;
+}
+
+string PRL_Config :: getDriverName() const
+{
+	return driverName;
+}
+
 void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::string& filename, std::string& fileformat)
 {
     std::string temp("");
-    unsigned int i(filepath.size() - 1);
+    int i(filepath.size() - 1);
 
     for (; i >= 0; i--)
     {

@@ -1,11 +1,10 @@
 #ifndef PRL_CLASS_TIME_H_INCLUDED
 #define PRL_CLASS_TIME_H_INCLUDED
 
-#include "PRL_timer.h"
 #include <iostream>
 #include <chrono>
 
-//! Class used for time handling.
+//! Class used for time handling. (To be removed!!!!!!!!!!!)
 /*!
 This class stores an elapsed time since it has been created or reseted.
 You need to call the method update() in order to make the internal time match the real elapsed time.
@@ -15,11 +14,11 @@ class PRL_Timer
 {
 private:
     std::chrono::high_resolution_clock::time_point start; //!< Reference time point, set to be the zero of the timer.
-    long long time_us; //!< Time stored in microseconds (us).
-    long long time_ms; //!< Time stored in milliseconds (ms).
-    long long shift_us; //!< Time shift (0 by default).
+    long long time_us;//!< Time stored in microseconds (us).
+    long long time_ms;//!< Time stored in milliseconds (ms).
+    long long shift_us;//!< Time shift (0 by default).
 
-    static int timers_count; //!< Keep track of how many timers are present in the program.
+    static int timers_count;//!< Keep track of how many timers are present in the program.
 
 public:
     //! Constructor.
@@ -55,12 +54,56 @@ public:
     //! Get how many timers are currently present.
     static int getCount();
 };
-//! Classic delay.
+
+
+class PRL_Stopwatch
+{
+public:
+	//! Constructor.
+    PRL_Stopwatch();
+    //! Destructor.
+    ~PRL_Stopwatch();
+
+	//! Get the elapsed time in microseconds (us).
+	long long us() const;
+	//! Get the elapsed time in milliseconds (ms).
+	int ms() const;
+
+	//! Start the stopwatch.
+	/*!
+	If the stopwatch is already started, nothing will happen. However if it was stopped
+	it simply continues without reset.
+	*/
+	void start();
+	//! Stop the stopwatch.
+	/*!
+	When stopped, the last value is held. If the stopwatch is already stopped or just reseted, nothing will happen.
+	*/
+	void stop();
+	//! Reset the stopwatch.
+	/*!
+	This action causes the time measured to be set to 0 again, and stops the stopwatch.
+	*/
+	void reset();
+
+private:
+    long long startingTime;//!< Time at which the stopwatch have been set (in us).
+    long long stopDuration;//!< Time of the cumulated stops (in us).
+    long long timeAtStop;//!< Time at the previous stop (in us).
+    bool reseted;//!< Tell if the stopwatch has just been reseted.
+    bool stopped;//!< Tell if the stopwatch is stopped.
+};
+
+//! Classic delay function.
 /*!
-Use this function to pause your thread.
+Use this function to pause the thread in which it is called.
 NB: The values of the desired time must be positive!
 @param [in] us Specify how long you want the thread to be paused.
 */
 void PRL_Delay(long long us);
+//! Get the number of microseconds since the launch of the program.
+long long PRL_GetTicks();
+//! Get a time stamp as a string.
+std::string PRL_TimeStamp();
 
 #endif // PRL_CLASS_TIME_H_INCLUDED

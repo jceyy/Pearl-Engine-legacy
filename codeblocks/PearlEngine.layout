@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<FileVersion major="1" minor="0" />
+	<ActiveTarget name="Debug" />
+	<File name="..\src\PRL_handler.h" open="1" top="1" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="173" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_handler.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="187" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_animation.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9693" topLine="363" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_configuration.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1953" topLine="39" />
+		</Cursor>
+		<Folding>
+			<Collapse line="46" />
+			<Collapse line="55" />
+			<Collapse line="66" />
+			<Collapse line="83" />
+			<Collapse line="88" />
+			<Collapse line="98" />
+			<Collapse line="416" />
+			<Collapse line="449" />
+			<Collapse line="476" />
+			<Collapse line="481" />
+			<Collapse line="487" />
+			<Collapse line="494" />
+			<Collapse line="499" />
+			<Collapse line="539" />
+			<Collapse line="573" />
+			<Collapse line="587" />
+			<Collapse line="601" />
+			<Collapse line="644" />
+			<Collapse line="650" />
+			<Collapse line="696" />
+			<Collapse line="798" />
+			<Collapse line="845" />
+			<Collapse line="904" />
+			<Collapse line="924" />
+			<Collapse line="934" />
+			<Collapse line="1066" />
+		</Folding>
+	</File>
+	<File name="..\src\PRL_configuration.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9061" topLine="162" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_global_variables.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="157" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_time.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1833" topLine="69" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_collision.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19490" topLine="576" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_time.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="174" topLine="3" />
+		</Cursor>
+		<Folding>
+			<Collapse line="13" />
+		</Folding>
+	</File>
+	<File name="..\src\PRL_menu_functions.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="154" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1615" topLine="38" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_display.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="357" topLine="155" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_display.h" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="217" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_HUD.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="51280" topLine="1523" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_animation.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="10340" topLine="132" />
+		</Cursor>
+		<Folding>
+			<Collapse line="20" />
+			<Collapse line="107" />
+			<Collapse line="185" />
+		</Folding>
+	</File>
+	<File name="..\src\PRL_camera.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="149" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\PRL_types.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="208" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\src\main.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="528" topLine="0" />
+		</Cursor>
+	</File>
+</CodeBlocks_layout_file>

@@ -1,6 +1,12 @@
 #ifndef PRL_HANDLER_H_INCLUDED
 #define PRL_HANDLER_H_INCLUDED
 
+#include "SDL2/SDL.h"
+
+#include "PRL_configuration.h"
+#include "PRL_input.h"
+#include "PRL_animation.h"
+
 class PRL_Handler
 {
 public:
@@ -9,7 +15,28 @@ public:
 	~PRL_Handler();
 
 	PRL_Config config;
-	
+	PRL_Input input;
+
+	struct display
+	{
+		int empty0;
+	};
+
+	struct collision
+	{
+		int empty1;
+	};
+
+	struct network
+	{
+		int empty2;
+	};
+
+	struct physics
+	{
+		int empty3;
+	};
+
 
 	void loadAnimation(const std::string& file_path);
 
@@ -34,8 +61,11 @@ public:
 private:
 	static int handlerCount;
 
+public:
 	std::vector <SDL_Renderer*> renderer;
 	std::vector <SDL_Window*> window;
+	std::vector <PRL_Animation*> animation;
+	//std::vector <PRL_Sprite*> sprite;
 
 // Threads/ networking, out screen update
 

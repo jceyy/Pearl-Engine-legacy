@@ -12,14 +12,18 @@ using std::string;
 
 int PRL_TestZone()
 {
-    SDL_Texture *texture = SDL_CreateTexture(renderer_GLOBAL[0], SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 256, 256);
+	cout << PRL_GetTicks() << " " + PRL_TimeStamp() << endl;
+	PRL_Delay(1000000);
+	cout << PRL_GetTicks() << " " + PRL_TimeStamp() << endl;
+
+    //SDL_Texture *texture = SDL_CreateTexture(renderer_GLOBAL[0], SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 256, 256);
     //SDL_Loc
     /*string output("");
     config_GLOBAL.getText("tobySaysHello", output);
 
     cout << "DEBUGGING: " << output << endl << endl;*/
 
-    SDL_SetRenderDrawColor(*renderer_GLOBAL, 0, 0, 0, 0); // add to configuration?
+    /*SDL_SetRenderDrawColor(*renderer_GLOBAL, 0, 0, 0, 0); // add to configuration?
     #if PRL_USE_TARGET_TEXTURE == 1
         SDL_Rect posTarget={0};
         SDL_QueryTexture(targetTexture[0], NULL, NULL, &(posTarget.w), &(posTarget.h));
@@ -161,6 +165,6 @@ int PRL_TestZone()
     delete scrollBar2;
     delete textBoxSimple;
     delete textLabel;
-
+*/
     return 0;
 }
