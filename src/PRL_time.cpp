@@ -86,7 +86,7 @@ PRL_Stopwatch :: ~PRL_Stopwatch()
 long long PRL_Stopwatch :: us() const
 {
 	if (stopped)
-		return timeAtStop;
+		return timeAtStop - startingTime - stopDuration;
 	else
 		return PRL_GetTicks() - startingTime - stopDuration;
 }

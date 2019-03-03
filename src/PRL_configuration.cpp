@@ -1,4 +1,5 @@
 #include <iostream>
+#include <exception>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -80,9 +81,15 @@ inline const char* const ito5scale(int n)
 
 }
 
-void PRL_SetError(std::string const& msg)
+void PRL_SetError(std::string const& msg, bool auto_throw)
 {
     PRL_ErrorHandling::setError(msg);
+
+    if (auto_throw)
+	{
+		std::runtime_error e(PRL_GetError());
+		throw e;
+	}
 }
 
 std::string PRL_GetError()
@@ -129,7 +136,7 @@ void printLaunchDiag() // print the launch diagnosis
 
     for(i = 0; i < SDL_GetNumVideoDisplays(); ++i)
     {
-        if (SDL_GetCurrentDisplayMode(i, &current)!=0)
+        if (SDL_GetCurrentDisplayMode(i, &current) != 0)
         {
             #if PRL_USE_WARNINGS == 1
             cout << __CERR_REF__ << "Could not get display mode for video display #" << i << ": " << SDL_GetError() << endl;
@@ -192,6 +199,7 @@ void printLaunchDiag() // print the launch diagnosis
 
     cout << "Language: " << handler.config.getLanguage() << endl;
     cout << endl;
+
     // IDEAS:
     // controllers plugged in?
     // Letterboxing / ...
@@ -598,7 +606,7 @@ int PRL_Config :: extractFloat(std::string const& str, float& f) const
     return 0;
 }
 
-int PRL_Config :: extractPoint(std::string const& str, PRL_Point& p) const
+int PRL_Config :: extractPoint(std::string const& str, PRL_Point& p)
 {
     size_t i(0);
     std::string temp1, temp2;

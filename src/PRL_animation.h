@@ -192,18 +192,18 @@ private:
     The first dimension is the corresponding frames and the second one the hit box number.
     Each hit box has the same number during the whole animation: the hit box number is constant frame to frame.
     */
-    std::vector <std::vector <PRL_HitBox>> hitBoxes;
+    std::vector <std::vector <PRL_HitBox>> hitBoxe;
     //! Vector containing the action points.
     /*!
     The first dimension is the corresponding frames and the second one the action point number.
     Each action point has the same number during the whole animation: the action point number is constant frame to frame.
     */
-    std::vector <std::vector <PRL_FPoint>> actionPoints;
+    std::vector <std::vector <PRL_FPoint>> actionPoint;
     //! Vector containing the anchor points.
     /*!
     There is only 1 anchor point per frame, so the vector is simple.
     */
-    std::vector <PRL_FPoint> anchorPoints;
+    std::vector <PRL_FPoint> anchorPoint;
 
 public:
     //! Constructor.
@@ -243,50 +243,61 @@ public:
 class PRL_Animation
 {
 public:
-	/// Need the path of the animation's .anim file
-	PRL_Animation(const char file_path[]);
-	/// Need the path of the animation's .anim file
-	PRL_Animation(const std::string& file_path);
+	/// Need the path of the animation's .anim file.
+	PRL_Animation(const char* path, SDL_Renderer *renderer);
+	/// Need the path of the animation's .anim file.
+	PRL_Animation(const std::string& path, SDL_Renderer *renderer);
 	~PRL_Animation();
 
-	SDL_Texture* getTexture(size_t which) const;
+	struct _display
+	{
+		SDL_Texture* getTexture(size_t which) const;
+		/// Return the size {width, height, width, height}.
+		const PRL_Point& getSize(size_t which) const; // no bound checking, in term of current render resolution
+		/// Return the source size (real one without scaling) {width, height, width, height}.
+		const PRL_Point& getSrcSize(size_t which) const;
+		/// Return {width, height, width, height}.
+		const PRL_Point& getTargetResolution() const;
+		/// Return the total number of frames of the animation.
+		int getFramesNumber() const;
+		/// Return the frame rate.
+		float getFrameRate() const;
+		/// Get the point cluster.
+	};
+	_display display;
 
-	/// Return the size {width, height, width, height}
-	PRL_Point getSize(size_t which) const; // no bound checking, in term of current render resolution
-	/// Return the source size (real one without scaling) {width, height, width, height}
-	PRL_Point getSrcSize(size_t which) const;
-	/// Return {width, height, width, height}
-	PRL_Point getTargetResolution() const;
-	/// Return the total number of frames of the animation
-	int getFramesNumber() const;
-	/// Set the renderer to be used. By default renderer_GLOBAL[0]. Use this function before load(const char file_path[])
-	void setRenderer(const SDL_Renderer *newRenderer); // in constructor!
-	/// Return the frame rate
-	float getFrameRate() const;
+	struct points
+	{
+		PRL_FPointCluster *getPointCluster() const; // change to reference?
+	};
 
-	/// Tell whether the animation has already been loaded or not
-	bool isLoaded() const;
-	/// Get the point cluster
-	PRL_FPointCluster *getPointCluster() const; // change to reference?
+	/// Get the number of PRL_Animation currently declared.
+	static int getCount();
 
 private:
-	static int animations_count;
+	static int animationsCount;
 
-	std::string animationPath;
-	std::vector <SDL_Texture*> texture;
-	std::vector <std::vector <SDL_Texture*> > mask;
+	std::string filePath;
+	std::vector <SDL_Texture*> mainTexture;
+	std::vector <SDL_Surface*> mainSurface;
+	std::vector <std::vector <SDL_Texture*> > maskTexture;
+	std::vector <std::vector <SDL_Surface*> > maskSurface;
 	std::vector <std::vector <PRL_FRect> > maskPos;
 	std::vector <PRL_Point> dstSize;
 	std::vector <PRL_Point> srcSize;
-	PRL_Point rect, srcRect; // actual size of the frames under the following form: rect = {w, h, w, h};
-	PRL_Point reference_renderer; // size under the following form: reference_renderer = {w, h, w, h};
-	int framesNumber; // total number of frames
+	PRL_Point refRenderer; // size under the following form: reference_renderer = {w, h, w, h};
+
 	SDL_Renderer *renderer; // the used renderer
+
 	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
+	size_t maskPerTexture;
 
 	float frameRate; // FPS
 
-	bool loaded; // whether it is loaded or not
+	void load();
+	int load_CPU();
+	int load_GPU();
+	void clear_CPU();
 };
 
 

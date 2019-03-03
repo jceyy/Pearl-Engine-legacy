@@ -169,6 +169,15 @@ public: // to become private!!!!!!!!!!!!
     string language; //!< Defines the language used by the software.
     string driverName; //!< Contains the name of the driver in use, or "default" if an error occurred while attempting to load the driver specified by the user.
 
+    //! Extract a point from a string.
+    /*!
+    This function extracts a point from a setting's string value obtained with the extractSetting function (spaced and special characters need to be removed first).
+    @param [in] str The string containing the point as follows: N1xN2.
+    @param [out] point The point filled with its value.
+    \return Returns 0 on success or a negative code on failure (call SDL_GetError() for more information).
+    */
+    static int extractPoint(std::string const& str, PRL_Point& point);
+
 private:
     //! Load the default settings.
     void loadDefault();
@@ -182,14 +191,7 @@ private:
     \return Returns 0 on success or a negative code on failure (call SDL_GetError() for more information).
     */
     int extractSetting(std::string const& fullLine, std::string& setting, bool keep_spaces = false) const;
-    //! Extract a point from a string.
-    /*!
-    This function extracts a point from a setting's string value obtained with the extractSetting function (spaced and special characters need to be removed first).
-    @param [in] str The string containing the point as follows: N1xN2.
-    @param [out] point The point filled with its value.
-    \return Returns 0 on success or a negative code on failure (call SDL_GetError() for more information).
-    */
-    int extractPoint(std::string const& str, PRL_Point& point) const;
+
     //! Extract a boolean from a string.
     /*!
     This function extracts a boolean from a setting's string value obtained with the extractSetting function (spaced and special characters need to be removed first).
@@ -227,20 +229,19 @@ public:
     virtual ~PRL_ErrorHandling() = 0;
     //! Get the latest error.
     /*!
-    This method returns the last error that was set using getError(). Use this function to help with debugging.
+    This method returns the last error that was set. Use this function to help with debugging.
     This function is similar to PRL_GetError();
     */
     static std::string getError();
     //! Set an error.
     /*!
-    This method returns the last error that was set using getError(). Use this function to help with debugging.
-    This function is similar to PRL_SetError();
+    Use this function to help with debugging. This function is similar to PRL_SetError().
     */
     static void setError(std::string const& msg);
     //! Get how many errors happened.
     /*!
     At each time the function setError() is called, the error count is incremented.
-    This function is similar to PRL_ErrorCount();
+    This function is similar to PRL_ErrorCount().
     */
     static int getErrorCount();
 
@@ -280,20 +281,21 @@ Use this function to get informations about a file's path.
 @param [out] filename The filename without its extension.
 @param [out] fileformat The file format without the point.
 
-For instance: providing filepath with "folder1/folder2/folder3/mysuperfile.txt" should output:
+For instance: providing filepath with "folder1/folder2/folder3/mygreatfile.txt" should output:
 - parentfolder folder1/folder2/folder3
-- filename mysuperfile
+- filename mygreatfile
 - fileformat txt
 */
 void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::string& filename, std::string& fileformat);
-//! Set an error.
+//! Set an error and choose whether to throw an exception or not.
 /*!
-Use this function to set a error message when an error is encountered. This function is based on PRL_ErrorHandling::setError().
+Use this function to set an error message when an error is encountered. It can be used to throw an exception containing the error message set.
+This function is based on PRL_ErrorHandling::setError().
 */
-void PRL_SetError(std::string const& msg);
+void PRL_SetError(std::string const& msg, bool auto_throw = false);
 //! Get the latest error.
 /*!
-Use this function to get a error message when an error occurred. This function is based on PRL_ErrorHandling::getError().
+Use this function to get an error message when an error occurred. This function is based on PRL_ErrorHandling::getError().
 */
 std::string PRL_GetError();
 //! Get the error count of the program.

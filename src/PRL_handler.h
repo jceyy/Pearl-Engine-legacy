@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 
+#include "PRL_time.h"
 #include "PRL_configuration.h"
 #include "PRL_input.h"
 #include "PRL_animation.h"
@@ -17,10 +18,17 @@ public:
 	PRL_Config config;
 	PRL_Input input;
 
-	struct display
+	struct _display
 	{
 		int empty0;
 	};
+	_display display;
+
+	struct _time
+	{
+		PRL_Stopwatch stopwatch; // automatically started
+	};
+	_time time;
 
 	struct collision
 	{

@@ -3,6 +3,7 @@
 #include <cstring>
 #include <math.h>
 #include <iostream>
+#include <fstream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -227,54 +228,187 @@ PRL_FPointCluster :: ~PRL_FPointCluster()
 
 int PRL_FPointCluster :: getFramesNumber() const
 {
-    return anchorPoints.size();
+    return anchorPoint.size();
 }
 
 int PRL_FPointCluster :: getActionPointsNumber() const
 {
-    return actionPoints[0].size();
+    return actionPoint[0].size();
 }
 
 int PRL_FPointCluster :: getHitBoxesNumber() const
 {
-    return hitBoxes[0].size();
+    return hitBoxe[0].size();
 }
 
 PRL_HitBox const& PRL_FPointCluster :: getHitBox(int frame, int hitBoxNumber) const
 {
-    return (PRL_HitBox const&) hitBoxes[frame][hitBoxNumber];
+    return (PRL_HitBox const&) hitBoxe[frame][hitBoxNumber];
 }
 
 PRL_FPoint const& PRL_FPointCluster :: getActionPoint(int frame, int actionPointNumber) const
 {
-    return (PRL_FPoint const&) actionPoints[frame][actionPointNumber];
+    return (PRL_FPoint const&) actionPoint[frame][actionPointNumber];
 }
 
 PRL_FPoint const& PRL_FPointCluster :: getFixedPoint(int frame) const
 {
-    return (PRL_FPoint const&) anchorPoints[frame];
+    return (PRL_FPoint const&) anchorPoint[frame];
 }
 
 void PRL_FPointCluster :: setHitBox(int frame, int hitBoxNumber, PRL_HitBox const& hitbox)
 {
-    hitBoxes[frame][hitBoxNumber] = hitbox;
+    hitBoxe[frame][hitBoxNumber] = hitbox;
 }
 
 void PRL_FPointCluster :: setActionPoint(int frame, int actionPointNumber, PRL_FPoint const& point)
 {
-    actionPoints[frame][actionPointNumber] = point;
+    actionPoint[frame][actionPointNumber] = point;
 }
 
 void PRL_FPointCluster :: setAnchorPoint(int frame, PRL_FPoint const& point)
 {
-    anchorPoints[frame] = point;
+    anchorPoint[frame] = point;
 }
 
+/* ********************************************* */
+/*               PRL_Animation                   */
+/* ********************************************* */
 
+int PRL_Animation :: animationsCount = 0;
 
-/** ********************************************* **/
-/**            PRL_AnimationSimple                **/
-/** ********************************************* **/
+int PRL_Animation :: getCount()
+{
+	return animationsCount;
+}
+
+PRL_Animation :: PRL_Animation(const std::string& path, SDL_Renderer *_renderer)
+{
+	// Loading of anim file.
+	filePath = path;
+	animationsCount ++;
+
+	renderer = _renderer;
+}
+
+PRL_Animation :: PRL_Animation(const char* path, SDL_Renderer *_renderer)
+{
+	PRL_Animation(std::string(path), _renderer);
+}
+
+PRL_Animation :: ~PRL_Animation()
+{
+	animationsCount--;
+}
+
+int PRL_Animation :: load_CPU()
+{
+	std::ifstream file(filePath);
+	std::string line;
+	if (!file.is_open())
+	{
+		getline(file, line);
+		SDL_Surface* surface;
+
+		// Load main surfaces
+		getline(file, line);
+		frameRate = stof(line);
+		getline(file, line);
+		PRL_Config :: extractPoint(line, refRenderer);
+		do
+		{
+			getline(file, line);
+			surface = IMG_Load(line.c_str());
+
+			if (surface == nullptr)
+			{
+				PRL_SetError(std::string("Unable to load main surface: ") + std::string(SDL_GetError()));
+				return PRL_ERROR;
+			}
+			mainSurface.push_back(surface);
+		}while (!line.find("MASK") != string::npos);
+
+		getline(file, line);
+		maskPerTexture = (size_t) stoi(line);
+
+		// Load masks
+		if (maskPerTexture != 0)
+		{
+			maskSurface.resize(mainSurface.size());
+			getline(file, line);
+			for (size_t i(0); i < mainSurface.size(); ++i)
+			{
+				maskSurface[i].resize(maskPerTexture);
+				for (size_t j(0); j < maskPerTexture; ++j)
+				{
+					maskSurface[i][j] = IMG_Load(line.c_str());
+					if (maskSurface[i][j] == nullptr)
+					{
+						PRL_SetError(std::string("Unable to load mask surface: ") + std::string(SDL_GetError()));
+						return PRL_ERROR;
+					}
+				}
+				getline(file, line);
+			}
+		}
+		// Points
+
+		file.close();
+	}
+	return 0;
+}
+
+int PRL_Animation :: load_GPU()
+{
+    mainTexture.resize(mainSurface.size());
+    if (maskPerTexture != 0)
+		maskTexture.resize(mainTexture.size());
+
+    for (size_t i(0); i < mainTexture.size(); ++i)
+	{
+		mainTexture[i] = SDL_CreateTextureFromSurface(renderer, mainSurface[i]);
+        if (mainTexture[i] == nullptr)
+		{
+			PRL_SetError(std::string("Unable to create main texture: ") + std::string(SDL_GetError()));
+			return PRL_ERROR;
+		}
+
+		if (maskPerTexture != 0)
+		{
+			maskTexture[i].resize(maskPerTexture);
+			for (size_t j(0); j < maskPerTexture; ++j)
+			{
+				maskTexture[i][j] = SDL_CreateTextureFromSurface(renderer, maskSurface[i][j]);
+				if (maskTexture[i][j] == nullptr)
+				{
+					PRL_SetError(std::string("Unable to create mask texture: ") + std::string(SDL_GetError()));
+					return PRL_ERROR;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+void PRL_Animation :: clear_CPU()
+{
+	for (size_t i(0); i < mainSurface.size(); ++i)
+	{
+		SDL_FreeSurface(mainSurface[i]);
+
+        if (maskPerTexture != 0)
+		{
+			for (size_t j(0); j < maskPerTexture; ++j)
+			{
+				SDL_FreeSurface(maskSurface[i][j]);
+			}
+		}
+	}
+}
+
+/* ********************************************* */
+/*            PRL_AnimationSimple                */
+/* ********************************************* */
 
 
 // Parameters for char strings names
