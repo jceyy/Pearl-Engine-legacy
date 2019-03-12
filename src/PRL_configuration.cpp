@@ -111,7 +111,7 @@ void printLaunchDiag() // print the launch diagnosis
 {
     int i(0), joy_num = SDL_NumJoysticks();
     SDL_RendererInfo info;
-    SDL_GetRendererInfo(handler.renderer[0], &info);
+    SDL_GetRendererInfo(handler.display.renderer[0], &info);
     SDL_DisplayMode current;
     const SDL_version *linkv = IMG_Linked_Version();
 
@@ -241,10 +241,10 @@ int PRL_CreateWindowAndRenderer()
 
     Uint32 flagsw = flagw1|flagw2|flagw3|flagw4|flagw5|flagw6;
 
-    handler.window.push_back(SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    handler.display.window.push_back(SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                              config_GLOBAL.resolution.x, config_GLOBAL.resolution.y, flagsw));
 
-    if (handler.window[0] == nullptr)
+    if (handler.display.window[0] == nullptr)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to create the window: " << SDL_GetError() << endl;
@@ -265,8 +265,8 @@ int PRL_CreateWindowAndRenderer()
 
     Uint32 flags_rend = flagr1 | flagr2;
 
-    handler.renderer.push_back(SDL_CreateRenderer(handler.window[0], handler.config.getDriverIndex(), flags_rend));
-    if (handler.renderer[0] == NULL)
+    handler.display.renderer.push_back(SDL_CreateRenderer(handler.display.window[0], handler.config.getDriverIndex(), flags_rend));
+    if (handler.display.renderer[0] == NULL)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to create the renderer: " << SDL_GetError() << endl;
@@ -275,7 +275,7 @@ int PRL_CreateWindowAndRenderer()
         return PRL_ERROR;
     }
 
-    if (SDL_RenderSetLogicalSize(handler.renderer[0], handler.config.getRenderResolution().x, handler.config.getRenderResolution().y) != 0)
+    if (SDL_RenderSetLogicalSize(handler.display.renderer[0], handler.config.getRenderResolution().x, handler.config.getRenderResolution().y) != 0)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to set the logical size: " << SDL_GetError() << endl;
@@ -384,7 +384,7 @@ int PRL_Init()
     SDL_SetRenderTarget(renderer_GLOBAL, targetTexture_GLOBAL);
     #endif
 
-    if (SDL_SetWindowBrightness(handler.window[0], config_GLOBAL.brightness) != 0)
+    if (SDL_SetWindowBrightness(handler.display.window[0], config_GLOBAL.brightness) != 0)
     {
         #if PRL_USE_WARNINGS == 1
         cout << __CERR_REF__ << "In PRL_Init, unable to set the brightness: " << SDL_GetError() << endl;
