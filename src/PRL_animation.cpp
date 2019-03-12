@@ -317,7 +317,7 @@ int PRL_Animation :: load_CPU()
 		PRL_Config :: extractPoint(line, refRenderer);
 		do
 		{
-			getline(file, line);
+			getline(file, line); // first line: [display]
 			surface = IMG_Load(line.c_str());
 
 			if (surface == nullptr)
@@ -387,6 +387,7 @@ int PRL_Animation :: load_GPU()
 			}
 		}
 	}
+	clear_CPU();
 	return 0;
 }
 
