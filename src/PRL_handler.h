@@ -69,10 +69,11 @@ public:
 private:
 	static int handlerCount;
 
-public:
 	std::vector <SDL_Renderer*> renderer;
 	std::vector <SDL_Window*> window;
 	std::vector <PRL_Animation*> animation;
+
+	PRL_Displayer hudDisplayer;
 	//std::vector <PRL_Sprite*> sprite;
 
 // Threads/ networking, out screen update
