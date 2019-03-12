@@ -307,26 +307,27 @@ int PRL_Animation :: load_CPU()
 	std::string line;
 	if (!file.is_open())
 	{
-		getline(file, line);
 		SDL_Surface* surface;
-
-		// Load main surfaces
+		getline(file, line); // first line: [display]
 		getline(file, line);
-		frameRate = stof(line);
+		frameRate = stof(line); // FPS
 		getline(file, line);
-		PRL_Config :: extractPoint(line, refRenderer);
+		PRL_Config :: extractPoint(line, refRenderer); // Reference renderer
 		do
 		{
-			getline(file, line); // first line: [display]
-			surface = IMG_Load(line.c_str());
-
-			if (surface == nullptr)
+			getline(file, line);
+			if (line != std::string(""))
 			{
-				PRL_SetError(std::string("Unable to load main surface: ") + std::string(SDL_GetError()));
-				return PRL_ERROR;
+				surface = IMG_Load(line.c_str());
+				if (surface == nullptr)
+				{
+					PRL_SetError(std::string("Unable to load main surface: ") + std::string(SDL_GetError()));
+					return PRL_ERROR;
+				}
+				mainSurface.push_back(surface);
+				surface = nullptr;
 			}
-			mainSurface.push_back(surface);
-		}while (!line.find("MASK") != string::npos);
+		}while (!line.find("[mask]") != string::npos);
 
 		getline(file, line);
 		maskPerTexture = (size_t) stoi(line);
@@ -351,7 +352,7 @@ int PRL_Animation :: load_CPU()
 				getline(file, line);
 			}
 		}
-		// Points
+		// Points: still to do
 
 		file.close();
 	}

@@ -266,10 +266,16 @@ public:
 	};
 	_display display;
 
-	struct points
+	struct _points
 	{
-		PRL_FPointCluster *getPointCluster() const; // change to reference?
+	public:
+        std::vector <PRL_FPointList> action;
+        PRL_FPointList anchor;
+        std::vector <PRL_HitBox> hitbox;
+	private:
+		//PRL_FPointCluster *getPointCluster() const; // change to reference?
 	};
+	_points points;
 
 	/// Get the number of PRL_Animation currently declared.
 	static int getCount();
@@ -293,6 +299,8 @@ private:
 	size_t maskPerTexture;
 
 	float frameRate; // FPS
+
+
 
 	void load();
 	int load_CPU();

@@ -20,29 +20,38 @@ public:
 
 	struct _display
 	{
-		int empty0;
+		friend PRL_Handler;
+
+	public:
+		std::vector <SDL_Renderer*> renderer;
+		std::vector <SDL_Window*> window;
+
+	private:
+		std::vector <PRL_Animation*> animation;
+
+		PRL_Displayer hudDisplayer;
 	};
 	_display display;
 
 	struct _time
 	{
+		friend PRL_Handler;
+
+	public:
 		PRL_Stopwatch stopwatch; // automatically started
 	};
 	_time time;
 
 	struct collision
 	{
-		int empty1;
 	};
 
 	struct network
 	{
-		int empty2;
 	};
 
 	struct physics
 	{
-		int empty3;
 	};
 
 
@@ -69,14 +78,9 @@ public:
 private:
 	static int handlerCount;
 
-	std::vector <SDL_Renderer*> renderer;
-	std::vector <SDL_Window*> window;
-	std::vector <PRL_Animation*> animation;
-
-	PRL_Displayer hudDisplayer;
 	//std::vector <PRL_Sprite*> sprite;
 
-// Threads/ networking, out screen update
+	// Threads/ networking, out screen update
 
 //
 
