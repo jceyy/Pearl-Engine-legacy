@@ -242,6 +242,7 @@ public:
 
 class PRL_Animation
 {
+	friend class _PRL_AnimationAccessor;
 public:
 	/// Need the path of the animation's .anim file.
 	PRL_Animation(const char* path, SDL_Renderer *renderer);
@@ -251,18 +252,33 @@ public:
 
 	struct _display
 	{
+		friend class PRL_Animation;
+	public:
 		SDL_Texture* getTexture(size_t which) const;
 		/// Return the size {width, height, width, height}.
 		const PRL_Point& getSize(size_t which) const; // no bound checking, in term of current render resolution
-		/// Return the source size (real one without scaling) {width, height, width, height}.
-		const PRL_Point& getSrcSize(size_t which) const;
 		/// Return {width, height, width, height}.
-		const PRL_Point& getTargetResolution() const;
+		const PRL_Point& getRefRenderer() const;
 		/// Return the total number of frames of the animation.
 		int getFramesNumber() const;
 		/// Return the frame rate.
-		float getFrameRate() const;
-		/// Get the point cluster.
+		float getFPS() const;
+
+		/// Return the source size (real one without scaling) {width, height}.
+
+	private:
+		std::vector <SDL_Texture*> mainTexture;
+		std::vector <SDL_Surface*> mainSurface;
+		std::vector <std::vector <SDL_Texture*> > maskTexture;
+		std::vector <std::vector <SDL_Surface*> > maskSurface;
+		std::vector <std::vector <PRL_FRect> > maskPos;
+		std::vector <PRL_Point> dstSize;
+		std::vector <PRL_Point> srcSize;
+		PRL_Point refRenderer; // size under the following form: reference_renderer = {w, h, w, h};
+
+		SDL_Renderer *renderer; // the used renderer
+		size_t maskPerTexture;
+		float frameRate; // FPS
 	};
 	_display display;
 
@@ -283,24 +299,15 @@ public:
 private:
 	static int animationsCount;
 
-	std::string filePath;
-	std::vector <SDL_Texture*> mainTexture;
-	std::vector <SDL_Surface*> mainSurface;
-	std::vector <std::vector <SDL_Texture*> > maskTexture;
-	std::vector <std::vector <SDL_Surface*> > maskSurface;
-	std::vector <std::vector <PRL_FRect> > maskPos;
-	std::vector <PRL_Point> dstSize;
-	std::vector <PRL_Point> srcSize;
-	PRL_Point refRenderer; // size under the following form: reference_renderer = {w, h, w, h};
+	int targetCount;
 
-	SDL_Renderer *renderer; // the used renderer
+	std::string filePath;
 
 	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
-	size_t maskPerTexture;
 
-	float frameRate; // FPS
-
-
+	///
+	void addTarget();
+	void removeTarget();
 
 	void load();
 	int load_CPU();
@@ -308,7 +315,58 @@ private:
 	void clear_CPU();
 };
 
+/* ********************************************* */
+/*           _PRL_AnimationAccessor              */
+/* ********************************************* */
 
+class _PRL_AnimationAccessor
+{
+	friend class PRL_Animated;
+public:
+	_PRL_AnimationAccessor();
+	~_PRL_AnimationAccessor();
+private:
+	void addTarget(PRL_Animation* anim) const;
+	void removeTarget(PRL_Animation* anim) const;
+};
+
+/* ********************************************* */
+/*                 PRL_Animated                  */
+/* ********************************************* */
+
+class PRL_Animated : public PRL_Displayable
+{
+public:
+    PRL_Animated();
+    ~PRL_Animated();
+
+    ///
+    int setAnim(PRL_Animation* anim);
+    /// Start or resume an animation and pause all the others
+    void start();
+    /// Reset and start an animation
+    void restart();
+    /// Stop an animation and set the current frame to 0
+    void stop();
+    /// Check whether the animation is started
+    bool isStarted() const;
+    /// Return the current frame of the currently used animation
+    int getCurrentFrame() const;
+    /// Return how many times the currently active animation has repeated without stopping
+    int getRepeatCount() const;
+    ///
+	void update();
+
+protected:
+    PRL_Animation* targetAnimation;
+    long long timeCurrent, timePrevUpdate; /// microseconds
+    int currentFrame;
+    int repeatCount;
+    bool started;
+
+    // Used when an animation is started to pause all the others.
+    //void pauseAllExcept(const int which); // Keep private!
+};
 
 /* ********************************************* */
 /*            PRL_AnimationSimple                */
@@ -430,11 +488,6 @@ protected:
 
     // Used when an animation is started to pause all the others.
     //void pauseAllExcept(const int which); // Keep private!
-};
-
-class PRL_Animated : public PRL_AnimatedSimple
-{
-
 };
 
 /// ////////////////////////// LATER: add sound directly built-in

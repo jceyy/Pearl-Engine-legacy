@@ -288,7 +288,7 @@ PRL_Animation :: PRL_Animation(const std::string& path, SDL_Renderer *_renderer)
 	filePath = path;
 	animationsCount ++;
 
-	renderer = _renderer;
+	display.renderer = _renderer;
 }
 
 PRL_Animation :: PRL_Animation(const char* path, SDL_Renderer *_renderer)
@@ -310,9 +310,9 @@ int PRL_Animation :: load_CPU()
 		SDL_Surface* surface;
 		getline(file, line); // first line: [display]
 		getline(file, line);
-		frameRate = stof(line); // FPS
+		display.frameRate = stof(line); // FPS
 		getline(file, line);
-		PRL_Config :: extractPoint(line, refRenderer); // Reference renderer
+		PRL_Config :: extractPoint(line, display.refRenderer); // Reference renderer
 		do
 		{
 			getline(file, line);
@@ -324,26 +324,26 @@ int PRL_Animation :: load_CPU()
 					PRL_SetError(std::string("Unable to load main surface: ") + std::string(SDL_GetError()));
 					return PRL_ERROR;
 				}
-				mainSurface.push_back(surface);
+				display.mainSurface.push_back(surface);
 				surface = nullptr;
 			}
 		}while (!line.find("[mask]") != string::npos);
 
 		getline(file, line);
-		maskPerTexture = (size_t) stoi(line);
+		display.maskPerTexture = (size_t) stoi(line);
 
 		// Load masks
-		if (maskPerTexture != 0)
+		if (display.maskPerTexture != 0)
 		{
-			maskSurface.resize(mainSurface.size());
+			display.maskSurface.resize(display.mainSurface.size());
 			getline(file, line);
-			for (size_t i(0); i < mainSurface.size(); ++i)
+			for (size_t i(0); i < display.mainSurface.size(); ++i)
 			{
-				maskSurface[i].resize(maskPerTexture);
-				for (size_t j(0); j < maskPerTexture; ++j)
+				display.maskSurface[i].resize(display.maskPerTexture);
+				for (size_t j(0); j < display.maskPerTexture; ++j)
 				{
-					maskSurface[i][j] = IMG_Load(line.c_str());
-					if (maskSurface[i][j] == nullptr)
+					display.maskSurface[i][j] = IMG_Load(line.c_str());
+					if (display.maskSurface[i][j] == nullptr)
 					{
 						PRL_SetError(std::string("Unable to load mask surface: ") + std::string(SDL_GetError()));
 						return PRL_ERROR;
@@ -361,26 +361,26 @@ int PRL_Animation :: load_CPU()
 
 int PRL_Animation :: load_GPU()
 {
-    mainTexture.resize(mainSurface.size());
-    if (maskPerTexture != 0)
-		maskTexture.resize(mainTexture.size());
+    display.mainTexture.resize(display.mainSurface.size());
+    if (display.maskPerTexture != 0)
+		display.maskTexture.resize(display.mainTexture.size());
 
-    for (size_t i(0); i < mainTexture.size(); ++i)
+    for (size_t i(0); i < display.mainTexture.size(); ++i)
 	{
-		mainTexture[i] = SDL_CreateTextureFromSurface(renderer, mainSurface[i]);
-        if (mainTexture[i] == nullptr)
+		display.mainTexture[i] = SDL_CreateTextureFromSurface(display.renderer, display.mainSurface[i]);
+        if (display.mainTexture[i] == nullptr)
 		{
 			PRL_SetError(std::string("Unable to create main texture: ") + std::string(SDL_GetError()));
 			return PRL_ERROR;
 		}
 
-		if (maskPerTexture != 0)
+		if (display.maskPerTexture != 0)
 		{
-			maskTexture[i].resize(maskPerTexture);
-			for (size_t j(0); j < maskPerTexture; ++j)
+			display.maskTexture[i].resize(display.maskPerTexture);
+			for (size_t j(0); j < display.maskPerTexture; ++j)
 			{
-				maskTexture[i][j] = SDL_CreateTextureFromSurface(renderer, maskSurface[i][j]);
-				if (maskTexture[i][j] == nullptr)
+				display.maskTexture[i][j] = SDL_CreateTextureFromSurface(display.renderer, display.maskSurface[i][j]);
+				if (display.maskTexture[i][j] == nullptr)
 				{
 					PRL_SetError(std::string("Unable to create mask texture: ") + std::string(SDL_GetError()));
 					return PRL_ERROR;
@@ -394,19 +394,162 @@ int PRL_Animation :: load_GPU()
 
 void PRL_Animation :: clear_CPU()
 {
-	for (size_t i(0); i < mainSurface.size(); ++i)
+	for (size_t i(0); i < display.mainSurface.size(); ++i)
 	{
-		SDL_FreeSurface(mainSurface[i]);
+		SDL_FreeSurface(display.mainSurface[i]);
 
-        if (maskPerTexture != 0)
+        if (display.maskPerTexture != 0)
 		{
-			for (size_t j(0); j < maskPerTexture; ++j)
+			for (size_t j(0); j < display.maskPerTexture; ++j)
 			{
-				SDL_FreeSurface(maskSurface[i][j]);
+				SDL_FreeSurface(display.maskSurface[i][j]);
 			}
 		}
 	}
 }
+
+SDL_Texture* PRL_Animation :: _display :: getTexture(size_t which) const
+{
+	return mainTexture[which];
+}
+
+const PRL_Point& PRL_Animation :: _display :: getRefRenderer() const
+{
+	return refRenderer;
+}
+
+int PRL_Animation :: _display :: getFramesNumber() const
+{
+	return (int) mainTexture.size();
+}
+
+float PRL_Animation :: _display :: getFPS() const
+{
+	return frameRate;
+}
+
+void PRL_Animation :: addTarget()
+{
+	targetCount++;
+}
+
+void PRL_Animation :: removeTarget()
+{
+	targetCount--;
+}
+
+
+/* ********************************************* */
+/*            _PRL_AnimationAccessor             */
+/* ********************************************* */
+
+_PRL_AnimationAccessor :: _PRL_AnimationAccessor()
+{
+	;
+}
+
+_PRL_AnimationAccessor :: ~_PRL_AnimationAccessor()
+{
+	;
+}
+
+void _PRL_AnimationAccessor :: addTarget(PRL_Animation* anim) const
+{
+	anim->addTarget();
+}
+
+void _PRL_AnimationAccessor :: removeTarget(PRL_Animation* anim) const
+{
+	anim->removeTarget();
+}
+
+/* ********************************************* */
+/*            		PRL_Animated                 */
+/* ********************************************* */
+
+_PRL_AnimationAccessor accessor_animated;
+
+PRL_Animated :: PRL_Animated() : targetAnimation(nullptr), timePrevUpdate(0), timeCurrent(0),
+currentFrame(0), repeatCount(0), started(false)
+{
+	;
+}
+
+PRL_Animated :: ~PRL_Animated()
+{
+	;
+}
+
+int PRL_Animated :: setAnim(PRL_Animation* anim)
+{
+	if (anim == nullptr)
+	{
+		SDL_SetError("Invalid animation");
+		return PRL_ERROR;
+	}
+
+	accessor_animated.addTarget(anim);
+	if (targetAnimation != nullptr) // if no previous target animation
+		accessor_animated.removeTarget(targetAnimation);
+
+	targetAnimation = anim;
+	repeatCount = 0;
+	currentFrame = 0;
+	started = false;
+
+	return 0;
+}
+
+void PRL_Animated :: start()
+{
+	started = true;
+}
+
+void PRL_Animated :: restart()
+{
+	started = true;
+    currentFrame = 0;
+}
+
+void PRL_Animated :: stop()
+{
+	started = false;
+}
+
+bool PRL_Animated :: isStarted() const
+{
+	return started;
+}
+
+int PRL_Animated :: getCurrentFrame() const
+{
+	return currentFrame;
+}
+
+int PRL_Animated :: getRepeatCount() const
+{
+	return repeatCount;
+}
+
+void PRL_Animated :: update()
+{
+	if (handler.time.timeUpdated - timePrevUpdate >= (long long) (1000000 * targetAnimation->display.getFPS()))
+	{
+		timePrevUpdate = handler.time.timeUpdated;
+
+		if (currentFrame < targetAnimation->display.getFramesNumber() - 1)
+		{
+			currentFrame++;
+		}
+		else
+		{
+			currentFrame = 0;
+			repeatCount++;
+		}
+		dspTexture = targetAnimation->display.getTexture(currentFrame);
+	}
+}
+
 
 /* ********************************************* */
 /*            PRL_AnimationSimple                */

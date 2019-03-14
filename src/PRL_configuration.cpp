@@ -129,6 +129,7 @@ void printLaunchDiag() // print the launch diagnosis
     cout << "Logical CPU cores: " << SDL_GetCPUCount() << endl;
     cout << "L1 cache line size: " << SDL_GetCPUCacheLineSize() << " bytes" << endl;
     cout << "System RAM: " << SDL_GetSystemRAM() << " MB" << endl;
+    cout << "'long long' type stored on  " << sizeof(long long) << " bytes" << endl;
     cout << endl << endl;
 
     cout << "--- Devices ---" << endl << endl;
@@ -172,7 +173,7 @@ void printLaunchDiag() // print the launch diagnosis
     cout << "Display resolution: " << handler.config.getResolution().x << "x" << handler.config.getResolution().y << endl;
     cout << "Renderer resolution: " << handler.config.getRenderResolution().x << "x" << handler.config.getRenderResolution().y << endl;
     cout << "Video driver: " << SDL_GetCurrentVideoDriver() << endl;
-    cout << "Renderer name: " << info.name << endl;
+    cout << "Renderer name: " << info.name << endl; // compare to settings values
     cout << "Renderer max. texture size: " << info.max_texture_width << " x " << info.max_texture_height << endl;
     cout << endl;
 

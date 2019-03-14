@@ -12,9 +12,23 @@ using std::string;
 
 int PRL_TestZone()
 {
-	cout << PRL_GetTicks() << " " + PRL_TimeStamp() << endl;
+	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.anim");
+
+	if (animMario == nullptr)
+		cout << "Loading failed\n";
+
+	PRL_Animated* mario = handler.createAnimated(animMario);
+
+	if (mario == nullptr) cout << "Main error here" << endl;
+
+
+	PRL_Displayer displayer;
+	displayer.add(mario);
+
+	//displayer.display();
+	//SDL_RenderPresent(*handler.display.renderer[0]);
 	PRL_Delay(1000000);
-	cout << PRL_GetTicks() << " " + PRL_TimeStamp() << endl;
+
 
 	//*renderer_GLOBAL=handler.renderer[0];
     //SDL_Texture *texture = SDL_CreateTexture(handler.renderer[0], SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 256, 256);

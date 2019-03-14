@@ -25,9 +25,9 @@ public:
 	public:
 		std::vector <SDL_Renderer*> renderer;
 		std::vector <SDL_Window*> window;
-
 	private:
 		std::vector <PRL_Animation*> animation;
+		std::vector <PRL_Animated*> animated;
 
 		PRL_Displayer hudDisplayer;
 	};
@@ -36,9 +36,13 @@ public:
 	struct _time
 	{
 		friend PRL_Handler;
+		friend PRL_Animated;
 
 	public:
 		PRL_Stopwatch stopwatch; // automatically started
+		long long getTimeUpdated() const;
+	private:
+		long long timeUpdated;
 	};
 	_time time;
 
@@ -55,9 +59,15 @@ public:
 	};
 
 
-	void loadAnimation(const std::string& file_path);
+	PRL_Animation* loadAnimation(const std::string& file_path);
 
-	void loadSprite(const std::string& file_path);
+	//PRL_Image* loadImage(const std::string& file_path);
+
+	PRL_Animated* createAnimated();
+    PRL_Animated* createAnimated(PRL_Animation* anim);
+
+
+    //PRL_Sprite* createSprite();
 
 	void free(); // Function overloading to cover multiple type of objects
 
@@ -69,7 +79,7 @@ public:
 
 	void freeUnusedAnimations();
 
-	void freeUnusedSprites();
+	void freeUnusedImages();
 
 	// Updater, Collider, Displayer, Physic system
 
