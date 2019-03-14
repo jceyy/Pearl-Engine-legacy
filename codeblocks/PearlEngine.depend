@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1551305137 source:d:\bibliothèques\documents\programming\pearl-engine\src\main.cpp
+1551579678 source:d:\bibliothèques\documents\programming\pearl-engine\src\main.cpp
 	<iostream>
 	<stdio.h>
 	<SDL2/SDL.h>
@@ -387,7 +387,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1551563757 d:\bibliothèques\documents\programming\pearl-engine\src\prl_animation.h
+1552604970 d:\bibliothèques\documents\programming\pearl-engine\src\prl_animation.h
 	<iostream>
 	<vector>
 	<SDL2/SDL.h>
@@ -425,7 +425,7 @@
 	"PRL_animation.h"
 	<vector>
 
-1551577922 d:\bibliothèques\documents\programming\pearl-engine\src\prl_configuration.h
+1551627579 d:\bibliothèques\documents\programming\pearl-engine\src\prl_configuration.h
 	<iostream>
 	<string>
 	<vector>
@@ -463,12 +463,13 @@
 
 1550403411 d:\bibliothèques\documents\programming\pearl-engine\src\prl_tool_programs.h
 
-1551573197 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_animation.cpp
+1552605943 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_animation.cpp
 	<stdio.h>
 	<stdlib.h>
 	<cstring>
 	<math.h>
 	<iostream>
+	<fstream>
 	<SDL2/SDL.h>
 	<SDL2/SDL_image.h>
 	"PRL_defines.h"
@@ -493,8 +494,9 @@
 	<typeinfo>
 	<thread>
 
-1551579510 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_configuration.cpp
+1552602792 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_configuration.cpp
 	<iostream>
+	<exception>
 	<fstream>
 	<string>
 	<vector>
@@ -552,7 +554,7 @@
 
 1550403339 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_math.cpp
 
-1551573495 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_menu_functions.cpp
+1552606141 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_menu_functions.cpp
 	"PRL.h"
 	"PRL_input.h"
 	"PRL_display.h"
@@ -929,13 +931,14 @@
 	"begin_code.h"
 	"close_code.h"
 
-1551579654 d:\bibliothèques\documents\programming\pearl-engine\src\prl_handler.h
+1552601526 d:\bibliothèques\documents\programming\pearl-engine\src\prl_handler.h
 	"SDL2/SDL.h"
+	"PRL_time.h"
 	"PRL_configuration.h"
 	"PRL_input.h"
 	"PRL_animation.h"
 
-1551576618 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_handler.cpp
+1552605584 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_handler.cpp
 	<iostream>
 	"PRL_handler.h"
 
@@ -943,7 +946,7 @@
 	<iostream>
 	<chrono>
 
-1551573877 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_time.cpp
+1551627579 source:d:\bibliothèques\documents\programming\pearl-engine\src\prl_time.cpp
 	<iostream>
 	<chrono>
 	<thread>
