@@ -29,6 +29,7 @@ public:
 		std::vector <PRL_Animation*> animation;
 		std::vector <PRL_Animated*> animated;
 
+		std::vector <PRL_Displayer> displayer;
 		PRL_Displayer hudDisplayer;
 	};
 	_display display;
@@ -43,6 +44,8 @@ public:
 		long long getTimeUpdated() const;
 	private:
 		long long timeUpdated;
+
+		void update();
 	};
 	_time time;
 
@@ -60,12 +63,14 @@ public:
 
 
 	PRL_Animation* loadAnimation(const std::string& file_path);
+	PRL_Animation* loadAnimation(const std::string& file_path, SDL_Renderer* render);
 
 	//PRL_Image* loadImage(const std::string& file_path);
 
-	PRL_Animated* createAnimated();
+	//PRL_Animated* createAnimated();
     PRL_Animated* createAnimated(PRL_Animation* anim);
 
+    void update();
 
     //PRL_Sprite* createSprite();
 

@@ -15,19 +15,36 @@ int PRL_TestZone()
 	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.anim");
 
 	if (animMario == nullptr)
-		cout << "Loading failed\n";
+	{
+		cout << "Loading failed: " << PRL_GetError() << endl;
+		return PRL_ERROR;
+	}
 
 	PRL_Animated* mario = handler.createAnimated(animMario);
 
 	if (mario == nullptr) cout << "Main error here" << endl;
 
+	PRL_Point p = animMario->display.getRefRenderSize();
+	cout << "Animation properties:" << endl << endl;
+    cout << "Frames number: " << animMario->display.getFramesNumber() << endl;
+    cout << "Frame rate: " << animMario->display.getFPS() << endl;
+    cout << "Reference render size: " << p.x << "x" << p.y << endl << endl;
 
-	PRL_Displayer displayer;
-	displayer.add(mario);
+    bool quit(false);
 
-	//displayer.display();
-	//SDL_RenderPresent(*handler.display.renderer[0]);
-	PRL_Delay(1000000);
+    while(!quit)
+	{
+		if (handler.input.quitEvent())
+		{
+			quit = true;
+		}
+
+		mario->update();
+		SDL_RenderPresent(handler.display.renderer[0]);
+		SDL_RenderClear(handler.display.renderer[0]);
+		PRL_Delay(9000);
+		handler.update();
+	}
 
 
 	//*renderer_GLOBAL=handler.renderer[0];

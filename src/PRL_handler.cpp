@@ -6,6 +6,8 @@
 PRL_Handler :: PRL_Handler()
 {
     time.stopwatch.start();
+    PRL_Displayer disp0;
+    display.displayer.push_back(disp0);
 }
 
 PRL_Handler :: ~PRL_Handler()
@@ -20,8 +22,26 @@ void PRL_Handler :: freeall()
 
 PRL_Animation* PRL_Handler :: loadAnimation(const std::string& file_path)
 {
+	return loadAnimation(file_path, display.renderer[0]);
+}
+
+PRL_Animation* PRL_Handler :: loadAnimation(const std::string& file_path, SDL_Renderer* render)
+{
+	if (render == nullptr)
+	{
+		PRL_SetError("Invalid renderer");
+		return nullptr;
+	}
+
 	PRL_Animation* anim(nullptr);
-	anim = new PRL_Animation(file_path, display.renderer[0]);
+	try
+	{
+		anim = new PRL_Animation(file_path, render);
+	}
+	catch (std::string e)
+	{
+		return nullptr;
+	}
 
 	if (anim != nullptr)
 		display.animation.push_back(anim);
@@ -38,18 +58,48 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
 	}
 
 	PRL_Animated* animd(nullptr);
-	animd = new PRL_Animated();
+	try
+	{
+		animd = new PRL_Animated();
+	}
+	catch (std::string e)
+	{
+		return nullptr;
+	}
 
 	if (animd != nullptr)
 	{
-		display.animated.push_back(animd);
 		animd->setAnim(anim);
+		display.animated.push_back(animd);
+        display.displayer[0].add(animd);
 	}
 
 	return animd;
 }
 
-PRL_Animated* PRL_Handler :: createAnimated()
+// Time
+
+long long PRL_Handler :: _time :: getTimeUpdated() const
+{
+	return timeUpdated;
+}
+
+void PRL_Handler :: _time :: update()
+{
+	timeUpdated = PRL_GetTicks();
+}
+
+void PRL_Handler :: update()
+{
+	input.update();
+	time.update();
+	for (size_t i(0); i < display.displayer.size(); ++i)
+	{
+		display.displayer[i].display();
+	}
+}
+
+/*PRL_Animated* PRL_Handler :: createAnimated()
 {
 	PRL_Animated* animd(nullptr);
 	animd = new PRL_Animated();
@@ -58,4 +108,4 @@ PRL_Animated* PRL_Handler :: createAnimated()
 		display.animated.push_back(animd);
 
 	return animd;
-}
+}*/

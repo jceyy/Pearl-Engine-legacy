@@ -115,7 +115,7 @@ PRL_FRect const& PRL_Displayable :: getSrcRect() const
     return dspSrc;
 }
 
-int PRL_Displayable :: getDspCount()
+int PRL_Displayable :: getCount()
 {
     return dspCount;
 }

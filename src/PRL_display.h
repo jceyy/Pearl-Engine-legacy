@@ -51,7 +51,7 @@ public:
     /// Get source rectangle used for display.
     PRL_FRect const& getSrcRect() const;
     /// Get how many displayable objects are currently in use.
-    static int getDspCount();
+    static int getCount();
 
 protected:
     PRL_FRect dspSrc;

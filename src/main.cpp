@@ -24,8 +24,9 @@ int main(int argc, char *argv[])
 
     //PRL_Logo();
     //PRL_LoadingScreen();
-    PRL_Delay(100000);
     main_return = PRL_TestZone();
+    cout << "Errors count: " << PRL_ErrorCount() << endl;
+    PRL_Delay(500000);
 
     PRL_Quit();
     return main_return;

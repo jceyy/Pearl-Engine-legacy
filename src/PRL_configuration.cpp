@@ -267,7 +267,7 @@ int PRL_CreateWindowAndRenderer()
     Uint32 flags_rend = flagr1 | flagr2;
 
     handler.display.renderer.push_back(SDL_CreateRenderer(handler.display.window[0], handler.config.getDriverIndex(), flags_rend));
-    if (handler.display.renderer[0] == NULL)
+    if (handler.display.renderer[0] == nullptr)
     {
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to create the renderer: " << SDL_GetError() << endl;
@@ -281,7 +281,7 @@ int PRL_CreateWindowAndRenderer()
         #if PRL_AUTO_WRITE_ERRORS == 1
         cerr << __CERR_REF__ << "In PRL_CreateWindowAndRenderer, unable to set the logical size: " << SDL_GetError() << endl;
         #endif // PRL_AUTO_WRITE_ERRORS
-        PRL_SetError(string("Unable to set the renderer's logical size: ") + string(SDL_GetError()));
+        PRL_SetError(string("Unable to set logical size of renderer: ") + string(SDL_GetError()));
         return PRL_ERROR;
     }
 
@@ -379,12 +379,6 @@ int PRL_Init()
         return PRL_ERROR;
     }
 
-    #if PRL_USE_TARGET_TEXTURE == 1
-    targetTexture_GLOBAL = SDL_CreateTexture(renderer_GLOBAL, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, config_GLOBAL.renderResolution.x, config_GLOBAL.renderResolution.y);
-    PRL_SetTextureColorMod(targetTexture_GLOBAL, COLMOD_NORMAL);
-    SDL_SetRenderTarget(renderer_GLOBAL, targetTexture_GLOBAL);
-    #endif
-
     if (SDL_SetWindowBrightness(handler.display.window[0], config_GLOBAL.brightness) != 0)
     {
         #if PRL_USE_WARNINGS == 1
@@ -395,17 +389,6 @@ int PRL_Init()
     SDL_DisableScreenSaver();
 
     printLaunchDiag(); // Print infos on startup
-
-    /// SET UP ALL GLOBAL VARIABLES!!!!!!!!!!!!!!!
-
-
-
-    for (int i(0); i < PRL_MAX_CAMERAS_GLOBAL; i++)
-    {
-        camera_GLOBAL[i].setCameraNumber(i);
-        //camera_GLOBAL[i].setDimension({0, 0, config_GLOBAL.renderResolution.x, config_GLOBAL.renderResolution.y});
-        camera_GLOBAL[i].setZoom(1.0);
-    }
 
     #if PRL_COMPILE_ANIM_TESTER == 1
     if (PRL_Tool_AnimationTester() != 0)
@@ -1064,7 +1047,7 @@ void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::st
         {
             filename = temp;
 
-            parentfolder = filepath.substr(0, filepath.size() - filename.size() - fileformat.size() - 2);
+            parentfolder = filepath.substr(0, filepath.size() - filename.size() - fileformat.size() - 1);
             break;
         }
         else

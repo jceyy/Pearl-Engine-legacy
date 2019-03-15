@@ -23,7 +23,7 @@ general-vol = 1.000
 mouse-sensitivity = 0.500
 
 render-resolution = 3840 x 2160
-resolution = 1280 x 720
+resolution = 1440 x 810
 
 driver = default
 language = english

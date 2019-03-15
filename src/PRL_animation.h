@@ -255,14 +255,17 @@ public:
 		friend class PRL_Animation;
 	public:
 		SDL_Texture* getTexture(size_t which) const;
-		/// Return the size {width, height, width, height}.
+		/// Get the main texture size
 		const PRL_Point& getSize(size_t which) const; // no bound checking, in term of current render resolution
 		/// Return {width, height, width, height}.
-		const PRL_Point& getRefRenderer() const;
+		const PRL_Point& getRefRenderSize() const;
 		/// Return the total number of frames of the animation.
 		int getFramesNumber() const;
-		/// Return the frame rate.
+		/// Get the frame rate of the animation
 		float getFPS() const;
+		/// Get mask per texture
+		int getMaskNumber() const;
+		SDL_Renderer* getRenderer() const;
 
 		/// Return the source size (real one without scaling) {width, height}.
 
@@ -271,11 +274,14 @@ public:
 		std::vector <SDL_Surface*> mainSurface;
 		std::vector <std::vector <SDL_Texture*> > maskTexture;
 		std::vector <std::vector <SDL_Surface*> > maskSurface;
-		std::vector <std::vector <PRL_FRect> > maskPos;
-		std::vector <PRL_Point> dstSize;
-		std::vector <PRL_Point> srcSize;
-		PRL_Point refRenderer; // size under the following form: reference_renderer = {w, h, w, h};
+		std::vector <PRL_Point> mainTrueTextureSize;
+		std::vector <PRL_Point> mainScaledTextureSize;
+		std::vector <std::vector <PRL_Point> > maskTrueTextureSize;
+		std::vector <std::vector <PRL_Point> > maskScaledTextureSize;
+		std::vector <std::vector <PRL_FRect> > maskLocalPos;
 
+		PRL_Point refRenderSize;
+		PRL_FPoint scalingRatio;
 		SDL_Renderer *renderer; // the used renderer
 		size_t maskPerTexture;
 		float frameRate; // FPS
@@ -313,6 +319,7 @@ private:
 	int load_CPU();
 	int load_GPU();
 	void clear_CPU();
+	void clear_GPU();
 };
 
 /* ********************************************* */
@@ -364,6 +371,7 @@ protected:
     int repeatCount;
     bool started;
 
+    void updateDisplayable();
     // Used when an animation is started to pause all the others.
     //void pauseAllExcept(const int which); // Keep private!
 };
