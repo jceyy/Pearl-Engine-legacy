@@ -97,6 +97,9 @@ void PRL_Handler :: update()
 	{
 		display.displayer[i].display();
 	}
+
+	SDL_RenderPresent(display.renderer[0]);
+	SDL_RenderClear(display.renderer[0]);
 }
 
 /*PRL_Animated* PRL_Handler :: createAnimated()
