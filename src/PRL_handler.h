@@ -67,12 +67,10 @@ public:
 
 	//PRL_Image* loadImage(const std::string& file_path);
 
-	//PRL_Animated* createAnimated();
     PRL_Animated* createAnimated(PRL_Animation* anim);
+	//PRL_Sprite* createSprite();
 
     void update();
-
-    //PRL_Sprite* createSprite();
 
 	void free(); // Function overloading to cover multiple type of objects
 
