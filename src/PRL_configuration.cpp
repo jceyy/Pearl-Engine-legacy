@@ -309,7 +309,6 @@ int PRL_Init()
 {
     srand(time(NULL));
 
-    // redirect output and error streams
     #if DEBUGGING == 0
     freopen("output.txt", "w", stdout);
     freopen("error.txt", "w", stderr);
@@ -319,10 +318,6 @@ int PRL_Init()
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << "In PRL_Init, could not initialize SDL: " << SDL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-
         PRL_SetError(string("Failed to load the SDL: ") + string(SDL_GetError()));
         return PRL_ERROR;
     }
@@ -331,30 +326,18 @@ int PRL_Init()
 
     if (IMG_Init(imgflags) != imgflags)
     {
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << "In PRL_Init, could not initialize SDL_Image: " << IMG_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-
         PRL_SetError(string("Failed to load SDL_Image: ") + string(IMG_GetError()));
         return PRL_ERROR;
     }
 
     if (TTF_Init() == -1)// TTF Initialization
     {
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << "In PRL_Init, could not initialize SDL_TTF: " << TTF_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-
         PRL_SetError(string("Failed to load SDL_TTF: ") + string(TTF_GetError()));
         return PRL_ERROR;
     }
 
     if (SDL_JoystickEventState(SDL_ENABLE) < 0)
     {
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << "In PRL_Init, could not enable controllers: " << SDL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-
         PRL_SetError(string("Failed to enable controllers: ") + string(SDL_GetError()));
         return PRL_ERROR;
     }
@@ -407,7 +390,7 @@ int PRL_Init()
 
 void PRL_Quit()
 {
-    cout << PRL_TimeStamp() << " Quiting..." << endl;
+    cout << PRL_TimeStamp() << " Quitting..." << endl;
     SDL_EnableScreenSaver();
 
     handler.freeall();
@@ -426,12 +409,6 @@ void PRL_Quit()
             SDL_DestroyWindow(window_GLOBAL[i]);
         }
     }
-
-    #if PRL_USE_TARGET_TEXTURE==1
-    for (int i(0); i < PRL_MAX_RENDERER_GLOBAL; i++)
-        if (targetTexture_GLOBAL[i] != NULL)
-            SDL_DestroyTexture(targetTexture_GLOBAL[i]);
-    #endif // PRL_USE_TARGET_TEXTURE
 
     TTF_Quit();
     IMG_Quit();
@@ -474,11 +451,20 @@ void PRL_ErrorHandling :: setError(std::string const& msg)
 {
     err_count++;
     last_err = PRL_TimeStamp() + " " + msg;
+
+    #if PRL_AUTO_WRITE_ERRORS == 1
+	writeError();
+	#endif // PRL_AUTO_WRITE_ERRORS
 }
 
 int PRL_ErrorHandling :: getErrorCount()
 {
     return err_count;
+}
+
+void PRL_ErrorHandling::writeError()
+{
+	cerr << PRL_GetError() << endl;
 }
 
 /* ************ PRL_Config ************* */
@@ -1053,26 +1039,4 @@ void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::st
         else
             temp = filepath[i] + temp;
     }
-}
-
-void PRL_SetTextureColorMod(SDL_Texture *texture, PRL_ColorMod colmod)
-{
-    Uint8 r, g, b;
-    if (colmod==COLMOD_NIGHT)
-    {
-        r=80; g=100; b=100;
-    }
-    else if (colmod==COLMOD_DAWN)
-    {
-        r=245; g=240; b=170;
-    }
-    else if(colmod==COLMOD_DARKNIGHT)
-    {
-        r=35; g=25; b=75;
-    }
-    else if(colmod==COLMOD_EVENING)
-    {
-        r=220; g=215; b=200;
-    }
-    SDL_SetTextureColorMod(texture, r, g, b);
 }

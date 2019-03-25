@@ -10,7 +10,6 @@
 
 using namespace std;
 
-// Classes
 
 //! Class responsible for the program configuration.
 /*!
@@ -246,15 +245,12 @@ public:
     static int getErrorCount();
 
 private:
+	//! Write the last error to the error file
+	static void writeError();
     static std::string last_err; //!< Last error.
     static int err_count; //!< Errors count.
 };
 
-// Enumerations
-// to be removed?
-enum PRL_ColorMod {COLMOD_NIGHT, COLMOD_DAWN, COLMOD_DARKNIGHT, COLMOD_EVENING, COLMOD_NORMAL};
-
-// Prototypes
 //! Function responsible for the initialization of the Pearl Engine.
 /*!
 This function initializes the SDL, SDL_Image, SDL_TTF, loads the settings and creates a window and a renderer.
@@ -300,5 +296,4 @@ Use this function to get an error message when an error occurred. This function 
 std::string PRL_GetError();
 //! Get the error count of the program.
 int PRL_ErrorCount();
-
 #endif //PRL_CONFIGURATION_H_INCLUDED
