@@ -521,7 +521,7 @@ int PRL_Config :: extractSetting(std::string const& fullLine, std::string& setti
 
     if (pos == 0 || fullLine.size() < 2) // min 3 characters
     {
-        PRL_SetError("The provided line hasn't the right format (type = value)");
+        PRL_SetError("The provided line hasn't the right format (type = value) (setting: " + setting + ")");
         return PRL_ERROR;
     }
 
@@ -642,6 +642,10 @@ int PRL_Config :: loadSettings()
     while (getline(file, fullLine)) // read a single line
     {
         temp.clear();
+        while (fullLine == "")
+		{
+			getline(file, fullLine);
+		}
         extractSetting(fullLine, temp); /// AJOUTER LES BORNEEEEEEEEEEEEEEES!!!!!!!!!!!!!!!!!!!
 
         // Booleans

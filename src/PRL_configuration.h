@@ -267,8 +267,6 @@ void PRL_Quit();
 //void PRL_LoadingScreen();
 //! Destroy a window and a renderer in a single call.
 void PRL_DestroyWindowAndRenderer(SDL_Window *window, SDL_Renderer *renderer);
-
-void PRL_SetTextureColorMod(SDL_Texture *texture, PRL_ColorMod colmod);
 //! Provide information about a file.
 /*!
 Use this function to get informations about a file's path.
