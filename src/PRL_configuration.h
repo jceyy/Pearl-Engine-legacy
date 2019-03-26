@@ -259,7 +259,7 @@ This function initializes the SDL, SDL_Image, SDL_TTF, loads the settings and cr
 int PRL_Init();
 //! Quit Pearl Engine.
 /*!
-Quit the SDL, SDL_Image, SDL_TTF, Pearl Engine and destroys all the renderer_GLOBAL as well as the window_GLOBAL.
+Quit the SDL, SDL_Image, SDL_TTF, and the Pearl Engine.
 */
 void PRL_Quit();
 // Shows the Pearl Engine's logo.

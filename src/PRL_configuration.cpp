@@ -20,7 +20,6 @@
 
 #include "PRL_configuration.h"
 #include "PRL_math.h"
-#include "PRL_tool_programs.h"
 
 #include "PRL_handler.h"
 #include "PRL_input.h"
@@ -31,15 +30,6 @@ using std::cerr;
 using std::endl;
 using std::string;
 
-
-// Global variables definition
-SDL_Texture *targetTexture_GLOBAL[PRL_MAX_RENDERER_GLOBAL];
-SDL_Renderer *renderer_GLOBAL[PRL_MAX_RENDERER_GLOBAL];
-SDL_Window *window_GLOBAL[PRL_MAX_WINDOWS_GLOBAL];
-PRL_Config config_GLOBAL;
-PRL_Timer timer_GLOBAL;
-PRL_Camera camera_GLOBAL[PRL_MAX_CAMERAS_GLOBAL];
-PRL_Displayer displayer_GLOBAL[PRL_MAX_DISPLAYERS_GLOBAL];
 
 PRL_Handler handler;
 
@@ -422,14 +412,14 @@ void PRL_Logo()
 void PRL_LoadingScreen() // whether or not to display the loading percentage.
 {
     TTF_Font *font = TTF_OpenFont("data/fonts/cooper.TTF", 85);
-    SDL_Color colorWhite={255, 255, 255};
-    SDL_Surface *surface=TTF_RenderText_Blended(font, "Loading...", colorWhite);
-    SDL_Texture *texture=SDL_CreateTextureFromSurface(renderer_GLOBAL[0], surface);
-    SDL_Rect pos={(config_GLOBAL.renderResolution.x-surface->w)/2, (config_GLOBAL.renderResolution.y-surface->h)/2, surface->w, surface->h};
+    SDL_Color colorWhite = {255, 255, 255};
+    SDL_Surface *surface = TTF_RenderText_Blended(font, "Loading...", colorWhite);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(handler.display.renderer[0], surface);
+    SDL_Rect pos = {(handler.config.getRenderResolution().x-surface->w)/2, (handler.config.getRenderResolution().y-surface->h)/2, surface->w, surface->h};
 
-    SDL_RenderClear(renderer_GLOBAL[0]);
-    SDL_RenderCopy(renderer_GLOBAL[0], texture, NULL, &pos);
-    SDL_RenderPresent(renderer_GLOBAL[0]);
+    SDL_RenderClear(handler.display.renderer[0]);
+    SDL_RenderCopy(handler.display.renderer[0], texture, NULL, &pos);
+    SDL_RenderPresent(handler.display.renderer[0]);
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);

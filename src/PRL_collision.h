@@ -109,7 +109,7 @@ public:
 /* ********************************************* */
 
 /// Class used to construct objects capable of being collided with each others. Default collidable type: PRL_COLLTYPE_0, dynamic: true
-class PRL_Collidable : public PRL_AnimatedSimple
+/*class PRL_Collidable : public PRL_AnimatedSimple
 {
     friend class PRL_Collider;
 
@@ -158,9 +158,9 @@ public:
 
 
 
-/* ********************************************* */
-/*                PRL_Collider                   */
-/* ********************************************* */
+/* ********************************************* *
+/*                PRL_Collider                   *
+/* ********************************************* *
 
 class PRL_Collider
 {
@@ -230,7 +230,7 @@ bool PRL_Coll_2HitBoxes(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2);
 /// Collision function that test collision between a point and an hit box
 bool PRL_Coll_HitBoxPoint(PRL_HitBox const& hitbox, PRL_FPoint const& point);
 
-
+*/
 
 
 

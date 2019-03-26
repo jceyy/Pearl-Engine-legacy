@@ -60,14 +60,12 @@
 #include "PRL_configuration.h"
 #include "PRL_defines.h"
 #include "PRL_display.h"
-#include "PRL_game_functions.h"
 #include "PRL_global_variables.h"
 #include "PRL_input.h"
 #include "PRL_math.h"
-#include "PRL_screenshots.h"
 #include "PRL_HUD.h"
 #include "PRL_time.h"
-#include "PRL_tool_programs.h"
+
 //#include "tools.h"
 
 

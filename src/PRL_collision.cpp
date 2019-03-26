@@ -1211,7 +1211,7 @@ PRL_FPoint PRL_Movable :: getVelocityVector() const
 
 void PRL_Movable :: applyDisplacement()
 {
-    current_time = timer_GLOBAL.us();
+    current_time = handler.time.getTimeUpdated();
     time_coeff = 1.0 * (current_time - previous_time) / 1000000;
     previousDisplacement_ = {pxlsPerSec_.x * time_coeff, pxlsPerSec_.y * time_coeff};
 

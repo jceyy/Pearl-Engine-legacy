@@ -1,6 +1,0 @@
-#ifndef PRL_TOOL_PROGRAMS_H_INCLUDED
-#define PRL_TOOL_PROGRAMS_H_INCLUDED
-
-int PRL_Tool_AnimationTester();
-
-#endif // PRL_TOOL_PROGRAMS_H_INCLUDED
