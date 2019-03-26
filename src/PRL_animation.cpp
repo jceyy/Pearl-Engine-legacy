@@ -669,9 +669,10 @@ void PRL_Animated :: updateDisplayable()
 	dspDst.h = dspSrc.h;
 }
 
-/* ********************************************* */
-/*            PRL_AnimationSimple                */
-/* ********************************************* */
+
+// Old implementation
+
+/*
 
 
 // Parameters for char strings names
@@ -974,9 +975,6 @@ PRL_FPointCluster* PRL_AnimationSimple :: getPointCluster() const
     return (PRL_FPointCluster*) &pointCluster;
 }
 
-/* ********************************************* */
-/*            PRL_AnimatedSimple                 */
-/* ********************************************* */
 
 
 PRL_AnimatedSimple :: PRL_AnimatedSimple() : started(false), paused(false), current_anim_repeat_count(0), current_anim_index(0), currentTimeAnim(0), previousTimeAnim(0)
@@ -1159,9 +1157,6 @@ void PRL_AnimatedSimple :: updateAnim()
 
 
 
-/** ********************************************* **/
-/**             PRL_AnimationVideo                **/
-/** ********************************************* **/
 
 
 PRL_AnimationVideo :: PRL_AnimationVideo(int buff) : bufferSz(buff), framesFilledInBufferAtUpdate(1)
@@ -1634,5 +1629,5 @@ void PRL_AnimationVideo :: setPosition(int x, int y)
         dspDst = {(float) x, (float) y, rect[0].w, rect[0].h};
         dspSrc = {0.0, 0.0, rect[0].w, rect[0].h};
     }
-}
+}*/
 

@@ -16,9 +16,16 @@ using std::endl;
 
 int PRL_Displayable :: dspCount = 0;
 
-PRL_Displayable :: PRL_Displayable() : dspSrc({0, 0, 0, 0}), dspDst({0, 0, 0, 0}), dspTexture(nullptr), dspRenderer(renderer_GLOBAL[0]), dspIsActive(true),
-dspAngle(0.0), dspDisplayerAddress(0), dspDisplayerAdded(false)
+PRL_Displayable :: PRL_Displayable(SDL_Renderer* renderer) : dspSrc({0, 0, 0, 0}), dspDst({0, 0, 0, 0}), dspTexture(nullptr),
+dspRenderer(nullptr), dspVelocity({0.0, 0.0}), dspIsActive(true), dspAngle(0.0),
+dspDisplayerAddress(0), dspDisplayerAdded(false)
 {
+	if (renderer == nullptr)
+	{
+		PRL_SetError("Invalid renderer for displayable");
+		throw std::runtime_error;
+	}
+	dspRenderer = renderer;
     dspCount++;
 }
 
@@ -113,6 +120,16 @@ PRL_FRect const& PRL_Displayable :: getDstRect() const
 PRL_FRect const& PRL_Displayable :: getSrcRect() const
 {
     return dspSrc;
+}
+
+void PRL_Displayable :: setVelocity(PRL_FPoint const& velocity)
+{
+	dspVelocity = velocity;
+}
+
+PRL_FPoint const& PRL_Displayable :: getVelocity() const
+{
+	return dspVelocity;
 }
 
 int PRL_Displayable :: getCount()
