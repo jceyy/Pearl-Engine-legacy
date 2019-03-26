@@ -1,10 +1,12 @@
 [display]
 20
-320x180
+1280x720
+
 mario0.png
 mario1.png
 mario2.png
 mario3.png
+
 
 [mask]
 0
