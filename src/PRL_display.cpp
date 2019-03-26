@@ -9,6 +9,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+#define PRL_DISPLAYABLE_DEFAULT_ADDRESS -1 // a negative value is important!
 
 /* ********************************************* */
 /*              PRL_Displayable                  */
@@ -16,17 +17,32 @@ using std::endl;
 
 int PRL_Displayable :: dspCount = 0;
 
-PRL_Displayable :: PRL_Displayable(SDL_Renderer* renderer) : dspSrc({0, 0, 0, 0}), dspDst({0, 0, 0, 0}), dspTexture(nullptr),
-dspRenderer(nullptr), dspVelocity({0.0, 0.0}), dspIsActive(true), dspAngle(0.0),
+PRL_Displayable :: PRL_Displayable() : dspSrc({0, 0, 0, 0}), dspDst({0, 0, 0, 0}), dspTexture(nullptr),
+dspRenderer(handler.display.renderer[0]), dspVelocity({0.0, 0.0}), dspIsActive(true), dspAngle(0.0),
 dspDisplayerAddress(0), dspDisplayerAdded(false)
 {
+    dspCount++;
+}
+
+PRL_Displayable :: PRL_Displayable(SDL_Texture *texture, SDL_Renderer *renderer)
+{
+	PRL_Displayable();
+
+	if (texture == nullptr)
+	{
+		PRL_SetError("Invalid texture");
+		std::runtime_error e(PRL_GetError());
+		throw(e);
+	}
 	if (renderer == nullptr)
 	{
-		PRL_SetError("Invalid renderer for displayable");
-		throw std::runtime_error;
+		PRL_SetError("Invalid renderer");
+		std::runtime_error e(PRL_GetError());
+		throw(e);
 	}
+
 	dspRenderer = renderer;
-    dspCount++;
+	dspTexture = texture;
 }
 
 PRL_Displayable :: ~PRL_Displayable()
@@ -39,33 +55,15 @@ SDL_Texture* PRL_Displayable :: getTexture() const
     return dspTexture;
 }
 
-int PRL_Displayable :: setTexture(SDL_Texture* texture)
+int PRL_Displayable :: set(SDL_Texture *texture, SDL_Renderer *renderer)
 {
     if (texture == nullptr)
     {
         PRL_SetError("Invalid texture (nullptr)");
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << PRL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
         return PRL_ERROR;
     }
 
     dspTexture = texture;
-    return 0;
-}
-
-int PRL_Displayable :: setRenderer(SDL_Renderer *renderer)
-{
-    if (renderer == nullptr)
-    {
-        PRL_SetError("Invalid renderer (nullptr)");
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << PRL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-        return PRL_ERROR;
-    }
-
-    dspRenderer = renderer;
     return 0;
 }
 

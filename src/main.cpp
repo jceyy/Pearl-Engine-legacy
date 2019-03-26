@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     if (PRL_Init()!=0) /* Initialize all the things we need */
     {
         cerr << "Error: in main(), failed to initialize PEARL Engine properly, quiting the program" << endl;
-        return ERROR;
+        return PRL_ERROR;
     }
 
     //PRL_Logo();

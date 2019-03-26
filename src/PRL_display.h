@@ -14,18 +14,18 @@
 /*              PRL_Displayable                  */
 /* ********************************************* */
 
-#define PRL_DISPLAYABLE_DEFAULT_ADDRESS -1 // a negative value is important!
 
 class PRL_Displayable
 {
     friend class PRL_Displayer;
 
 public:
-    PRL_Displayable(SDL_Renderer* renderer);
+	PRL_Displayable();
+    PRL_Displayable(SDL_Texture *texture, SDL_Renderer *renderer);
     ~PRL_Displayable();
 
-    // Returns 0 if allright
-    int setTexture(SDL_Texture* texture);
+    /// Returns 0 if allright
+    int set(SDL_Texture *texture, SDL_Renderer *renderer);
     /// Get the texture to be displayed.
     SDL_Texture* getTexture() const;
 

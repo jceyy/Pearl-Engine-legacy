@@ -224,16 +224,16 @@ int PRL_CreateWindowAndRenderer()
     if (handler.config.getBorderless() == true)
         flagw4 = SDL_WINDOW_BORDERLESS;
 
-    if (PRL_CONFIG_WINDOW_ALLWAYS_ON_THE_TOP)
+    /*if (PRL_CONFIG_WINDOW_ALLWAYS_ON_THE_TOP)
         flagw5 = SDL_WINDOW_ALWAYS_ON_TOP;
 
     if (PRL_CONFIG_CAPTURE_MOUSE)
-        flagw6 = SDL_WINDOW_MOUSE_CAPTURE;
+        flagw6 = SDL_WINDOW_MOUSE_CAPTURE;*/
 
     Uint32 flagsw = flagw1|flagw2|flagw3|flagw4|flagw5|flagw6;
 
     handler.display.window.push_back(SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                             config_GLOBAL.resolution.x, config_GLOBAL.resolution.y, flagsw));
+                             handler.config.getResolution().x, handler.config.getResolution().y, flagsw));
 
     if (handler.display.window[0] == nullptr)
     {
@@ -352,7 +352,7 @@ int PRL_Init()
         return PRL_ERROR;
     }
 
-    if (SDL_SetWindowBrightness(handler.display.window[0], config_GLOBAL.brightness) != 0)
+    if (SDL_SetWindowBrightness(handler.display.window[0], handler.config.getBrightness()) != 0)
     {
         #if PRL_USE_WARNINGS == 1
         cout << __CERR_REF__ << "In PRL_Init, unable to set the brightness: " << SDL_GetError() << endl;
@@ -384,21 +384,6 @@ void PRL_Quit()
     SDL_EnableScreenSaver();
 
     handler.freeall();
-
-    for (int i(0); i < PRL_MAX_RENDERER_GLOBAL; i++)
-    {
-        if (renderer_GLOBAL[i] != NULL)
-            SDL_DestroyRenderer(renderer_GLOBAL[i]);
-    }
-
-    for (int i(0); i < PRL_MAX_WINDOWS_GLOBAL; i++)
-    {
-        if (window_GLOBAL[i] != NULL)
-        {
-            SDL_SetWindowBrightness(window_GLOBAL[0], (float) 1.0); // reset brightness
-            SDL_DestroyWindow(window_GLOBAL[i]);
-        }
-    }
 
     TTF_Quit();
     IMG_Quit();

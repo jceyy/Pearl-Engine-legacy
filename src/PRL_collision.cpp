@@ -567,7 +567,7 @@ PRL_CollInfos :: ~PRL_CollInfos()
 /*                PRL_Collidable                 */
 /* ********************************************* */
 
-PRL_Collidable :: PRL_Collidable(PRL_FRect *display_dst_rect) :
+/*PRL_Collidable :: PRL_Collidable(PRL_FRect *display_dst_rect) :
     collider_address(-1), coll_isDynamic_(true), collidableType(PRL_COLLTYPE_0)
 {
     ;
@@ -648,9 +648,9 @@ int PRL_Collidable :: getHitBoxesNumber() const
 }
 
 
-/* ********************************************* */
-/*                PRL_Collider                   */
-/* ********************************************* */
+/* ********************************************* *
+/*                PRL_Collider                   *
+/* ********************************************* *
 
 PRL_Collider :: PRL_Collider()
 {
@@ -1178,7 +1178,7 @@ void PRL_Collider :: testCollisionsBetween(int i, int j) // without any concern 
         }
     }
 }
-
+*/
 
 /* ********************************************* */
 /*                PRL_Movable                    */

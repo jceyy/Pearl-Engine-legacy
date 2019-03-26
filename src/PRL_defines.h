@@ -16,6 +16,7 @@
 // input
 #define PRL_USE_SCANCODES 1 // if 0 use key-codes instead of scan-codes for the keyboard
 
+#define PRL_MAX_FPS 200
 
 /// RETURN ///
 #define __CERR_REF__ PRL_TimeStamp() << " " << __FILENAME__ << ", line " << __LINE__ << " "
