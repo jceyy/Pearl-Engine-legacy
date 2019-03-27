@@ -1,3 +1,0 @@
-/home/vivien/Documents/pearl-engine/build/CMakeFiles/rebuild_cache.dir
-/home/vivien/Documents/pearl-engine/build/CMakeFiles/pearl-engine.dir
-/home/vivien/Documents/pearl-engine/build/CMakeFiles/edit_cache.dir
