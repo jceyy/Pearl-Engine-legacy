@@ -30,8 +30,6 @@ add_executable(
 
 	src/PRL_display.cpp
 
-	src/PRL_game_functions.cpp
-
 	src/PRL_handler.cpp
 
 	src/PRL_HUD.cpp
@@ -42,11 +40,8 @@ add_executable(
 
 	src/PRL_menu_functions.cpp
 
-	src/PRL_sreenshots.cpp
-
 	src/PRL_time.cpp
 
-	src/PRL_tool_programs.cpp
 )
 
 target_link_libraries(pearl-engine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
