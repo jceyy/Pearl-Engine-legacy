@@ -25,16 +25,18 @@ int PRL_TestZone()
 	}
 
 	PRL_Animated* mario = handler.createAnimated(animMario);
-
+    PRL_Animated* mario_erstatz = handler.createAnimated(animMario);
 	if (mario == nullptr) // error
 	{
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
 	}
 
-	printAnimDiagnostics(animMario);
+	//printAnimDiagnostics(animMario);
 
-    mario->setPos(200.0, 150.0);
+    PRL_FPoint mpos({0.0,0.0});
+    PRL_FPoint mepos({0.0,0.0});
+    bool showmario = false;
 
     while(!quit)
 	{
@@ -43,10 +45,54 @@ int PRL_TestZone()
 			quit = true;
 		}
 
+		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))
+        {
+            mpos.y -= 50;
+        }
+		if (handler.input.isKeyPressed(SDL_SCANCODE_DOWN))
+        {
+            mpos.y += 50;
+        }
+		if (handler.input.isKeyPressed(SDL_SCANCODE_LEFT))
+        {
+            mpos.x -= 50;
+        }
+		if (handler.input.isKeyPressed(SDL_SCANCODE_RIGHT))
+        {
+            mpos.x += 50;
+        }
+
+        mario->setPos(mpos);
 		mario->update();
+        mario_erstatz->setPos(mpos);
+		mario_erstatz->update();
+        showmario = false;
+
+		if (mpos.y <= 0)
+		{
+            mepos.y = handler.config.getRenderResolution().y;
+            showmario = true;
+		}
+        else if (mpos.y >= handler.config.getRenderResolution().y + animMario->display.getSize((size_t) mario->getCurrentFrame()).y)
+        {
+            mepos.y = -animMario->display.getSize((size_t) mario_erstatz->getCurrentFrame()).y;
+            showmario = true;
+        }
+        if (mpos.x <= 0)
+        {
+            mepos.x = handler.config.getRenderResolution().x;
+            showmario = true;
+        }
+        else if (mpos.x >= handler.config.getRenderResolution().x + animMario->display.getSize((size_t) mario->getCurrentFrame()).x)
+        {
+            mepos.x = -animMario->display.getSize((size_t) mario_erstatz->getCurrentFrame()).x;
+            showmario = true;
+        }
+
+        mario_erstatz->makeActive(showmario);
 
 		handler.update();
-		PRL_Delay(9000);
+		PRL_Delay(10000);
 	}
     return 0;
 }
