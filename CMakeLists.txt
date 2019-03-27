@@ -16,11 +16,11 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_I
 
 add_executable(
 
-        pearl-engine
+	pearl-engine
 
-        src/main.cpp
+	src/main.cpp
 
-        src/PRL_animation.cpp
+	src/PRL_animation.cpp
 
 	src/PRL_camera.cpp
 
@@ -29,8 +29,6 @@ add_executable(
 	src/PRL_configuration.cpp
 
 	src/PRL_display.cpp
-
-	src/PRL_game_functions.cpp
 
 	src/PRL_handler.cpp
 
@@ -42,11 +40,8 @@ add_executable(
 
 	src/PRL_menu_functions.cpp
 
-	src/PRL_sreenshots.cpp
-
 	src/PRL_time.cpp
 
-	src/PRL_tool_programs.cpp
 )
 
 target_link_libraries(pearl-engine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})

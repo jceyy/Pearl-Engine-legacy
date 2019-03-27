@@ -16,11 +16,10 @@
 #include <SDL2/SDL_image.h>
 
 #include "PRL_time.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 
 #include "PRL_configuration.h"
 #include "PRL_math.h"
-#include "PRL_tool_programs.h"
 
 #include "PRL_handler.h"
 #include "PRL_input.h"
@@ -31,20 +30,11 @@ using std::cerr;
 using std::endl;
 using std::string;
 
-
-// Global variables definition
-SDL_Texture *targetTexture_GLOBAL[PRL_MAX_RENDERER_GLOBAL];
-SDL_Renderer *renderer_GLOBAL[PRL_MAX_RENDERER_GLOBAL];
-SDL_Window *window_GLOBAL[PRL_MAX_WINDOWS_GLOBAL];
-PRL_Config config_GLOBAL;
-PRL_Timer timer_GLOBAL;
-PRL_Camera camera_GLOBAL[PRL_MAX_CAMERAS_GLOBAL];
-PRL_Displayer displayer_GLOBAL[PRL_MAX_DISPLAYERS_GLOBAL];
-
+// Declaration of extern variable
 PRL_Handler handler;
 
-// convert a bool into a char string
-inline const char* const btoc(bool b)
+// convert a bool into a string
+string btoc(bool b)
 {
     if (b == true)
         return "true";
@@ -52,8 +42,8 @@ inline const char* const btoc(bool b)
         return "false";
 }
 
-// convert an int into a char string
-inline const char* const ito3scale(int n)
+// convert an int into a string
+string ito3scale(int n)
 {
     if (n <= 0)
         return "low";
@@ -63,8 +53,8 @@ inline const char* const ito3scale(int n)
         return "high";
 }
 
-// convert an int into a char string
-inline const char* const ito5scale(int n)
+// convert an int into a string
+string ito5scale(int n)
 {
     if (n <= 0)
         return "verylow";
@@ -234,16 +224,16 @@ int PRL_CreateWindowAndRenderer()
     if (handler.config.getBorderless() == true)
         flagw4 = SDL_WINDOW_BORDERLESS;
 
-    if (PRL_CONFIG_WINDOW_ALLWAYS_ON_THE_TOP)
+    /*if (PRL_CONFIG_WINDOW_ALLWAYS_ON_THE_TOP)
         flagw5 = SDL_WINDOW_ALWAYS_ON_TOP;
 
     if (PRL_CONFIG_CAPTURE_MOUSE)
-        flagw6 = SDL_WINDOW_MOUSE_CAPTURE;
+        flagw6 = SDL_WINDOW_MOUSE_CAPTURE;*/
 
     Uint32 flagsw = flagw1|flagw2|flagw3|flagw4|flagw5|flagw6;
 
     handler.display.window.push_back(SDL_CreateWindow(PROGRAM_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                             config_GLOBAL.resolution.x, config_GLOBAL.resolution.y, flagsw));
+                             handler.config.getResolution().x, handler.config.getResolution().y, flagsw));
 
     if (handler.display.window[0] == nullptr)
     {
@@ -362,7 +352,7 @@ int PRL_Init()
         return PRL_ERROR;
     }
 
-    if (SDL_SetWindowBrightness(handler.display.window[0], config_GLOBAL.brightness) != 0)
+    if (SDL_SetWindowBrightness(handler.display.window[0], handler.config.getBrightness()) != 0)
     {
         #if PRL_USE_WARNINGS == 1
         cout << __CERR_REF__ << "In PRL_Init, unable to set the brightness: " << SDL_GetError() << endl;
@@ -390,29 +380,23 @@ int PRL_Init()
 
 void PRL_Quit()
 {
-    cout << PRL_TimeStamp() << " Quitting..." << endl;
-    SDL_EnableScreenSaver();
+    cout << PRL_TimeStamp() << " Quitting..." << endl << endl;
 
+    cout << "Errors count: " << PRL_ErrorCount() << endl;
+    cout << "Quitting PRL" << endl;
+    SDL_EnableScreenSaver();
     handler.freeall();
 
-    for (int i(0); i < PRL_MAX_RENDERER_GLOBAL; i++)
-    {
-        if (renderer_GLOBAL[i] != NULL)
-            SDL_DestroyRenderer(renderer_GLOBAL[i]);
-    }
-
-    for (int i(0); i < PRL_MAX_WINDOWS_GLOBAL; i++)
-    {
-        if (window_GLOBAL[i] != NULL)
-        {
-            SDL_SetWindowBrightness(window_GLOBAL[0], (float) 1.0); // reset brightness
-            SDL_DestroyWindow(window_GLOBAL[i]);
-        }
-    }
-
+    cout << "Quitting SDL_TTF" << endl;
     TTF_Quit();
+
+    cout << "Quitting SDL_IMG" << endl;
     IMG_Quit();
+
+    cout << "Quitting SDL" << endl;
     SDL_Quit();
+
+    cout << endl << PRL_TimeStamp() + " Done" << endl;
 }
 
 void PRL_Logo()
@@ -422,14 +406,14 @@ void PRL_Logo()
 void PRL_LoadingScreen() // whether or not to display the loading percentage.
 {
     TTF_Font *font = TTF_OpenFont("data/fonts/cooper.TTF", 85);
-    SDL_Color colorWhite={255, 255, 255};
-    SDL_Surface *surface=TTF_RenderText_Blended(font, "Loading...", colorWhite);
-    SDL_Texture *texture=SDL_CreateTextureFromSurface(renderer_GLOBAL[0], surface);
-    SDL_Rect pos={(config_GLOBAL.renderResolution.x-surface->w)/2, (config_GLOBAL.renderResolution.y-surface->h)/2, surface->w, surface->h};
+    SDL_Color colorWhite = {255, 255, 255, 0};
+    SDL_Surface *surface = TTF_RenderText_Blended(font, "Loading...", colorWhite);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(handler.display.renderer[0], surface);
+    SDL_Rect pos = {(handler.config.getRenderResolution().x-surface->w)/2, (handler.config.getRenderResolution().y-surface->h)/2, surface->w, surface->h};
 
-    SDL_RenderClear(renderer_GLOBAL[0]);
-    SDL_RenderCopy(renderer_GLOBAL[0], texture, NULL, &pos);
-    SDL_RenderPresent(renderer_GLOBAL[0]);
+    SDL_RenderClear(handler.display.renderer[0]);
+    SDL_RenderCopy(handler.display.renderer[0], texture, NULL, &pos);
+    SDL_RenderPresent(handler.display.renderer[0]);
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);

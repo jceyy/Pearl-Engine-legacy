@@ -11,13 +11,13 @@
 #include "PRL_types.h"
 #include "PRL_collision.h"
 #include "PRL_input.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 
 using std::cout;
 using std::cerr;
 using std::endl;
 
-SDL_Texture* PRL_CreateRectangle(SDL_Renderer *renderer, int w, int h, SDL_Color const& bkgd, int borderSz, SDL_Color const& border)
+/*SDL_Texture* PRL_CreateRectangle(SDL_Renderer *renderer, int w, int h, SDL_Color const& bkgd, int borderSz, SDL_Color const& border)
 {
     if (borderSz > PRL_HUD_MAX_BORDER_SIZE) borderSz = PRL_HUD_MAX_BORDER_SIZE; // maximum limitation
     else if (borderSz < 0) borderSz = 0; // minimum limitation
@@ -91,11 +91,11 @@ SDL_Texture* PRL_CreateRectangle(SDL_Renderer *renderer, int w, int h, SDL_Color
 {
     return PRL_CreateRectangle(renderer, w, h, bkgd, 0, bkgd);
 }
-
+*/
 /** ********************************************* **/
 /**               PRL_TextLabel                   **/
 /** ********************************************* **/
-
+/*
 PRL_TextLabel :: PRL_TextLabel() : input(NULL), font(NULL), fontColor({255, 255, 255, 255}), texture(NULL), bkgdtarget(NULL), surface(NULL),
 path(NULL), fontSz(0), fontStyle(TTF_STYLE_NORMAL), useBkgd(false), allowDisplacement_(false), beingMoved(false), relativeClickDistance({0}),
 bkgdColor({0}), borderColor({0}), bkgdTempColor({0}), borderSz(0), spaceBetweenBorderAndText(PRL_HUD_SPACE_BETWEEN_BORDER_AND_TEXT),
@@ -364,9 +364,6 @@ void PRL_TextLabel :: update()
 }
 
 
-/** ********************************************* **/
-/**             PRL_TextBoxSimple                 **/
-/** ********************************************* **/
 
 PRL_TextBoxSimple :: PRL_TextBoxSimple() : input(NULL), font(NULL), fontColor({255, 255, 255, 255}), texture(NULL), bkgdtarget(NULL), surface(NULL),
 path(NULL), fontSz(0), fontStyle(TTF_STYLE_NORMAL), maxLineLength(200), isTrackingInput(false), allowTracking(false),
@@ -734,10 +731,6 @@ void PRL_TextBoxSimple :: update()
 }
 
 
-/** ********************************************* **/
-/**                PRL_TextBox                    **/
-/** ********************************************* **/
-
 PRL_TextBox :: PRL_TextBox() : input(NULL), font(NULL), fontColor({255, 255, 255, 255}), texture(NULL), bkgdtarget(NULL), surface(NULL),
 path(NULL), fontSz(0), fontStyle(TTF_STYLE_NORMAL), maxLineLength(200), isTrackingInput(false), allowTracking(false),
 useBkgd(false), allowDisplacement_(false), beingMoved(false), relativeClickDistance({0}), bkgdColor({0}), bkgdTextInputColor(PRL_DEFAULT_TEXT_INPUT_BKGD_COLOR), borderColor({0}),
@@ -918,7 +911,7 @@ void PRL_TextBox :: stopUsingBackground()
 }
 
 void PRL_TextBox :: renderText_surfaceManipulation(int lineNb) // split the work between surface manipulation and texture manipulation to allow multi-threading optimization
-{
+{*/
     /*if (lineNb >= linesNumber)
         cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_TextBox, invalid line number (" << lineNb << ")" << endl;
     if (surface != NULL)
@@ -968,7 +961,7 @@ void PRL_TextBox :: renderText_surfaceManipulation(int lineNb) // split the work
         }
     }
     free(c_str);*/
-}
+/*}
 
 void PRL_TextBox :: moveLastWordToNextLine(int workingLine)
 {
@@ -1144,7 +1137,7 @@ int PRL_TextBox :: renderText()
         #endif // PRL_USE_WARNINGS
     }
 
-    /*if (useBkgd)
+    if (useBkgd)
     {
         int factor = 1; // ignore the additional space if border size is 0
         if (borderSz == 0) factor = 0;
@@ -1172,7 +1165,7 @@ int PRL_TextBox :: renderText()
         display_src_int.w = display_src.w = surface->w;
         display_src_int.h = display_src.h = surface->h;
         display_texture = texture;
-    }*/
+    }
 
     #if PRL_MULTITHREADING == 1
     for (int i(0); i<linesNumber; i++)
@@ -1283,9 +1276,7 @@ void PRL_TextBox :: update()
 // Parameters for char strings names
 const int FILENAME_LENGTH(400), FORMAT_LENGTH(20), HUDELEMENT_TYPE_LENGTH(100);
 
-/** ********************************************* **/
-/**               PRL_VScrollBar                  **/
-/** ********************************************* **/
+
 
 PRL_VScrollBar :: PRL_VScrollBar(const PRL_Input *in, int barLength) : barOutput(0.0), input(NULL), idle(NULL), selected(NULL), rail(NULL),
 target(NULL), miny(0), maxy(0), distFromTop(0), loaded(false), positionHasBeenProvided(false), barSelected(false), hasMoved_(false)
@@ -1606,11 +1597,6 @@ void PRL_VScrollBar :: updateOutput()
 
 
 
-/** ********************************************* **/
-/**               PRL_HScrollBar                  **/
-/** ********************************************* **/
-
-
 PRL_HScrollBar :: PRL_HScrollBar(const PRL_Input *in, int barLength) : barOutput(0.0), idle(NULL), selected(NULL), rail(NULL),
 target(NULL), minx(0), maxx(0), distFromLeft(0), loaded(false), positionHasBeenProvided(false), barSelected(false), hasMoved_(false)
 {
@@ -1925,5 +1911,5 @@ void PRL_HScrollBar :: renderBar()
 void PRL_HScrollBar :: updateOutput()
 {
     barOutput = 1.0 * (barPos.x + dspDst.x - minx) / (maxx - minx + 1);
-}
+}*/
 

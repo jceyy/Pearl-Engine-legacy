@@ -376,9 +376,7 @@ protected:
     //void pauseAllExcept(const int which); // Keep private!
 };
 
-/* ********************************************* */
-/*            PRL_AnimationSimple                */
-/* ********************************************* */
+/*
 
 #define PRL_MAX_FRAMES_ANIM_SIMPLE 18000 // 18000 frames gives 5 minutes at 60 FPS
 
@@ -437,9 +435,7 @@ private:
 
 
 
-/* ********************************************* */
-/*             PRL_AnimatedSimple                */
-/* ********************************************* */
+
 
 #define PRL_ANIMATION_MAX_TARGETS 128
 #define PRL_ANIMATION_CHECK_TIME_AT_UPDATE 1 // make the update time-dependent (synchronous)
@@ -498,10 +494,7 @@ protected:
     //void pauseAllExcept(const int which); // Keep private!
 };
 
-/// ////////////////////////// LATER: add sound directly built-in
-/* ********************************************* */
-/*             PRL_AnimationVideo                */
-/* ********************************************* */
+
 
 #define PRL_ANIM_VIDEO_BUFFER 20 // 20 frames prepared in advance
 
@@ -584,7 +577,7 @@ private:
     long long previousTimeAnim;
 
     void freeBuffer();
-};
+};*/
 
 #endif // PRL_ANIMATION_H_INCLUDED
 

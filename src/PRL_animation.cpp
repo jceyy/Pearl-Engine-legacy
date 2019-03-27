@@ -8,7 +8,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "PRL_defines.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 #include "PRL_animation.h"
 
 #include "PRL_display.h"
@@ -137,9 +137,14 @@ PRL_FRect const& PRL_FPointList :: getRectAround() const
 /*                  PRL_HitBox                   */
 /* ********************************************* */
 
-PRL_HitBox :: PRL_HitBox() : _rect({0}), rect_arround_hitbox({0}), _circle({0.0}), _type(PRL_HITBOX_RECT)
+PRL_HitBox :: PRL_HitBox() : _type(PRL_HITBOX_RECT)
 {
-    ;
+	PRL_FRect frect(0.0, 0.0, 0, 0);
+    _rect = frect;
+    rect_arround_hitbox = _rect;
+
+    PRL_FCircle circle(0.0, 0.0, 0.0);
+    _circle = circle;
 }
 
 PRL_HitBox :: ~PRL_HitBox()
@@ -157,7 +162,7 @@ void PRL_HitBox :: set(PRL_FRect& rect)
 void PRL_HitBox :: set(PRL_FCircle& circle)
 {
     _circle = circle;
-    rect_arround_hitbox = {circle.x - circle.radius, circle.y - circle.radius, (int) circle.radius, (int) circle.radius};
+    rect_arround_hitbox = {circle.x - circle.r, circle.y - circle.r, (int) circle.r, (int) circle.r};
     _type = PRL_HITBOX_CIRCLE;
 }
 
@@ -669,9 +674,10 @@ void PRL_Animated :: updateDisplayable()
 	dspDst.h = dspSrc.h;
 }
 
-/* ********************************************* */
-/*            PRL_AnimationSimple                */
-/* ********************************************* */
+
+// Old implementation
+
+/*
 
 
 // Parameters for char strings names
@@ -974,9 +980,6 @@ PRL_FPointCluster* PRL_AnimationSimple :: getPointCluster() const
     return (PRL_FPointCluster*) &pointCluster;
 }
 
-/* ********************************************* */
-/*            PRL_AnimatedSimple                 */
-/* ********************************************* */
 
 
 PRL_AnimatedSimple :: PRL_AnimatedSimple() : started(false), paused(false), current_anim_repeat_count(0), current_anim_index(0), currentTimeAnim(0), previousTimeAnim(0)
@@ -1159,9 +1162,6 @@ void PRL_AnimatedSimple :: updateAnim()
 
 
 
-/** ********************************************* **/
-/**             PRL_AnimationVideo                **/
-/** ********************************************* **/
 
 
 PRL_AnimationVideo :: PRL_AnimationVideo(int buff) : bufferSz(buff), framesFilledInBufferAtUpdate(1)
@@ -1634,5 +1634,5 @@ void PRL_AnimationVideo :: setPosition(int x, int y)
         dspDst = {(float) x, (float) y, rect[0].w, rect[0].h};
         dspSrc = {0.0, 0.0, rect[0].w, rect[0].h};
     }
-}
+}*/
 

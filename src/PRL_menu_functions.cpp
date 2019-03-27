@@ -1,7 +1,4 @@
 #include "PRL.h"
-#include "PRL_input.h"
-#include "PRL_display.h"
-#include "PRL_animation.h"
 
 #include <iostream>
 

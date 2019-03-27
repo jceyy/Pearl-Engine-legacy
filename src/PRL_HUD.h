@@ -7,7 +7,7 @@
 #include <thread>
 #include "PRL_display.h"
 #include "PRL_input.h"
-
+/*
 #define PRL_DEFAULT_TEXT_COLOR {255, 255, 255, 255}
 #define PRL_DEFAULT_TEXT_INPUT_BKGD_COLOR {255, 255, 255, 128}
 #define PRL_HUD_MAX_BORDER_SIZE 200 // in pixels
@@ -23,9 +23,7 @@ enum PRL_TextRenderMethod
     PRL_TEXTRENDER_SOLID, PRL_TEXTRENDER_BLENDED, PRL_TEXTRENDER_DEFAULT = PRL_TEXTRENDER_BLENDED
 };
 
-/* ********************************************* */
-/*                PRL_TextLabel                  */
-/* ********************************************* */
+
 
 class PRL_TextLabel : public PRL_Displayable
 {
@@ -98,9 +96,7 @@ private:
 
 
 
-/* ********************************************* */
-/*              PRL_TextBoxSimple                */
-/* ********************************************* */
+
 
 /// Simple line text box without visual cursor handling
 class PRL_TextBoxSimple : public PRL_Displayable
@@ -183,9 +179,7 @@ private:
     void renderText_surfaceManipulation();
 };
 
-/* ********************************************* */
-/*                 PRL_TextBox                   */
-/* ********************************************* */
+
 
 #define PRL_DEFAULT_LINE_SPACING 5 // in pixels
 #define PRL_DEFAULT_SELECTED_TEXT_COLOR {220, 220, 220, 220}
@@ -277,9 +271,7 @@ private:
     void moveLastWordToNextLine(int workingLine);
 };
 
-/* ********************************************* */
-/*               PRL_VScrollBar                  */
-/* ********************************************* */
+
 
 class PRL_VScrollBar : public PRL_Displayable
 {
@@ -326,9 +318,7 @@ private:
     void updateOutput();
 };
 
-/* ********************************************* */
-/*               PRL_HScrollBar                  */
-/* ********************************************* */
+
 
 class PRL_HScrollBar : public PRL_Displayable
 {
@@ -375,5 +365,5 @@ private:
     void renderBar();
     void updateOutput();
 };
-
+*/
 #endif // PRL_HUD_H_INCLUDED

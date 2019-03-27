@@ -14,22 +14,21 @@
 /*              PRL_Displayable                  */
 /* ********************************************* */
 
-#define PRL_DISPLAYABLE_DEFAULT_ADDRESS -1 // a negative value is important!
 
 class PRL_Displayable
 {
     friend class PRL_Displayer;
 
 public:
-    PRL_Displayable();
+	PRL_Displayable();
+    PRL_Displayable(SDL_Texture *texture, SDL_Renderer *renderer);
     ~PRL_Displayable();
 
-    // Returns 0 if allright
-    int setTexture(SDL_Texture* texture);
+    /// Returns 0 if allright
+    int set(SDL_Texture *texture, SDL_Renderer *renderer);
     /// Get the texture to be displayed.
     SDL_Texture* getTexture() const;
 
-    int setRenderer(SDL_Renderer *renderer);
     /// Make the displayable active or not.
     void makeActive(bool b);
     /// Tell whether the displayable object is active (displayed by the displayer) or not.
@@ -50,6 +49,11 @@ public:
     PRL_FRect const& getDstRect() const;
     /// Get source rectangle used for display.
     PRL_FRect const& getSrcRect() const;
+    /// Set velocity of the displayable in pixels per second.
+    void setVelocity(PRL_FPoint const& velocity);
+    /// Get velocity of the displayable in pixels per second.
+    PRL_FPoint const& getVelocity() const;
+
     /// Get how many displayable objects are currently in use.
     static int getCount();
 
@@ -58,6 +62,7 @@ protected:
     PRL_FRect dspDst;
     SDL_Texture *dspTexture;
     SDL_Renderer *dspRenderer;
+    PRL_FPoint dspVelocity;
     bool dspIsActive;
     double dspAngle;
 
