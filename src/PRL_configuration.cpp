@@ -16,7 +16,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "PRL_time.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 
 #include "PRL_configuration.h"
 #include "PRL_math.h"
@@ -406,7 +406,7 @@ void PRL_Logo()
 void PRL_LoadingScreen() // whether or not to display the loading percentage.
 {
     TTF_Font *font = TTF_OpenFont("data/fonts/cooper.TTF", 85);
-    SDL_Color colorWhite = {255, 255, 255};
+    SDL_Color colorWhite = {255, 255, 255, 0};
     SDL_Surface *surface = TTF_RenderText_Blended(font, "Loading...", colorWhite);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(handler.display.renderer[0], surface);
     SDL_Rect pos = {(handler.config.getRenderResolution().x-surface->w)/2, (handler.config.getRenderResolution().y-surface->h)/2, surface->w, surface->h};

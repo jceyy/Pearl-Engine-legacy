@@ -1,6 +1,6 @@
 #include "PRL_collision.h"
 #include "PRL_animation.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 #include <math.h>
 #include <vector>
 #include <iostream>

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <SDL2/SDL.h>
 #include "PRL_display.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 
 using std::cout;
 using std::cerr;

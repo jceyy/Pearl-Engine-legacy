@@ -11,7 +11,7 @@
 #include "PRL_types.h"
 #include "PRL_collision.h"
 #include "PRL_input.h"
-#include "PRL_global_variables.h"
+#include "PRL_global.h"
 
 using std::cout;
 using std::cerr;
