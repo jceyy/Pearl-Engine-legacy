@@ -11,14 +11,20 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+typedef struct PRL_Vector PRL_Vector; // to be depreciated
+struct PRL_Vector
+{
+    double x, y;
+};
+
 /// GEOMETRIC FUNCTIONS ///
 
 PRL_Rect GetBoxAroundCircle(const PRL_Circle C)/// Get the AABB box around a circle
 {
     PRL_Rect box;
-    box.x=C.x-C.radius;
-    box.y=C.y-C.radius;
-    box.w=box.h=2*C.radius;
+    box.x=C.x-C.r;
+    box.y=C.y-C.r;
+    box.w=box.h=2*C.r;
     return box;
 }
 
@@ -156,7 +162,7 @@ bool PRL_Coll_2Rects(PRL_Rect const& box1, PRL_FRect const& box2)
 
 bool PRL_Coll_2Circles(PRL_FCircle const& C1, PRL_FCircle const& C2)
 {
-    float a(C1.x - C2.x), b(C1.y - C2.y), c(C1.radius + C2.radius); // a*a + b*b is the distance between the 2 centers
+    float a(C1.x - C2.x), b(C1.y - C2.y), c(C1.r + C2.r); // a*a + b*b is the distance between the 2 centers
     if (a*a + b*b > c*c)
         return false;
     else
@@ -292,7 +298,7 @@ bool Coll_2Points(const PRL_Point p1, const PRL_Point p2)
 bool Coll_PointCircle(const PRL_Point p, const PRL_Circle C) // may be faster if there were some 'radius2' variable included in the crcl structure
 {
     int d2=(p.x-C.x)*(p.x-C.x)+(p.y-C.y)*(p.y-C.y);
-    if (d2>C.radius*C.radius)
+    if (d2>C.r*C.r)
         return false;
     else
         return true;
@@ -301,7 +307,7 @@ bool Coll_PointCircle(const PRL_Point p, const PRL_Circle C) // may be faster if
 bool Coll_CirclePoint(const PRL_Circle C, const PRL_Point p) // may be faster if there were some 'radius2' variable included in the crcl structure
 {
     int d2=(p.x-C.x)*(p.x-C.x)+(p.y-C.y)*(p.y-C.y);
-    if (d2>C.radius*C.radius)
+    if (d2>C.r*C.r)
         return false;
     else
         return true;
@@ -425,7 +431,7 @@ bool Coll_StraightLineCircle(const PRL_Point A, const PRL_Point B, const PRL_Cir
       numerator = -numerator ;   // absolute value
     double denominator = sqrt(u.x*u.x + u.y*u.y);  // vector magnitude of u
     double CI = numerator / denominator;
-    if (CI<C.radius)
+    if (CI<C.r)
         return true;
     else
         return false;
@@ -443,7 +449,7 @@ bool Coll_CircleStraightLine(const PRL_Circle C, const PRL_Point A, const PRL_Po
       numerator = -numerator ;   // absolute value
     double denominator = sqrt(u.x*u.x + u.y*u.y);  // vector magnitude of u
     double CI = numerator / denominator;
-    if (CI<C.radius)
+    if (CI<C.r)
         return true;
     else
         return false;
@@ -1187,9 +1193,11 @@ void PRL_Collider :: testCollisionsBetween(int i, int j) // without any concern 
 float PRL_Movable :: time_coeff = 0.0;
 int PRL_Movable :: movable_count = 0;
 
-PRL_Movable :: PRL_Movable(PRL_FRect* display_dst_rect) : pxlsPerSec_({0.0}), previousDisplacement_({0.0}),
-previous_time(0), current_time(0)
+PRL_Movable :: PRL_Movable(PRL_FRect* display_dst_rect) : previous_time(0), current_time(0)
 {
+	PRL_FPoint p(0.0, 0.0);
+	pxlsPerSec_ = p;
+	previousDisplacement_ = p;
     display_dst_copy = display_dst_rect;
     movable_count++;
 }

@@ -7,9 +7,13 @@ using std::cout;
 using std::cout;
 using std::endl;
 
-PRL_Camera :: PRL_Camera() : zoom(1.0), cameraRectangle({0}), absoluteCenter({0.0}), cameraNumber(0)
+PRL_Camera :: PRL_Camera() : zoom(1.0), cameraNumber(0)
 {
-    ;
+	PRL_FRect r(0.0, 0.0, 0, 0);
+    cameraRectangle = r;
+
+    PRL_FPoint p(0.0, 0.0);
+    absoluteCenter = p;
 }
 
 PRL_Camera :: ~PRL_Camera()

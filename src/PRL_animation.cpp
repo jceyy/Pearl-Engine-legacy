@@ -137,9 +137,14 @@ PRL_FRect const& PRL_FPointList :: getRectAround() const
 /*                  PRL_HitBox                   */
 /* ********************************************* */
 
-PRL_HitBox :: PRL_HitBox() : _rect({0}), rect_arround_hitbox({0}), _circle({0.0}), _type(PRL_HITBOX_RECT)
+PRL_HitBox :: PRL_HitBox() : _type(PRL_HITBOX_RECT)
 {
-    ;
+	PRL_FRect frect(0.0, 0.0, 0, 0);
+    _rect = frect;
+    rect_arround_hitbox = _rect;
+
+    PRL_FCircle circle(0.0, 0.0, 0.0);
+    _circle = circle;
 }
 
 PRL_HitBox :: ~PRL_HitBox()
@@ -157,7 +162,7 @@ void PRL_HitBox :: set(PRL_FRect& rect)
 void PRL_HitBox :: set(PRL_FCircle& circle)
 {
     _circle = circle;
-    rect_arround_hitbox = {circle.x - circle.radius, circle.y - circle.radius, (int) circle.radius, (int) circle.radius};
+    rect_arround_hitbox = {circle.x - circle.r, circle.y - circle.r, (int) circle.r, (int) circle.r};
     _type = PRL_HITBOX_CIRCLE;
 }
 
