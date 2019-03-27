@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../build/PearlEngine" prefix_auto="1" extension_auto="1" />
+				<Option output="../build/pearl-engine" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="../build/" />
 				<Option object_output="../build/obj/" />
 				<Option type="1" />
@@ -43,6 +43,12 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../CMakeLists.txt">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="../LICENSE.txt">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="../src/PRL.h" />
 		<Unit filename="../src/PRL_HUD.cpp" />
 		<Unit filename="../src/PRL_HUD.h" />
@@ -57,7 +63,7 @@
 		<Unit filename="../src/PRL_defines.h" />
 		<Unit filename="../src/PRL_display.cpp" />
 		<Unit filename="../src/PRL_display.h" />
-		<Unit filename="../src/PRL_global_variables.h" />
+		<Unit filename="../src/PRL_global.h" />
 		<Unit filename="../src/PRL_handler.cpp" />
 		<Unit filename="../src/PRL_handler.h" />
 		<Unit filename="../src/PRL_input.cpp" />
@@ -67,6 +73,7 @@
 		<Unit filename="../src/PRL_menu_functions.cpp" />
 		<Unit filename="../src/PRL_time.cpp" />
 		<Unit filename="../src/PRL_time.h" />
+		<Unit filename="../src/PRL_types.cpp" />
 		<Unit filename="../src/PRL_types.h" />
 		<Unit filename="../src/main.cpp" />
 		<Extensions>

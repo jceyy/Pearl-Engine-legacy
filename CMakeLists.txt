@@ -16,11 +16,11 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_I
 
 add_executable(
 
-        pearl-engine
+	pearl-engine
 
-        src/main.cpp
+	src/main.cpp
 
-        src/PRL_animation.cpp
+	src/PRL_animation.cpp
 
 	src/PRL_camera.cpp
 
