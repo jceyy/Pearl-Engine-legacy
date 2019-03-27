@@ -30,11 +30,11 @@ using std::cerr;
 using std::endl;
 using std::string;
 
-
+// Declaration of extern variable
 PRL_Handler handler;
 
-// convert a bool into a char string
-inline const char* const btoc(bool b)
+// convert a bool into a string
+string btoc(bool b)
 {
     if (b == true)
         return "true";
@@ -42,8 +42,8 @@ inline const char* const btoc(bool b)
         return "false";
 }
 
-// convert an int into a char string
-inline const char* const ito3scale(int n)
+// convert an int into a string
+string ito3scale(int n)
 {
     if (n <= 0)
         return "low";
@@ -53,8 +53,8 @@ inline const char* const ito3scale(int n)
         return "high";
 }
 
-// convert an int into a char string
-inline const char* const ito5scale(int n)
+// convert an int into a string
+string ito5scale(int n)
 {
     if (n <= 0)
         return "verylow";
@@ -380,14 +380,23 @@ int PRL_Init()
 
 void PRL_Quit()
 {
-    cout << PRL_TimeStamp() << " Quitting..." << endl;
-    SDL_EnableScreenSaver();
+    cout << PRL_TimeStamp() << " Quitting..." << endl << endl;
 
+    cout << "Errors count: " << PRL_ErrorCount() << endl;
+    cout << "Quitting PRL" << endl;
+    SDL_EnableScreenSaver();
     handler.freeall();
 
+    cout << "Quitting SDL_TTF" << endl;
     TTF_Quit();
+
+    cout << "Quitting SDL_IMG" << endl;
     IMG_Quit();
+
+    cout << "Quitting SDL" << endl;
     SDL_Quit();
+
+    cout << endl << PRL_TimeStamp() + " Done" << endl;
 }
 
 void PRL_Logo()

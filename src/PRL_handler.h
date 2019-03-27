@@ -101,4 +101,6 @@ private:
 
 };
 
+extern PRL_Handler handler;
+
 #endif // PRL_HANDLER_H_INCLUDED
