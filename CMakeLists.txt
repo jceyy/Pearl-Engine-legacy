@@ -14,9 +14,7 @@ find_package(SDL2_ttf REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
 
-add_executable(
-
-	pearl-engine
+add_executable(pearl-engine
 
 	src/main.cpp
 
@@ -42,6 +40,7 @@ add_executable(
 
 	src/PRL_time.cpp
 
+	src/PRL_types.cpp
 )
 
 target_link_libraries(pearl-engine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
