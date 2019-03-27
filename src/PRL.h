@@ -39,19 +39,6 @@
 #define LINUX
 #include <pthread.h>
 #endif // __unix__
-/*
-#include <stdio.h>
-#include <stdlib.h>
-//#include <stdint.h>
-#include <stdarg.h>
-#include <string.h>
-#include <math.h>
-#include <time.h>
-#include <chrono>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>*/
-//#include <SDL2/SDL_mixer.h>
 
 
 #include "PRL_animation.h"
@@ -60,17 +47,11 @@
 #include "PRL_configuration.h"
 #include "PRL_defines.h"
 #include "PRL_display.h"
-#include "PRL_global_variables.h"
 #include "PRL_input.h"
 #include "PRL_math.h"
 #include "PRL_HUD.h"
 #include "PRL_time.h"
+#include "PRL_handler.h"
 
-//#include "tools.h"
-
-
-#if PRL_COMPILE_ANIM_TESTER == 1
-#include "PRL_tool_programs.h"
-#endif // PRL_COMPILE_ANIM_TESTER
 
 #endif // PEARL_H_INCLUDED
