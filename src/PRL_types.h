@@ -14,6 +14,8 @@ public:
 	PRL_Point(PRL_Point const& point);
 	~PRL_Point();
 
+	void set(int x_, int y_);
+
     int x, y;
 };
 
@@ -26,6 +28,8 @@ public:
 	PRL_FPoint(PRL_FPoint const& fpoint);
 	~PRL_FPoint();
 
+	void set(float x_, float y_);
+
     float x, y;
 };
 
@@ -37,6 +41,8 @@ public:
 	PRL_DPoint(double x_, double y_);
 	PRL_DPoint(PRL_DPoint const& dpoint);
 	~PRL_DPoint();
+
+	void set(double x_, double y_);
 
     double x, y;
 };

@@ -23,6 +23,12 @@ PRL_Point :: ~PRL_Point()
 	;
 }
 
+void PRL_Point :: set(int x_, int y_)
+{
+	x = x_;
+	y = y_;
+}
+
 // Declaration of PRL_FPoint
 
 PRL_FPoint :: PRL_FPoint() : x(0.0), y(0.0)
@@ -45,6 +51,12 @@ PRL_FPoint :: ~PRL_FPoint()
 	;
 }
 
+void PRL_FPoint :: set(float x_, float y_)
+{
+	x = x_;
+	y = y_;
+}
+
 // Declaration of PRL_DPoint
 
 PRL_DPoint :: PRL_DPoint() : x(0.0), y(0.0)
@@ -65,6 +77,12 @@ PRL_DPoint :: PRL_DPoint(PRL_DPoint const& dpoint) : x(dpoint.x), y(dpoint.y)
 PRL_DPoint :: ~PRL_DPoint()
 {
 	;
+}
+
+void PRL_DPoint :: set(double x_, double y_)
+{
+	x = x_;
+	y = y_;
 }
 
 // Declaration of PRL_Rect
