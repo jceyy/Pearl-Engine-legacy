@@ -276,15 +276,282 @@ void PRL_FPointCluster :: setAnchorPoint(int frame, PRL_FPoint const& point)
     anchorPoint[frame] = point;
 }
 
+
+/// ---------------------------------------------------------------------------------------------------------------
+
+
+void getline_ne(basic_istream<char>& f, string& line)
+{
+	getline(f, line);
+
+	while(line == "")
+		getline(f, line);
+}
+
 /* ********************************************* */
 /*               PRL_Animation                   */
 /* ********************************************* */
 
-int PRL_Animation :: animationsCount = 0;
+int PRL_Image :: imageCount = 0;
+
+int PRL_Image :: getCount()
+{
+	return imageCount;
+}
+
+PRL_Image :: PRL_Image(const std::string& path, SDL_Renderer *_renderer)
+{
+	// Loading of anim file.
+	filePath = path;
+	display.renderer = _renderer;
+
+	if (load_CPU() != 0)
+	{
+		clear_CPU();
+		throw (std::runtime_error(PRL_GetError()));
+	}
+	if (load_GPU() != 0)
+	{
+		clear_CPU();
+		clear_GPU();
+		throw (std::runtime_error(PRL_GetError()));
+	}
+
+	imageCount++;
+}
+
+PRL_Image :: PRL_Image(const char* path, SDL_Renderer *_renderer)
+{
+	PRL_Image(std::string(path), _renderer);
+}
+
+PRL_Image :: ~PRL_Image()
+{
+	clear_CPU();
+	clear_GPU();
+	imageCount--;
+}
+
+int PRL_Image :: load_CPU()
+{
+	std::ifstream file(filePath);
+
+	if (file.is_open())
+	{
+		PRL_Point temp;
+		string parentFolder;
+		string line, maskPath;
+		getline(file, line); // First line: [display]
+		getline_ne(file, line); // Reference renderer
+		PRL_Config :: extractPoint(line, display.refRenderSize);
+
+		if (display.refRenderSize.x == 0 || display.refRenderSize.y == 0)
+		{
+			PRL_SetError("Invalid reference renderer size: can not be 0");
+			return PRL_ERROR;
+		}
+
+		getline_ne(file, line); // Main texture name
+        display.mainSurface = IMG_Load(line.c_str());
+
+        if (display.mainSurface == nullptr)
+		{
+			PRL_SetError(string("Unable to load main surface: ") + string(SDL_GetError()));
+			return PRL_ERROR;
+		}
+
+		display.scalingRatio.x = 1.0 * handler.config.getRenderResolution().x / display.refRenderSize.x;
+		display.scalingRatio.y = 1.0 * handler.config.getRenderResolution().y / display.refRenderSize.y;
+		display.mainTextureTrueSize.set(display.mainSurface->w, display.mainSurface->h);
+		display.mainTextureScaledSize.set((int)(display.mainSurface->w * display.scalingRatio.x), (int)(display.mainSurface->h * display.scalingRatio.y));
+
+		getline(file, line);
+		SDL_Surface* surface(nullptr);
+
+		// Load masks
+		PRL_Point sz;
+		int current_mask(0);
+		while (line != "[hitbox-rect]")
+		{
+			if (line != string(""))
+			{
+				PRL_GetPath(filePath, parentFolder, maskPath, maskPath); // mask path not recovering any useful information
+				maskPath = parentFolder + "/" + line;
+				surface = IMG_Load(maskPath.c_str());
+
+				if (surface == nullptr)
+				{
+					PRL_SetError(string("Unable to load mask ") + to_string(current_mask) + string(": ") + string(SDL_GetError()));
+					clear_CPU();
+					return PRL_ERROR;
+
+				}
+				display.maskSurface.push_back(surface);
+
+				// Update true and scaled sizes
+				sz.set(surface->w, surface->h);
+				display.maskTextureTrueSize.push_back(sz);
+				sz.set((int)(surface->w * display.scalingRatio.x), (int)(surface->h * display.scalingRatio.y));
+				display.maskSTexturecaledSize.push_back(sz);
+
+				// Load local pos!
+
+				surface = nullptr;
+				current_mask++;
+			}
+			getline(file, line);
+		}
+
+		// resize all the vectors
+
+		if (display.maskNb != 0)
+		{
+			display.maskSurface.resize(framesNb);
+			display.maskTexture.resize(framesNb);
+			display.maskScaledTextureSize.resize(framesNb);
+			display.maskLocalPos.resize(framesNb);
+		}
+
+		getline(file, line);
+		display.maskPerTexture = (size_t) stoi(line);
+
+		// Points: still to do
+
+		file.close();
+	}
+	else
+	{
+		PRL_SetError("File could not be opened");
+		return PRL_ERROR;
+	}
+	return 0;
+}
+
+int PRL_Image :: load_GPU()
+{
+	display.mainTexture = SDL_CreateTextureFromSurface(display.renderer, display.mainSurface);
+	SDL_Texture *mask(nullptr);
+
+	if (display.mainTexture == nullptr)
+	{
+		PRL_SetError(string("Unable to load main texture: ") + string(SDL_GetError()));
+		return PRL_ERROR;
+	}
+
+	for (size_t i(0); i < display.maskTexture.size(); ++i)
+	{
+        ;
+	}
+
+	return 0;
+}
+
+void PRL_Image :: clear_CPU()
+{
+	SDL_FreeSurface(display.mainSurface);
+	display.mainSurface = nullptr;
+
+	for (size_t i(0); i < display.maskSurface.size(); ++i)
+	{
+		SDL_FreeSurface(display.maskSurface[i]);
+		display.maskSurface[i] = nullptr;
+	}
+	display.maskSurface.clear();
+	display.maskTrueSize.clear();
+	display.maskScaledSize.clear();
+}
+
+void PRL_Image :: clear_GPU()
+{
+	SDL_DestroyTexture(display.mainTexture);
+	display.mainTexture = nullptr;
+
+	for (size_t i(0); i < display.maskTexture.size(); ++i)
+	{
+		SDL_DestroyTexture(display.maskTexture[i]);
+		display.maskTexture[i] = nullptr;
+	}
+	display.maskTexture.clear();
+}
+
+SDL_Texture* PRL_Image :: _display :: getTexture() const
+{
+	return mainTexture;
+}
+
+const PRL_Point& PRL_Image :: _display :: getSize() const
+{
+	return mainScaledTextureSize;
+}
+
+const PRL_Point& PRL_Image :: _display :: getRefRenderSize() const
+{
+	return refRenderSize;
+}
+
+void PRL_Image :: addTarget()
+{
+	targetCount++;
+}
+
+void PRL_Image :: removeTarget()
+{
+	targetCount--;
+}
+
+int PRL_Image :: _display :: getMaskNumber() const
+{
+	return (int) maskNb;
+}
+
+SDL_Renderer* PRL_Image :: _display :: getRenderer() const
+{
+	return renderer;
+}
+
+/* ********************************************* */
+/*            _PRL_ImageAccessor 	             */
+/* ********************************************* */
+
+_PRL_ImageAccessor  :: _PRL_ImageAccessor()
+{
+	;
+}
+
+_PRL_ImageAccessor  :: ~_PRL_ImageAccessor()
+{
+	;
+}
+
+void _PRL_ImageAccessor  :: addTarget(PRL_Image* img) const
+{
+	img->addTarget();
+}
+
+void _PRL_ImageAccessor :: removeTarget(PRL_Image* img) const
+{
+	img->removeTarget();
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ********************************************* */
+/*               PRL_Animation                   */
+/* ********************************************* */
+
+int PRL_Animation :: animationCount = 0;
 
 int PRL_Animation :: getCount()
 {
-	return animationsCount;
+	return animationCount;
 }
 
 PRL_Animation :: PRL_Animation(const std::string& path, SDL_Renderer *_renderer)

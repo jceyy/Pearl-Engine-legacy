@@ -236,6 +236,80 @@ public:
 
 
 /* ********************************************* */
+/*                 PRL_Image	                 */
+/* ********************************************* */
+
+
+class PRL_Image
+{
+public:
+	PRL_Image(const char* path, SDL_Renderer *renderer);
+	/// Need the path of the animation's .anim file.
+	PRL_Image(const std::string& path, SDL_Renderer *renderer);
+
+	struct _display
+	{
+		friend class PRL_Image;
+	public:
+		SDL_Texture* getTexture() const;
+		/// Get the main texture size
+		const PRL_Point& getSize() const; // no bound checking, in term of current render resolution
+		/// Return {width, height, width, height}.
+		const PRL_Point& getRefRenderSize() const;
+		/// Get mask per texture
+		int getMaskNumber() const;
+		SDL_Renderer* getRenderer() const;
+
+		/// Return the source size (real one without scaling) {width, height}.
+
+	private:
+		SDL_Texture* mainTexture;
+		SDL_Surface* mainSurface;
+		std::vector <SDL_Texture*> maskTexture;
+		std::vector <SDL_Surface*> maskSurface;
+		PRL_Point mainTextureTrueSize;
+		PRL_Point mainTextureScaledSize;
+		std::vector <PRL_Point> maskTrueSize;
+		std::vector <PRL_Point> maskScaledSize;
+		std::vector <PRL_FRect> maskLocalPos;
+
+		PRL_Point refRenderSize;
+		PRL_FPoint scalingRatio;
+		SDL_Renderer *renderer; // the used renderer
+	};
+	_display display;
+
+	struct _points
+	{
+
+	};
+	_points points;
+
+private:
+
+	static int imageCount;
+
+	int targetCount;
+
+	std::string filePath;
+
+	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
+
+	///
+	void addTarget();
+	void removeTarget();
+
+	void load();
+	int load_CPU();
+	int load_GPU();
+	void clear_CPU();
+	void clear_GPU();
+};
+
+
+
+
+/* ********************************************* */
 /*                 PRL_Animation                 */
 /* ********************************************* */
 
@@ -303,7 +377,7 @@ public:
 	static int getCount();
 
 private:
-	static int animationsCount;
+	static int animationCount;
 
 	int targetCount;
 
@@ -312,7 +386,7 @@ private:
 	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
 
 	///
-	void addTarget();
+	void addTarget(); // ciblage
 	void removeTarget();
 
 	void load();
