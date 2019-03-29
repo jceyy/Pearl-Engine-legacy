@@ -1,9 +1,29 @@
 cmake_minimum_required(VERSION 2.6)
-
 project(PearlEngine)
-if (NOT CMAKE_CXX_FLAGS)
-	set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -std=c++11")
-endif(NOT CMAKE_CXX_FLAGS)
+
+if(NOT CMAKE_BUILD_TYPE) 
+    set(CMAKE_BUILD_TYPE Debug)
+endif(NOT CMAKE_BUILD_TYPE)
+
+message("\n")
+
+message("Build type is ${CMAKE_BUILD_TYPE}")
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -pedantic -std=c++11")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11")
+
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+	message("Flags are: ${CMAKE_CXX_FLAGS_DEBUG}")
+elseif(CMAKE_BUILD_TYPE MATCHES "Release")
+	message("Flags are: ${CMAKE_CXX_FLAGS_RELEASE}")
+endif(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+message("\n")
+
+set(CMAKE_C_COMPILER gcc)
+set(CMAKE_CXX_COMPILER g++)
+
+
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
@@ -44,3 +64,4 @@ add_executable(pearl-engine
 )
 
 target_link_libraries(pearl-engine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+
