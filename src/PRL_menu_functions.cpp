@@ -13,7 +13,7 @@ int PRL_TestZone()
 {
 	// To DO: add save-memory settings flag to reduce loaded textures then implement in load animation
 	bool quit(false);
-	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.anim");
+	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.prl");
 
 	if (animMario == nullptr) // error
 	{

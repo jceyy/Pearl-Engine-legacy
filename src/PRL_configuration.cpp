@@ -991,7 +991,7 @@ string PRL_Config :: getDriverName() const
 	return driverName;
 }
 
-void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::string& filename, std::string& fileformat)
+void PRL_GetPath(std::string const& filepath, std::string& parentdir, std::string& filename, std::string& fileformat)
 {
     std::string temp("");
     int i(filepath.size() - 1);
@@ -1014,17 +1014,30 @@ void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::st
         if (i == 0)
         {
             filename = temp;
-            parentfolder.clear(); // no parent folder
+            parentdir = ""; // no parent folder
             break;
         }
         else if (filepath[i] == '/' || filepath[i] == '\\')
         {
             filename = temp;
 
-            parentfolder = filepath.substr(0, filepath.size() - filename.size() - fileformat.size() - 1);
+            parentdir = filepath.substr(0, filepath.size() - filename.size() - fileformat.size());
             break;
         }
         else
             temp = filepath[i] + temp;
     }
+}
+
+void PRL_GetParentDir(std::string const& filepath, std::string& parentdir)
+{
+	parentdir = "";
+	for (size_t i(filepath.size() - 1); i > 0; i--)
+	{
+		if (filepath[i] == '/' || filepath[i] == '\\')
+		{
+			parentdir = filepath.substr(0, i);
+			return;
+		}
+	}
 }

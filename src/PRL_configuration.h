@@ -276,14 +276,24 @@ Use this function to get informations about a file's path.
 @param [out] fileformat The file format without the point.
 
 For instance: providing filepath with "folder1/folder2/folder3/mygreatfile.txt" should output:
-- parentfolder folder1/folder2/folder3
+- parentdir folder1/folder2/folder3
 - filename mygreatfile
 - fileformat txt
 */
-void PRL_GetPath(std::string const& filepath, std::string& parentfolder, std::string& filename, std::string& fileformat);
+void PRL_GetPath(std::string const& filepath, std::string& parentdir, std::string& filename, std::string& fileformat);
+//! Provide a file's parent directory.
+/*!
+Use this function to get the parent directory of a file.
+@param [in] filepath The complete file's path.
+@param [out] parentfolder The parent folder (without a terminating '/').
+
+For instance: providing filepath with "folder1/folder2/folder3/mygreatfile.txt" should output:
+- parentdir folder1/folder2/folder3
+*/
+void PRL_GetParentDir(std::string const& filepath, std::string& parentdir);
 //! Set an error and choose whether to throw an exception or not.
 /*!
-Use this function to set an error message when an error is encountered. It can be used to throw an exception containing the error message set.
+Use this function to set an error message when an error is encountered. It can be used to throw an exception of type std::runtime_exception containing the error message set.
 This function is based on PRL_ErrorHandling::setError().
 */
 void PRL_SetError(std::string const& msg, bool auto_throw = false);

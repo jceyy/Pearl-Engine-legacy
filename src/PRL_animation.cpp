@@ -289,7 +289,7 @@ void getline_ne(basic_istream<char>& f, string& line)
 }
 
 /* ********************************************* */
-/*               PRL_Animation                   */
+/*               	PRL_Image	                 */
 /* ********************************************* */
 
 int PRL_Image :: imageCount = 0;
@@ -390,9 +390,9 @@ int PRL_Image :: load_CPU()
 
 				// Update true and scaled sizes
 				sz.set(surface->w, surface->h);
-				display.maskTextureTrueSize.push_back(sz);
+				display.maskTrueSize.push_back(sz);
 				sz.set((int)(surface->w * display.scalingRatio.x), (int)(surface->h * display.scalingRatio.y));
-				display.maskSTexturecaledSize.push_back(sz);
+				display.maskScaledSize.push_back(sz);
 
 				// Load local pos!
 
@@ -404,16 +404,13 @@ int PRL_Image :: load_CPU()
 
 		// resize all the vectors
 
-		if (display.maskNb != 0)
+		if (display.maskTrueSize.size() != 0)
 		{
-			display.maskSurface.resize(framesNb);
-			display.maskTexture.resize(framesNb);
-			display.maskScaledTextureSize.resize(framesNb);
-			display.maskLocalPos.resize(framesNb);
+			display.maskSurface.resize(display.maskTrueSize.size());
+			display.maskTexture.resize(display.maskTrueSize.size());
+			display.maskScaledSize.resize(display.maskTrueSize.size());
+			display.maskLocalPos.resize(display.maskTrueSize.size());
 		}
-
-		getline(file, line);
-		display.maskPerTexture = (size_t) stoi(line);
 
 		// Points: still to do
 
@@ -481,7 +478,7 @@ SDL_Texture* PRL_Image :: _display :: getTexture() const
 
 const PRL_Point& PRL_Image :: _display :: getSize() const
 {
-	return mainScaledTextureSize;
+	return mainTextureScaledSize;
 }
 
 const PRL_Point& PRL_Image :: _display :: getRefRenderSize() const
@@ -489,19 +486,19 @@ const PRL_Point& PRL_Image :: _display :: getRefRenderSize() const
 	return refRenderSize;
 }
 
-void PRL_Image :: addTarget()
+void PRL_Image :: addTargeting()
 {
-	targetCount++;
+	targetingCount++;
 }
 
-void PRL_Image :: removeTarget()
+void PRL_Image :: removeTargeting()
 {
-	targetCount--;
+	targetingCount--;
 }
 
 int PRL_Image :: _display :: getMaskNumber() const
 {
-	return (int) maskNb;
+	return (int) maskTrueSize.size();
 }
 
 SDL_Renderer* PRL_Image :: _display :: getRenderer() const
@@ -513,24 +510,24 @@ SDL_Renderer* PRL_Image :: _display :: getRenderer() const
 /*            _PRL_ImageAccessor 	             */
 /* ********************************************* */
 
-_PRL_ImageAccessor  :: _PRL_ImageAccessor()
+_PRL_ImageAccessor :: _PRL_ImageAccessor()
 {
 	;
 }
 
-_PRL_ImageAccessor  :: ~_PRL_ImageAccessor()
+_PRL_ImageAccessor :: ~_PRL_ImageAccessor()
 {
 	;
 }
 
-void _PRL_ImageAccessor  :: addTarget(PRL_Image* img) const
+void _PRL_ImageAccessor :: addTargeting(PRL_Image* img) const
 {
-	img->addTarget();
+	img->addTargeting();
 }
 
-void _PRL_ImageAccessor :: removeTarget(PRL_Image* img) const
+void _PRL_ImageAccessor :: removeTargeting(PRL_Image* img) const
 {
-	img->removeTarget();
+	img->removeTargeting();
 }
 
 
@@ -565,7 +562,7 @@ PRL_Animation :: PRL_Animation(const std::string& path, SDL_Renderer *_renderer)
 	if (load_GPU() != 0)
 		throw (PRL_GetError());
 
-	animationsCount++;
+	animationCount++;
 }
 
 PRL_Animation :: PRL_Animation(const char* path, SDL_Renderer *_renderer)
@@ -577,7 +574,7 @@ PRL_Animation :: ~PRL_Animation()
 {
 	clear_CPU();
 	clear_GPU();
-	animationsCount--;
+	animationCount--;
 }
 
 int PRL_Animation :: load_CPU()
@@ -587,7 +584,7 @@ int PRL_Animation :: load_CPU()
 	if (file.is_open())
 	{
 		PRL_Point temp;
-		std::string parentFolder;
+		std::string parentDir;
 		std::string line, dump;
 		SDL_Surface* surface;
 		getline(file, line); // first line: [display]
@@ -601,8 +598,8 @@ int PRL_Animation :: load_CPU()
 		{
 			if (line != std::string(""))
 			{
-				PRL_GetPath(filePath, parentFolder, dump, dump);
-				dump = parentFolder + "/" + line;
+				PRL_GetParentDir(filePath, parentDir);
+				dump = parentDir + "/" + line;
 				surface = IMG_Load(dump.c_str());
 
 				if (surface == nullptr)
@@ -647,8 +644,8 @@ int PRL_Animation :: load_CPU()
 				display.maskSurface[i].resize(display.maskPerTexture);
 				for (size_t j(0); j < display.maskPerTexture; ++j)
 				{
-					PRL_GetPath(filePath, parentFolder, dump, dump);
-					dump = parentFolder + "/" + line;
+					PRL_GetPath(filePath, parentDir, dump, dump);
+					dump = parentDir + "/" + line;
 					display.maskSurface[i][j] = IMG_Load(dump.c_str());
 					if (display.maskSurface[i][j] == nullptr)
 					{

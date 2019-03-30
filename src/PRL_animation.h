@@ -242,10 +242,12 @@ public:
 
 class PRL_Image
 {
+	friend class _PRL_ImageAccessor;
 public:
 	PRL_Image(const char* path, SDL_Renderer *renderer);
 	/// Need the path of the animation's .anim file.
 	PRL_Image(const std::string& path, SDL_Renderer *renderer);
+	~PRL_Image();
 
 	struct _display
 	{
@@ -285,19 +287,21 @@ public:
 	};
 	_points points;
 
+	static int getCount();
+
 private:
 
 	static int imageCount;
 
-	int targetCount;
+	int targetingCount;
 
 	std::string filePath;
 
 	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
 
 	///
-	void addTarget();
-	void removeTarget();
+	void addTargeting();
+	void removeTargeting();
 
 	void load();
 	int load_CPU();
@@ -306,7 +310,20 @@ private:
 	void clear_GPU();
 };
 
+/* ********************************************* */
+/*           	_PRL_ImageAccessor               */
+/* ********************************************* */
 
+class _PRL_ImageAccessor
+{
+	friend class PRL_Image;
+public:
+	_PRL_ImageAccessor();
+	~_PRL_ImageAccessor();
+private:
+	void addTargeting(PRL_Image* img) const;
+	void removeTargeting(PRL_Image* img) const;
+};
 
 
 /* ********************************************* */
