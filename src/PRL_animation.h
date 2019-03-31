@@ -252,6 +252,7 @@ public:
 	struct _display
 	{
 		friend class PRL_Image;
+		friend class _PRL_ImageAccessor;
 	public:
 		SDL_Texture* getTexture() const;
 		/// Get the main texture size
@@ -316,7 +317,7 @@ private:
 
 class _PRL_ImageAccessor
 {
-	friend class PRL_Image;
+	friend class PRL_Sprite;
 public:
 	_PRL_ImageAccessor();
 	~_PRL_ImageAccessor();
