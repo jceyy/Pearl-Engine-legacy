@@ -31,8 +31,12 @@ public:
 
     /// Make the displayable active or not.
     void makeActive(bool b);
+    /// Make the displayable static or not (if it can move or not).
+    void makeStatic(bool b);
     /// Tell whether the displayable object is active (displayed by the displayer) or not.
     bool isActive() const;
+    /// Tell whether the displayable object is static or not.
+    bool isStatic() const;
     /// Set the display angle.
     void setAngle(double angle);
     /// Get the display angle.
@@ -63,6 +67,7 @@ protected:
     SDL_Texture *dspTexture;
     SDL_Renderer *dspRenderer;
     PRL_FPoint dspVelocity;
+    bool dspIsStatic;
     bool dspIsActive;
     double dspAngle;
 

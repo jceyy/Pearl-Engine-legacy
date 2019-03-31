@@ -327,6 +327,24 @@ private:
 
 
 /* ********************************************* */
+/*                 PRL_Sprite	                 */
+/* ********************************************* */
+
+class PRL_Sprite : public PRL_Displayable
+{
+public:
+    PRL_Sprite();
+    ~PRL_Sprite();
+
+    ///
+    int setImage(PRL_Image* image);
+
+protected:
+    PRL_Image* targetImage;
+};
+
+
+/* ********************************************* */
 /*                 PRL_Animation                 */
 /* ********************************************* */
 

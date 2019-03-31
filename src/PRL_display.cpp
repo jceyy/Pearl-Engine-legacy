@@ -72,15 +72,26 @@ void PRL_Displayable :: makeActive(bool b)
     dspIsActive = b;
 }
 
+void PRL_Displayable :: makeStatic(bool b)
+{
+	dspIsStatic = b;
+}
+
 bool PRL_Displayable :: isActive() const
 {
     return dspIsActive;
+}
+
+bool PRL_Displayable :: isStatic() const
+{
+	return dspIsStatic;
 }
 
 void PRL_Displayable :: setAngle(double angle)
 {
     dspAngle = angle;
 }
+
 double PRL_Displayable :: getAngle() const
 {
     return dspAngle;

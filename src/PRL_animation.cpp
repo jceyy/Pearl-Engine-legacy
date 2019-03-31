@@ -532,6 +532,39 @@ void _PRL_ImageAccessor :: removeTargeting(PRL_Image* img) const
 
 
 
+PRL_Sprite :: PRL_Sprite() : targetImage(nullptr)
+{
+	;
+}
+
+PRL_Sprite :: ~PRL_Sprite()
+{
+	;
+}
+
+
+_PRL_ImageAccessor image_accessor;
+
+int PRL_Sprite :: setImage(PRL_Image* image)
+{
+	if (image == nullptr)
+	{
+		PRL_SetError("Invalid image");
+		return PRL_ERROR;
+	}
+
+	if (targetImage != nullptr)
+	{
+		image_accessor.removeTargeting(image); // Remove previous targeting
+	}
+
+	image_accessor.addTargeting(image); // Add targeting
+
+	targetImage = image;
+	dspTexture = image->display.getTexture(); // to be modified
+
+	return 0;
+}
 
 
 
