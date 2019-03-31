@@ -339,8 +339,9 @@ int PRL_Image :: load_CPU()
 	if (file.is_open())
 	{
 		PRL_Point temp;
-		string parentFolder;
+		string parentDir;
 		string line, maskPath;
+
 		getline(file, line); // First line: [display]
 		getline_ne(file, line); // Reference renderer
 		PRL_Config :: extractPoint(line, display.refRenderSize);
@@ -352,6 +353,8 @@ int PRL_Image :: load_CPU()
 		}
 
 		getline_ne(file, line); // Main texture name
+		PRL_GetParentDir(filePath, parentDir);
+		line = parentDir + string("/") + line;
         display.mainSurface = IMG_Load(line.c_str());
 
         if (display.mainSurface == nullptr)
@@ -365,18 +368,19 @@ int PRL_Image :: load_CPU()
 		display.mainTextureTrueSize.set(display.mainSurface->w, display.mainSurface->h);
 		display.mainTextureScaledSize.set((int)(display.mainSurface->w * display.scalingRatio.x), (int)(display.mainSurface->h * display.scalingRatio.y));
 
-		getline(file, line);
-		SDL_Surface* surface(nullptr);
-
 		// Load masks
 		PRL_Point sz;
 		int current_mask(0);
-		while (line != "[hitbox-rect]")
+		SDL_Surface* surface(nullptr);
+
+		getline_ne(file, line); // [mask]
+
+		while (0 && line != "[hitbox-rect]")
 		{
 			if (line != string(""))
 			{
-				PRL_GetPath(filePath, parentFolder, maskPath, maskPath); // mask path not recovering any useful information
-				maskPath = parentFolder + "/" + line;
+				PRL_GetPath(filePath, parentDir, maskPath, maskPath); // mask path not recovering any useful information
+				maskPath = parentDir + "/" + line;
 				surface = IMG_Load(maskPath.c_str());
 
 				if (surface == nullptr)
@@ -481,6 +485,11 @@ const PRL_Point& PRL_Image :: _display :: getSize() const
 	return mainTextureScaledSize;
 }
 
+const PRL_Point& PRL_Image :: _display :: getTrueSize() const
+{
+	return mainTextureTrueSize;
+}
+
 const PRL_Point& PRL_Image :: _display :: getRefRenderSize() const
 {
 	return refRenderSize;
@@ -537,6 +546,15 @@ PRL_Sprite :: PRL_Sprite() : targetImage(nullptr)
 	;
 }
 
+
+PRL_Sprite :: PRL_Sprite(PRL_Image* image)
+{
+	if (setImage(image) != 0)
+	{
+		throw (std::runtime_error(PRL_GetError()));
+	}
+}
+
 PRL_Sprite :: ~PRL_Sprite()
 {
 	;
@@ -561,7 +579,13 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 	image_accessor.addTargeting(image); // Add targeting
 
 	targetImage = image;
-	dspTexture = image->display.getTexture(); // to be modified
+	dspTexture = image->display.getTexture(); // to be modified (masks)
+	PRL_Point p = image->display.getTrueSize();
+	dspSrc.w = p.x;
+	dspSrc.h = p.y;
+	p = image->display.getSize();
+	dspDst.h = p.x;
+	dspDst.w = p.y;
 
 	return 0;
 }
@@ -879,6 +903,12 @@ PRL_Animated :: PRL_Animated() : targetAnimation(nullptr), timePrevUpdate(0), ti
 currentFrame(0), repeatCount(0), started(false)
 {
 	;
+}
+
+PRL_Animated :: PRL_Animated(PRL_Animation* anim) : targetAnimation(nullptr), timePrevUpdate(0), timeCurrent(0),
+currentFrame(0), repeatCount(0), started(false)
+{
+	setAnim(anim);
 }
 
 PRL_Animated :: ~PRL_Animated()

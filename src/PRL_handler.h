@@ -29,6 +29,8 @@ public:
 	private:
 		std::vector <PRL_Animation*> animation;
 		std::vector <PRL_Animated*> animated;
+		std::vector <PRL_Image*> image;
+		std::vector <PRL_Sprite*> sprite;
 
 		std::vector <PRL_Displayer> displayer;
 		PRL_Displayer hudDisplayer;
@@ -66,10 +68,12 @@ public:
 	PRL_Animation* loadAnimation(const std::string& file_path);
 	PRL_Animation* loadAnimation(const std::string& file_path, SDL_Renderer* render);
 
-	//PRL_Image* loadImage(const std::string& file_path);
+	PRL_Image* loadImage(const std::string& file_path);
+	PRL_Image* loadImage(const std::string& file_path, SDL_Renderer* render);
 
+	//
     PRL_Animated* createAnimated(PRL_Animation* anim);
-	//PRL_Sprite* createSprite();
+	PRL_Sprite* createSprite(PRL_Image* image);
 
     void update();
 

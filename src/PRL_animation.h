@@ -255,8 +255,14 @@ public:
 		friend class _PRL_ImageAccessor;
 	public:
 		SDL_Texture* getTexture() const;
-		/// Get the main texture size
-		const PRL_Point& getSize() const; // no bound checking, in term of current render resolution
+		/// Get the main texture size.
+		/*!
+		This size is a scaled size, adapted to the current renderer size.
+		To get the original true size, call getTrueSize().
+		*/
+		const PRL_Point& getSize() const;
+		//! Get the main texture's true size.
+		const PRL_Point& getTrueSize() const;
 		/// Return {width, height, width, height}.
 		const PRL_Point& getRefRenderSize() const;
 		/// Get mask per texture
@@ -335,6 +341,7 @@ class PRL_Sprite : public PRL_Displayable
 {
 public:
     PRL_Sprite();
+    PRL_Sprite(PRL_Image* image);
     ~PRL_Sprite();
 
     ///
@@ -455,6 +462,7 @@ class PRL_Animated : public PRL_Displayable
 {
 public:
     PRL_Animated();
+    PRL_Animated(PRL_Animation* anim);
     ~PRL_Animated();
 
     ///

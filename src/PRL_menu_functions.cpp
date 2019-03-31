@@ -13,29 +13,34 @@ int PRL_TestZone()
 {
 	// To DO: add save-memory settings flag to reduce loaded textures then implement in load animation
 	bool quit(false);
+
 	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.prl");
-
-	if (animMario == nullptr) // error
+	PRL_Image* image = handler.loadImage("data/imgtest/img.prl");
+	if (animMario == nullptr || image == nullptr) // error
 	{
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
 	}
 
+	PRL_Sprite* sprite = handler.createSprite(image);
 	PRL_Animated* mario = handler.createAnimated(animMario);
-    PRL_Animated* mario_erstatz = handler.createAnimated(animMario);
-	if (mario == nullptr) // error
+	PRL_Animated* mario_erstatz = handler.createAnimated(animMario);
+	if (mario == nullptr || mario_erstatz == nullptr || sprite == nullptr) // error
 	{
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
 	}
+
+	sprite->setPos(1000.0, 100.0);
+	//sprite->makeActive(true);
 
 	//printAnimDiagnostics(animMario);
 
-    PRL_FPoint mpos({0.0,0.0});
-    PRL_FPoint mepos({0.0,0.0});
-    bool showmario = false;
+	PRL_FPoint mpos({0.0,0.0});
+	PRL_FPoint mepos({0.0,0.0});
+	bool showmario = false;
 
-    while(!quit)
+	while(!quit)
 	{
 		if (handler.input.quitEvent())
 		{
@@ -98,7 +103,7 @@ void printAnimDiagnostics(PRL_Animation* anim)
 {
 	PRL_Point p = anim->display.getRefRenderSize();
 	cout << "Animation properties:" << endl << endl;
-    cout << "Frames number: " << anim->display.getFramesNumber() << endl;
-    cout << "Frame rate: " << anim->display.getFPS() << endl;
-    cout << "Reference render size: " << p.x << "x" << p.y << endl << endl;
+	cout << "Frames number: " << anim->display.getFramesNumber() << endl;
+	cout << "Frame rate: " << anim->display.getFPS() << endl;
+	cout << "Reference render size: " << p.x << "x" << p.y << endl << endl;
 }

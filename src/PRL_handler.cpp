@@ -38,13 +38,15 @@ PRL_Animation* PRL_Handler :: loadAnimation(const std::string& file_path, SDL_Re
 	{
 		anim = new PRL_Animation(file_path, render);
 	}
-	catch (std::string e)
+	catch (std::exception e)
 	{
 		return nullptr;
 	}
 
 	if (anim != nullptr)
 		display.animation.push_back(anim);
+	else
+		return nullptr;
 
 	return anim;
 }
@@ -53,7 +55,7 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
 {
 	if (anim == nullptr)
 	{
-		SDL_SetError("Invalid animation");
+		PRL_SetError("Invalid animation");
 		return nullptr;
 	}
 
@@ -62,7 +64,7 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
 	{
 		animd = new PRL_Animated();
 	}
-	catch (std::string e)
+	catch (std::exception e)
 	{
 		return nullptr;
 	}
@@ -73,8 +75,71 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
 		display.animated.push_back(animd);
         display.displayer[0].add(animd);
 	}
+	else
+		return nullptr;
 
 	return animd;
+}
+
+PRL_Image* PRL_Handler :: loadImage(const std::string& file_path)
+{
+	return loadImage(file_path, display.renderer[0]);
+}
+
+PRL_Image* PRL_Handler :: loadImage(const std::string& file_path, SDL_Renderer* render)
+{
+	if (render == nullptr)
+	{
+		PRL_SetError("Invalid renderer");
+		return nullptr;
+	}
+
+	PRL_Image* img(nullptr);
+	try
+	{
+		img = new PRL_Image(file_path, render);
+	}
+	catch (std::exception e)
+	{
+		return nullptr;
+	}
+
+	if (img != nullptr)
+		display.image.push_back(img);
+	else
+		return nullptr;
+
+	return img;
+}
+
+PRL_Sprite* PRL_Handler :: createSprite(PRL_Image* image)
+{
+	if (image == nullptr)
+	{
+		PRL_SetError("Invalid animation");
+		return nullptr;
+	}
+
+	PRL_Sprite* sprite(nullptr);
+	try
+	{
+		sprite = new PRL_Sprite();
+	}
+	catch (std::exception e)
+	{
+		return nullptr;
+	}
+
+	if (sprite != nullptr)
+	{
+		sprite->setImage(image);
+		display.sprite.push_back(sprite);
+        display.displayer[0].add(sprite);
+	}
+	else
+		return nullptr;
+
+	return sprite;
 }
 
 // Time
