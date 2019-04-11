@@ -363,8 +363,8 @@ int PRL_Image :: load_CPU()
 			return PRL_ERROR;
 		}
 
-		display.scalingRatio.x = 1.0 * handler.config.getRenderResolution().x / display.refRenderSize.x;
-		display.scalingRatio.y = 1.0 * handler.config.getRenderResolution().y / display.refRenderSize.y;
+		display.scalingRatio.x = 1.0f * handler.config.getRenderResolution().x / display.refRenderSize.x;
+		display.scalingRatio.y = 1.0f * handler.config.getRenderResolution().y / display.refRenderSize.y;
 		display.mainTextureTrueSize.set(display.mainSurface->w, display.mainSurface->h);
 		display.mainTextureScaledSize.set((int)(display.mainSurface->w * display.scalingRatio.x), (int)(display.mainSurface->h * display.scalingRatio.y));
 
@@ -740,7 +740,7 @@ int PRL_Animation :: load_CPU()
 int PRL_Animation :: load_GPU()
 {
 	PRL_Point renderSize = handler.config.getRenderResolution();
-	display.scalingRatio = {1.0 * renderSize.x / display.refRenderSize.x, 1.0 * renderSize.y / display.refRenderSize.y};
+	display.scalingRatio = {1.0f * renderSize.x / display.refRenderSize.x, 1.0f * renderSize.y / display.refRenderSize.y};
 
 	SDL_Texture *texture(nullptr), *targetTexture(nullptr);
 	PRL_Point scaledSize;

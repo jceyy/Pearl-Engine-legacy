@@ -222,7 +222,7 @@ PRL_Point PRL_Input :: getLastClickPoint() const
 
 PRL_FPoint PRL_Input :: getLastClickFPoint() const
 {
-    return (PRL_FPoint) {1.0*posAtLastClick.x, 1.0*posAtLastClick.y};
+    return (PRL_FPoint) {1.0f*posAtLastClick.x, 1.0f*posAtLastClick.y};
 }
 
 bool PRL_Input :: quitEvent() const
