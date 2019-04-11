@@ -285,6 +285,10 @@ public:
 		PRL_Point refRenderSize;
 		PRL_FPoint scalingRatio;
 		SDL_Renderer *renderer; // the used renderer
+
+		///
+		void get(SDL_Texture* &mainTex, std::vector<SDL_Texture*>& maskTex, PRL_FRect& mainSrc,
+				PRL_FRect& mainDst, std::vector<PRL_FPoint>& maskDst, std::vector<PRL_FPoint>& maskDst) const;
 	};
 	_display display;
 

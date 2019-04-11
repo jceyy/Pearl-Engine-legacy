@@ -515,6 +515,14 @@ SDL_Renderer* PRL_Image :: _display :: getRenderer() const
 	return renderer;
 }
 
+void PRL_Image :: _display :: get(SDL_Texture* &mainTex, std::vector<SDL_Texture*> &maskTex, PRL_FRect& mainSrc,
+				PRL_FRect& mainDst, std::vector<PRL_FPoint> &maskDst, std::vector<PRL_FPoint>& maskDst) const
+{
+	mainTex = mainTexture;
+	maskTex = maskTexture;
+	//mainSrc = mainTextureTrueSize
+}
+
 /* ********************************************* */
 /*            _PRL_ImageAccessor 	             */
 /* ********************************************* */

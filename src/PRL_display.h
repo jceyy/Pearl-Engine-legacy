@@ -64,7 +64,7 @@ public:
 protected:
     PRL_FRect dspSrc;
     PRL_FRect dspDst;
-    SDL_Texture *dspTexture;
+    SDL_Texture *dspTexture; // add masks
     SDL_Renderer *dspRenderer;
     PRL_FPoint dspVelocity;
     bool dspIsStatic;
