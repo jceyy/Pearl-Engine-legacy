@@ -204,3 +204,19 @@ PRL_FPoint PRL_FCircle :: getCenter() const
 	PRL_FPoint p(x, y);
 	return p;
 }
+
+
+int PRL_ScalarProduct(PRL_Point p, PRL_Point q) noexcept
+{
+	return p.x * q.x + p.y * q.y;
+}
+
+float PRL_ScalarProduct(PRL_FPoint p, PRL_FPoint q) noexcept
+{
+	return p.x * q.x + p.y * q.y;
+}
+
+double PRL_ScalarProduct(PRL_DPoint p, PRL_DPoint q) noexcept
+{
+	return p.x * q.x + p.y * q.y;
+}

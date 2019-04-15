@@ -11,9 +11,10 @@ using std::cerr;
 using std::endl;
 
 PRL_Input :: PRL_Input() : m_x_int(0), m_y_int(0), m_xRel_int(0), m_yRel_int(0), m_x(0), m_y(0), m_xRel(0), m_yRel(0),
-battery_percent(-1), battery_sec_left(-1), quit(false), textInputEnabled(false), textInputChanged(false), textCursorPosition(0)
+battery_sec_left(-1), battery_percent(-1), textInputEnabled(false), textInputChanged(false), textCursorPosition(0),
+quit(false)
 {
-    // Initialize key array
+	// Initialize key array
     for(int i(0); i < PRL_MAX_KEYBOARDS; i++)
     {
         for(int j(0); j < SDL_NUM_SCANCODES; j++)
@@ -222,7 +223,8 @@ PRL_Point PRL_Input :: getLastClickPoint() const
 
 PRL_FPoint PRL_Input :: getLastClickFPoint() const
 {
-    return (PRL_FPoint) {1.0f*posAtLastClick.x, 1.0f*posAtLastClick.y};
+	PRL_FPoint p((float)posAtLastClick.x, (float)posAtLastClick.y);
+    return p;
 }
 
 bool PRL_Input :: quitEvent() const
@@ -305,7 +307,7 @@ void PRL_Input :: update() // update the input
         }
     }
 
-    if (textInputEnabled && textCursorPosition >= textInput.length()) textCursorPosition = textInput.length();
+    if (textInputEnabled && textCursorPosition >= (int)textInput.length()) textCursorPosition = (int)textInput.length();
 
     // Re-initialize window events
     for (int i(0); i<PRL_MAX_WINDOW_EVENTS; i++)
@@ -408,7 +410,7 @@ void PRL_Input :: update() // update the input
                 else if (key[0][SDL_SCANCODE_RIGHT] && 1) // left arrow to move the cursor
                 {
                     textCursorPosition++;
-                    if (textCursorPosition > textInput.length()) textCursorPosition = textInput.length();
+                    if (textCursorPosition > (int)textInput.length()) textCursorPosition = (int)textInput.length();
                 }
             }
             break;

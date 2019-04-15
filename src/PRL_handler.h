@@ -88,6 +88,7 @@ public:
 	void freeUnusedAnimations();
 
 	void freeUnusedImages();
+	// Current FPS function?
 
 	// Updater, Collider, Displayer, Physic system
 

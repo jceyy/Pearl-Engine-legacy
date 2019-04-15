@@ -1,15 +1,54 @@
-#include "PRL_collision.h"
-#include "PRL_animation.h"
-#include "PRL_global.h"
-#include <math.h>
-#include <vector>
 #include <iostream>
 #include <typeinfo>
 #include <thread>
+#include <vector>
+#include <math.h>
+
+#include "PRL_collision.h"
+#include "PRL_global.h"
 
 using std::cout;
 using std::cerr;
 using std::endl;
+
+
+PRL_HitBox :: PRL_HitBox()
+{
+	;
+}
+
+PRL_HitBox :: ~PRL_HitBox()
+{
+	;
+}
+
+PRL_FRect frect_temp;
+PRL_FRect const& PRL_HitBox :: getIncludingRect() const noexcept
+{
+	frect_temp.x = 0.0f;
+	return frect_temp;
+}
+
+
+PRL_HitBoxRect :: PRL_HitBoxRect(PRL_FRect const& rect) : hitboxRect(rect)
+{
+	;
+}
+
+PRL_HitBoxRect :: ~PRL_HitBoxRect()
+{
+	;
+}
+
+PRL_FRect const& PRL_HitBoxRect :: getIncludingRect() const noexcept
+{
+	return hitboxRect;
+}
+
+void PRL_HitBoxRect :: get(PRL_FRect& frect) const noexcept
+{
+	frect = hitboxRect;
+}
 
 typedef struct PRL_Vector PRL_Vector; // to be depreciated
 struct PRL_Vector
@@ -188,10 +227,11 @@ int PRL_Coll_2Segments(PRL_FPoint const& A, PRL_FPoint const& B, PRL_FPoint cons
     return 1;
 }
 
-bool PRL_Coll_PointPolygon(PRL_FPoint const& p, PRL_FPointList const& polygon)//General function, for all polygons
+/*bool PRL_Coll_PointPolygon(PRL_FPoint const& p, PRL_FPointList const& polygon)//General function, for all polygons
 {   // If the segment between a point p in the polygon and an other random point outside
     // the polygon cuts edges an odd number of times, then p is in the polygon
-    int i, iseg, intersections_count = 0;
+    size_t i;
+    int iseg, intersections_count = 0;
     PRL_FPoint I, A, B;
     I.x = 1000000.0 + (float) (rand()%1000);   // 1 000 000 + a random integer between 0 and 999
     I.y = 1000000.0 + (float) (rand()%1000);
@@ -283,7 +323,7 @@ bool PRL_Coll_HitBoxPoint(PRL_HitBox const& hitbox, PRL_FPoint const& point)
 {
     return false;
 }
-
+*/
 
 
 
@@ -547,17 +587,17 @@ bool Coll_StraightLineSegment(const PRL_Point O, const PRL_Point P, const PRL_Po
    || ProjectionOnSegment(GetPointFromCoord(C.x, C.y), GetPointFromCoord(box.x,box.y), GetPointFromCoord(box.x+box.w,box.y))==true)
       return true;
    return false;
-}*/
+}
 
 
 
 
-/* ********************************************* */
-/*                PRL_CollInfos                  */
-/* ********************************************* */
+* ********************************************* *
+*                PRL_CollInfos                  *
+* ********************************************* *
 
 
-PRL_CollInfos :: PRL_CollInfos() : srcNumber(0), collidable_target(NULL), hitBox_target(0)
+PRL_CollInfos :: PRL_CollInfos() : srcNumber(0), hitBox_target(0), collidable_target(nullptr)
 {
     ;
 }
@@ -569,11 +609,11 @@ PRL_CollInfos :: ~PRL_CollInfos()
 
 
 
-/* ********************************************* */
-/*                PRL_Collidable                 */
-/* ********************************************* */
+* ********************************************* *
+*                PRL_Collidable                 *
+* ********************************************* *
 
-/*PRL_Collidable :: PRL_Collidable(PRL_FRect *display_dst_rect) :
+PRL_Collidable :: PRL_Collidable(PRL_FRect *display_dst_rect) :
     collider_address(-1), coll_isDynamic_(true), collidableType(PRL_COLLTYPE_0)
 {
     ;
@@ -654,9 +694,9 @@ int PRL_Collidable :: getHitBoxesNumber() const
 }
 
 
-/* ********************************************* *
-/*                PRL_Collider                   *
-/* ********************************************* *
+* ********************************************* *
+*                PRL_Collider                   *
+* ********************************************* *
 
 PRL_Collider :: PRL_Collider()
 {
@@ -1184,11 +1224,11 @@ void PRL_Collider :: testCollisionsBetween(int i, int j) // without any concern 
         }
     }
 }
-*/
 
-/* ********************************************* */
-/*                PRL_Movable                    */
-/* ********************************************* */
+
+* ********************************************* *
+*                PRL_Movable                    *
+* ********************************************* *
 
 float PRL_Movable :: time_coeff = 0.0;
 int PRL_Movable :: movable_count = 0;
@@ -1233,6 +1273,6 @@ int PRL_Movable :: getMvbCount()
 {
     return movable_count;
 }
-
+*/
 
 

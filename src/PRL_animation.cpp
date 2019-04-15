@@ -24,7 +24,7 @@ using std::string;
 /* ********************************************* */
 /*               PRL_FPointList                  */
 /* ********************************************* */
-
+/*
 PRL_FPointList :: PRL_FPointList()
 {
     ;
@@ -133,9 +133,9 @@ PRL_FRect const& PRL_FPointList :: getRectAround() const
 }
 
 
-/* ********************************************* */
-/*                  PRL_HitBox                   */
-/* ********************************************* */
+* ********************************************* *
+*                  PRL_HitBox                   *
+* ********************************************* *
 
 PRL_HitBox :: PRL_HitBox() : _type(PRL_HITBOX_RECT)
 {
@@ -217,9 +217,9 @@ void PRL_HitBox :: translateBy(float x, float y)
 }
 
 
-/* ********************************************* */
-/*               PRL_FPointCluster               */
-/* ********************************************* */
+* ********************************************* *
+*               PRL_FPointCluster               *
+* ********************************************* *
 
 PRL_FPointCluster :: PRL_FPointCluster()
 {
@@ -274,7 +274,7 @@ void PRL_FPointCluster :: setActionPoint(int frame, int actionPointNumber, PRL_F
 void PRL_FPointCluster :: setAnchorPoint(int frame, PRL_FPoint const& point)
 {
     anchorPoint[frame] = point;
-}
+}*/
 
 
 /// ---------------------------------------------------------------------------------------------------------------
@@ -431,7 +431,7 @@ int PRL_Image :: load_CPU()
 int PRL_Image :: load_GPU()
 {
 	display.mainTexture = SDL_CreateTextureFromSurface(display.renderer, display.mainSurface);
-	SDL_Texture *mask(nullptr);
+	//SDL_Texture *mask(nullptr);
 
 	if (display.mainTexture == nullptr)
 	{
@@ -515,12 +515,21 @@ SDL_Renderer* PRL_Image :: _display :: getRenderer() const
 	return renderer;
 }
 
-void PRL_Image :: _display :: get(SDL_Texture* &mainTex, std::vector<SDL_Texture*> &maskTex, PRL_FRect& mainSrc,
-				PRL_FRect& mainDst, std::vector<PRL_FPoint> &maskDst, std::vector<PRL_FPoint>& maskDst) const
+void PRL_Image :: _display :: get(SDL_Texture*& mainTex, PRL_FRect& mainDst, std::vector<SDL_Texture*>& maskTex,
+				std::vector<PRL_FRect>& maskDst) const
 {
 	mainTex = mainTexture;
 	maskTex = maskTexture;
-	//mainSrc = mainTextureTrueSize
+	mainDst.w = mainTextureScaledSize.x;
+	mainDst.h = mainTextureScaledSize.y;
+
+	maskDst.resize(maskScaledSize.size());
+
+	for (size_t i(0); i < maskScaledSize.size(); ++i)
+	{
+		maskDst[i].w = maskScaledSize[i].x;
+		maskDst[i].h = maskScaledSize[i].y;
+	}
 }
 
 /* ********************************************* */
@@ -546,7 +555,6 @@ void _PRL_ImageAccessor :: removeTargeting(PRL_Image* img) const
 {
 	img->removeTargeting();
 }
-
 
 
 PRL_Sprite :: PRL_Sprite() : targetImage(nullptr)
@@ -585,23 +593,10 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 	}
 
 	image_accessor.addTargeting(image); // Add targeting
-
 	targetImage = image;
-	dspTexture = image->display.getTexture(); // to be modified (masks)
-	PRL_Point p = image->display.getTrueSize();
-	dspSrc.w = p.x;
-	dspSrc.h = p.y;
-	p = image->display.getSize();
-	dspDst.h = p.x;
-	dspDst.w = p.y;
-
+	image->display.get(dspTexture, dspDst, dspMaskTexture, dspMaskDst);
 	return 0;
 }
-
-
-
-
-
 
 
 
@@ -907,14 +902,14 @@ void _PRL_AnimationAccessor :: removeTarget(PRL_Animation* anim) const
 
 _PRL_AnimationAccessor accessor_animated;
 
-PRL_Animated :: PRL_Animated() : targetAnimation(nullptr), timePrevUpdate(0), timeCurrent(0),
+PRL_Animated :: PRL_Animated() : targetAnimation(nullptr), timeCurrent(0), timePrevUpdate(0),
 currentFrame(0), repeatCount(0), started(false)
 {
 	;
 }
 
-PRL_Animated :: PRL_Animated(PRL_Animation* anim) : targetAnimation(nullptr), timePrevUpdate(0), timeCurrent(0),
-currentFrame(0), repeatCount(0), started(false)
+PRL_Animated :: PRL_Animated(PRL_Animation* anim) : targetAnimation(nullptr), timeCurrent(0),
+timePrevUpdate(0), currentFrame(0), repeatCount(0), started(false)
 {
 	setAnim(anim);
 }
@@ -1003,10 +998,8 @@ void PRL_Animated :: update()
 void PRL_Animated :: updateDisplayable()
 {
 	dspTexture = targetAnimation->display.getTexture(currentFrame);
-	dspSrc.w = targetAnimation->display.getSize(currentFrame).x;
-	dspSrc.h = targetAnimation->display.getSize(currentFrame).y;
-	dspDst.w = dspSrc.w;
-	dspDst.h = dspSrc.h;
+	dspDst.w = targetAnimation->display.getSize(currentFrame).x;
+	dspDst.h = targetAnimation->display.getSize(currentFrame).y;
 }
 
 

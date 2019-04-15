@@ -1,17 +1,17 @@
 #ifndef PRL_COLLISIONS_FUNCTIONS_INCLUDED
 #define PRL_COLLISIONS_FUNCTIONS_INCLUDED
 
+#include <iostream>
 #include <thread>
+#include <vector>
 #include <SDL2/SDL.h>
 #include "PRL_types.h"
 #include "PRL_defines.h"
-#include "PRL_animation.h"
-#include <vector>
 
 
 // CLASSES //
 
-/// Collidable types (flags). They can be customizable like int32_t WALL = PRL_COLLTYPE_0, GROUND = PRL_COLLTYPE_1, PLAYER = PRL_COLLTYPE_2, ...
+/// Collision types (flags). They can be customizable like int32_t WALL = PRL_COLLTYPE_0, GROUND = PRL_COLLTYPE_1, PLAYER = PRL_COLLTYPE_2, ...
 enum PRL_CollType
 {
     PRL_COLLTYPE_0 = 1<<0,
@@ -50,15 +50,36 @@ enum PRL_CollType
 /// Collision group (or rule). You can use it as PRL_CollisionGroup group1 = PRL_COLLTYPE_0 | PRL_COLLTYPE_9 | PRL_COLLTYPE_25
 typedef uint32_t PRL_CollGroup;
 
+class PRL_HitBox
+{
+public:
+    PRL_HitBox();
+    virtual ~PRL_HitBox() = 0;
+
+    virtual PRL_FRect const& getIncludingRect() const noexcept;
+};
+
+class PRL_HitBoxRect : public PRL_HitBox
+{
+public:
+	PRL_HitBoxRect(PRL_FRect const& rect);
+	~PRL_HitBoxRect();
+
+    PRL_FRect const& getIncludingRect() const noexcept override;
+    void get(PRL_FRect& frect) const noexcept;
+
+private:
+	PRL_FRect hitboxRect;
+};
 
 /* ********************************************* */
 /*                PRL_CollInfos                  */
 /* ********************************************* */
 
-class PRL_Collidable; // simple class prototype in order to use a pointer on a PRL_Collidable object
+//class PRL_Collidable; // simple class prototype in order to use a pointer on a PRL_Collidable object
 
-/// Contain infos about a collision caused by a point or a hit box to a single collidable
-class PRL_CollInfos
+// Contain infos about a collision caused by a point or a hit box to a single collidable
+/*class PRL_CollInfos
 {
 public:
     PRL_CollInfos();
@@ -67,14 +88,14 @@ public:
     int srcNumber; // Collision's source point or hit box number. REDUNDANT
     int hitBox_target; // Target hit box in collision
     PRL_Collidable *collidable_target; // Target collidable in collision
-};
+};*/
 
 
 
 /* ********************************************* */
 /*                PRL_Movable                    */
 /* ********************************************* */
-
+/*
 class PRL_Movable
 {
 private:
@@ -100,7 +121,7 @@ public:
     int getMvbCount();
 
     static float time_coeff; // used in computations
-};
+};*/
 
 
 
@@ -158,9 +179,9 @@ public:
 
 
 
-/* ********************************************* *
-/*                PRL_Collider                   *
-/* ********************************************* *
+* ********************************************* *
+*                PRL_Collider                   *
+* ********************************************* *
 
 class PRL_Collider
 {

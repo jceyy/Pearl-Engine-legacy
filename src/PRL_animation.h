@@ -6,7 +6,6 @@
 #include <SDL2/SDL.h>
 #include "PRL_display.h"
 #include "PRL_defines.h"
-//#include "PRL_collision.h"
 
 //using std::vector;
 
@@ -26,11 +25,11 @@ enum PRL_HitBoxType
 /* ********************************************* */
 /*                PRL_PointList                  */
 /* ********************************************* */
-
+/*
 //! Class used to store points.
-/*!
+/!
 This class provides a convenient way to store points. Please note that the points are stored as float numbers, and any integer point added will be converted into a float one.
-*/
+*
 class PRL_FPointList
 {
 public:
@@ -42,16 +41,16 @@ public:
     //! Add a point to the list.
     void add(PRL_FPoint& point);
     //! Add a point to the list.
-    /*!
+    *!
     The provided point with int coordinates will be converted into float coordinates.
-    */
+    *
     void add(PRL_Point& point);
     //! Insert a point to the list at a certain index.
     void insert(PRL_FPoint& point, unsigned int index);
     //! Insert a point (int) to the list at a certain index.
-    /*!
+    *!
     The provided point with int coordinates will be converted into float coordinates.
-    */
+    *
     void insert(PRL_Point& point, unsigned int index);
     //! Get point at index.
     PRL_FPoint const& get(unsigned int index) const;
@@ -64,18 +63,18 @@ public:
     //! Invert the order of the whole list.
     void invert();
     //! Translate all the points.
-    /*!
+    *!
     All the points will undergo the following translation:
     p' = p + (x, y)
     where p' are the transformed points, p the original ones and (x, y) the translation vector.
-    */
+    *
     void translateBy(float x, float y);
     //! Get the rectangle around the FPoint list.
-    /*!
+    *!
     This method gives the smallest rectangle in which all the points fit. The rectangle is aligned with the principal axes x and y.
     This can be used to get from a complex form a simple geometric object on which a first collision test is done in order to determinate whether or not to proceed to further tests.
     Be careful: this method doesn't update the rectangle (see calculateRectAround and checkRectAroundWithPoint).
-    */
+    *
     PRL_FRect const& getRectAround() const;
 
 private:
@@ -83,27 +82,27 @@ private:
     PRL_FRect rect_arround_hitbox; //!< This rectangle stores the last calculated rectangle around the points.
 
     //! Calculate the rectangle around the point list.
-    /*!
+    *!
     This method computes the smallest rectangle in which all the points fit. The rectangle is aligned with the principal axes x and y.
-    */
+    *
     void calculateRectAround();
     //! Update the rectangle around based on a point.
-    /*!
+    *!
     This method is automatically used when a point is added to the point list. It computes the new rectangle using the previous one and checking whether the new point lies inside it or not.
-    */
+    *
     void checkRectAroundWithPoint(PRL_FPoint& point);
 };
 
 
 
-/* ********************************************* */
-/*                  PRL_HitBox                   */
-/* ********************************************* */
+* ********************************************* *
+*                  PRL_HitBox                   *
+* ********************************************* *
 
 //! A class defining hit boxes.
-/*!
+/!
 This class provides methods to manipulate hit boxes. Please note that the points are stored as float numbers.
-*/
+*
 class PRL_HitBox
 {
 private:
@@ -120,89 +119,89 @@ public:
     ~PRL_HitBox();
 
     //! Set a rectangle hit box.
-    /*!
+    *!
     Doing so, the hit box type becomes PRL_HITBOX_RECT.
     If the hit box previously was of another type, the existing data is replaced.
-    */
+    *
     void set(PRL_FRect& rect);
     //! Set a circle hit box.
-    /*!
+    *!
     Doing so, the hit box type becomes PRL_HITBOX_CIRCLE.
     If the hit box previously was of another type, the existing data is replaced.
-    */
+    *
     void set(PRL_FCircle& circle);
     //! Set a polygon hit box.
-    /*!
+    *!
     Doing so, the hit box type becomes PRL_HITBOX_POLYGON.
     If the hit box previously was of another type, the existing data is replaced.
-    */
+    *
     void set(PRL_FPointList& fpointList);
     //! Get the rectangle if type is rectangle.
-    /*!
+    *!
     If the hit box type is not PRL_HITBOX_RECT, you will get a null rectangle: {x, y, w, h} = {0, 0, 0, 0}
     where x and y are the upper left corner coordinates, w the width and h the height.
-    */
+    *
     PRL_FRect const& getRect() const;
     //! Get the circle if type is circle.
-    /*!
+    *!
     If the hit box type is not PRL_HITBOX_CIRCLE, you will get a null circle: {x, y, r} = {0, 0, 0}
     where x and y are the upper left corner coordinates and r the radius.
-    */
+    *
     PRL_FCircle const& getCircle() const;
     //! Get the polygon if type is polygon.
-    /*!
+    *!
     If the hit box type is not PRL_HITBOX_POLYGON, you will get an empty point list.
-    */
+    *
     PRL_FPointList const& getPolygon() const;
     //! Get the hit box type.
     PRL_HitBoxType getType() const;
     //! Get the rectangle around the hit box.
-    /*!
+    *!
     This method gives the smallest rectangle in which the hit box fit. The rectangle is aligned with the principal axes x and y.
     If the hit box type is already PRL_HITBOX_RECT, this rectangle will actually be the hit box itself.
-    */
+    *
     PRL_FRect const& getRectAround() const;
     //! Translate the whole hit box.
-    /*!
+    *!
     All the points composing the hit box will undergo the following translation:
     p' = p + (x, y)
     where p' are the transformed points, p the original ones and (x, y) the translation vector.
-    */
+    *
     void translateBy(float x, float y);
 };
 
-/* ********************************************* */
-/*               PRL_PointCluster                */
-/* ********************************************* */
+* ********************************************* *
+*               PRL_PointCluster                *
+* ********************************************* *
 
 //! A class containing points and hit boxes.
-/*!
+*!
 This class contains 2 types of points: action points and anchor points.
 Action points are points used to specify location on an animation associated with specific actions (i.e. the foot of a player in 2D combat game).
 Fixed points are points used when an animation has a changing size. It defines the static reference point in the animation.
 So, if the animation is not translating on the screen, the anchor point will remain at the same place.
-*/
+*
 class PRL_FPointCluster
 {
     friend class PRL_AnimationSimple;
 
 private:
     //! Vector containing the hit boxes.
-    /*!
+    *!
     The first dimension is the corresponding frames and the second one the hit box number.
     Each hit box has the same number during the whole animation: the hit box number is constant frame to frame.
-    */
+    *
     std::vector <std::vector <PRL_HitBox>> hitBoxe;
     //! Vector containing the action points.
-    /*!
+    *!
     The first dimension is the corresponding frames and the second one the action point number.
     Each action point has the same number during the whole animation: the action point number is constant frame to frame.
-    */
+    *
     std::vector <std::vector <PRL_FPoint>> actionPoint;
     //! Vector containing the anchor points.
-    /*!
+    *!
     There is only 1 anchor point per frame, so the vector is simple.
-    */
+    *
     std::vector <PRL_FPoint> anchorPoint;
 
 public:
@@ -212,9 +211,9 @@ public:
     ~PRL_FPointCluster();
 
     //! Get how many frames are loaded.
-    /*!
+    *!
     This should give the same than the number of anchor points (1 per frame).
-    */
+    *
     int getFramesNumber() const; // HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE DOXY_STOP
     //! Get the number of action points at each frame
     int getActionPointsNumber() const;
@@ -232,20 +231,21 @@ public:
     void setActionPoint(int frame, int actionPointNumber, PRL_FPoint const& point);
     //! Set the anchor point at the desired frame
     void setAnchorPoint(int frame, PRL_FPoint const& point);
-};
+};*/
 
 
 /* ********************************************* */
 /*                 PRL_Image	                 */
 /* ********************************************* */
 
-
+/// Handle pure images with or without masks.
 class PRL_Image
 {
 	friend class _PRL_ImageAccessor;
 public:
+	/// Need the path of the animation's .prl file and the desired renderer.
 	PRL_Image(const char* path, SDL_Renderer *renderer);
-	/// Need the path of the animation's .anim file.
+	/// Need the path of the animation's .prl file and the desired renderer.
 	PRL_Image(const std::string& path, SDL_Renderer *renderer);
 	~PRL_Image();
 
@@ -255,21 +255,25 @@ public:
 		friend class _PRL_ImageAccessor;
 	public:
 		SDL_Texture* getTexture() const;
-		/// Get the main texture size.
+		/// Get the main texture display size.
 		/*!
 		This size is a scaled size, adapted to the current renderer size.
 		To get the original true size, call getTrueSize().
 		*/
 		const PRL_Point& getSize() const;
-		//! Get the main texture's true size.
+		//! Get the main texture's true (not scaled) size.
 		const PRL_Point& getTrueSize() const;
-		/// Return {width, height, width, height}.
+		/// Get size of reference renderer.
 		const PRL_Point& getRefRenderSize() const;
-		/// Get mask per texture
+		/// Get mask per texture.
 		int getMaskNumber() const;
+		/// Get the used renderer.
 		SDL_Renderer* getRenderer() const;
 
 		/// Return the source size (real one without scaling) {width, height}.
+		/// Update main texture, mask textures, main dst and mask dst.
+		void get(SDL_Texture*& mainTex, PRL_FRect& mainDst, std::vector<SDL_Texture*>& maskTex,
+				std::vector<PRL_FRect>& maskDst) const;
 
 	private:
 		SDL_Texture* mainTexture;
@@ -284,19 +288,15 @@ public:
 
 		PRL_Point refRenderSize;
 		PRL_FPoint scalingRatio;
-		SDL_Renderer *renderer; // the used renderer
-
-		///
-		void get(SDL_Texture* &mainTex, std::vector<SDL_Texture*>& maskTex, PRL_FRect& mainSrc,
-				PRL_FRect& mainDst, std::vector<PRL_FPoint>& maskDst, std::vector<PRL_FPoint>& maskDst) const;
+		SDL_Renderer* renderer;
 	};
 	_display display;
 
-	struct _points
+	struct _collision
 	{
 
 	};
-	_points points;
+	_collision collision;
 
 	static int getCount();
 
@@ -307,8 +307,6 @@ private:
 	int targetingCount;
 
 	std::string filePath;
-
-	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
 
 	///
 	void addTargeting();
@@ -412,9 +410,9 @@ public:
 	struct _points
 	{
 	public:
-        std::vector <PRL_FPointList> action;
+        /*std::vector <PRL_FPointList> action;
         PRL_FPointList anchor;
-        std::vector <PRL_HitBox> hitbox;
+        std::vector <PRL_HitBox> hitbox;*/
 	private:
 		//PRL_FPointCluster *getPointCluster() const; // change to reference?
 	};
@@ -429,8 +427,6 @@ private:
 	int targetCount;
 
 	std::string filePath;
-
-	PRL_FPointCluster pointCluster; // contains all the points loaded from the .anim file
 
 	///
 	void addTarget(); // ciblage

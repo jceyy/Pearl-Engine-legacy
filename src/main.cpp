@@ -12,9 +12,16 @@ int maingen(), mainbut(); // to disappear
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::string;
 
 int main(int argc, char *argv[])
 {
+	for (int i(0); i < argc; ++i)
+	{
+		cout << string("Argument ") + to_string(i) + ": " + argv[i] << endl;
+	}
+	cout << endl;
+
     int main_return(0);
     if (PRL_Init()!=0) /* Initialize all the things we need */
     {

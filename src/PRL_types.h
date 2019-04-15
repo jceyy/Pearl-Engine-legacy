@@ -138,5 +138,8 @@ public:
     float r; //!< Radius.
 };
 
+inline int PRL_ScalarProduct(PRL_Point p, PRL_Point q) noexcept;
+inline float PRL_ScalarProduct(PRL_FPoint p, PRL_FPoint q) noexcept;
+inline double PRL_ScalarProduct(PRL_DPoint p, PRL_DPoint q) noexcept;
 
 #endif // PRL_TYPES_H_INCLUDED

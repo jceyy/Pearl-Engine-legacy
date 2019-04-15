@@ -56,7 +56,7 @@ std::string PRL_TimeStamp();
 
 
 /*
-/*!
+*!
 This class stores an elapsed time since it has been created or reseted.
 You need to call the method update() in order to make the internal time match the real elapsed time.
 You can introduce a shift in the timer if needed.
@@ -80,12 +80,12 @@ public:
     //! Update the timer and get the latest time value.
     void update();
     //! Reset the timer.
-    /*!
+    *!
     This method resets the reference time point and the time shift, just as if the class had just been created.
     *
     void reset();
     //! Set a time shift (us).
-    /*!
+    *!
     The time shift is implemented via this formula:
     t_timer = t_true - shift.
 

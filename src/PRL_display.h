@@ -8,6 +8,7 @@
 #include "PRL_types.h"
 #include "PRL_time.h"
 #include "PRL_camera.h"
+#include "PRL_collision.h"
 
 
 /* ********************************************* */
@@ -24,52 +25,59 @@ public:
     PRL_Displayable(SDL_Texture *texture, SDL_Renderer *renderer);
     ~PRL_Displayable();
 
-    /// Returns 0 if allright
-    int set(SDL_Texture *texture, SDL_Renderer *renderer);
+    /// Set a texture alongside with its renderer.
+    int set(SDL_Texture *texture, SDL_Renderer *renderer) noexcept;
     /// Get the texture to be displayed.
-    SDL_Texture* getTexture() const;
+    SDL_Texture* getTexture() const noexcept;
 
     /// Make the displayable active or not.
-    void makeActive(bool b);
+    void makeActive(bool b) noexcept;
     /// Make the displayable static or not (if it can move or not).
-    void makeStatic(bool b);
+    void makeStatic(bool b) noexcept;
     /// Tell whether the displayable object is active (displayed by the displayer) or not.
-    bool isActive() const;
+    bool isActive() const noexcept;
     /// Tell whether the displayable object is static or not.
-    bool isStatic() const;
+    bool isStatic() const noexcept;
     /// Set the display angle.
-    void setAngle(double angle);
+    void setAngle(double angle) noexcept;
     /// Get the display angle.
-    double getAngle() const;
+    double getAngle() const noexcept;
     /// Set the position (upper left corner).
-    virtual void setPos(float x, float y);
+    virtual void setPos(float x, float y) noexcept;
     /// Set the position (upper left corner).
-    virtual void setPos(PRL_FPoint pos);
+    virtual void setPos(PRL_FPoint pos) noexcept;
     /// Set the position of the center.
-    virtual void setCenterPos(float x, float y);
+    virtual void setCenterPos(float x, float y) noexcept;
     /// Set the position of the center.
-    virtual void setCenterPos(PRL_FPoint pos);
+    virtual void setCenterPos(PRL_FPoint pos) noexcept;
     /// Get destination rectangle used for display.
-    PRL_FRect const& getDstRect() const;
-    /// Get source rectangle used for display.
-    PRL_FRect const& getSrcRect() const;
+    PRL_FRect const& getDstRect() const noexcept;
     /// Set velocity of the displayable in pixels per second.
-    void setVelocity(PRL_FPoint const& velocity);
+    void setVelocity(PRL_FPoint const& velocity) noexcept;
     /// Get velocity of the displayable in pixels per second.
-    PRL_FPoint const& getVelocity() const;
+    PRL_FPoint const& getVelocity() const noexcept;
 
     /// Get how many displayable objects are currently in use.
-    static int getCount();
+    static int getCount() noexcept;
+
+    struct _collision
+    {
+	private:
+		std::vector <PRL_HitBox> mainHitboxe;
+		std::vector <std::vector <PRL_HitBox> > maskHitboxe;
+    };
+    _collision collision;
 
 protected:
-    PRL_FRect dspSrc;
     PRL_FRect dspDst;
-    SDL_Texture *dspTexture; // add masks
+    SDL_Texture *dspTexture;
+    std::vector <PRL_FRect> dspMaskDst;
+    std::vector <SDL_Texture*> dspMaskTexture;
     SDL_Renderer *dspRenderer;
     PRL_FPoint dspVelocity;
     bool dspIsStatic;
     bool dspIsActive;
-    double dspAngle;
+    double dspAngle; //!> Rotation angle in degrees.
 
 private:
     //! Used only by displayer: address of the displayable in the displayer
