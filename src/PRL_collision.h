@@ -57,6 +57,14 @@ public:
     virtual ~PRL_HitBox() = 0;
 
     virtual PRL_FRect const& getIncludingRect() const noexcept;
+    virtual PRL_FPoint const& getCenterOfMass() const noexcept;
+
+protected:
+	PRL_FPoint centerOfMass;
+	PRL_FRect includingFRect; //!< Smaller possible rectangle in which all points fit.
+
+private:
+	virtual void computeCOM() noexcept;
 };
 
 class PRL_HitBoxRect : public PRL_HitBox
@@ -66,10 +74,12 @@ public:
 	~PRL_HitBoxRect();
 
     PRL_FRect const& getIncludingRect() const noexcept override;
-    void get(PRL_FRect& frect) const noexcept;
+    void set(PRL_FRect const& rect) noexcept;
+    PRL_FRect const& get() const noexcept;
+    PRL_FPoint const& getCenterOfMass() const noexcept override;
 
 private:
-	PRL_FRect hitboxRect;
+	void computeCOM() noexcept override;
 };
 
 /* ********************************************* */

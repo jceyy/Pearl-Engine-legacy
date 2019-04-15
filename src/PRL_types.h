@@ -2,7 +2,8 @@
 #define PRL_TYPES_H_INCLUDED
 
 #include <SDL2/SDL.h>
-
+#include <type_traits>
+#include <typeinfo>
 
 
 //! Class to store a 2D point made out of integer coordinates.
@@ -24,6 +25,7 @@ class PRL_FPoint
 {
 public:
 	PRL_FPoint();
+	PRL_FPoint(float x_y);
 	PRL_FPoint(float x_, float y_);
 	PRL_FPoint(PRL_FPoint const& fpoint);
 	~PRL_FPoint();
@@ -47,6 +49,40 @@ public:
     double x, y;
 };
 
+
+template<typename T, typename S>
+S operator*(T q, S const& p) noexcept
+{
+	static_assert(std::is_same<S, PRL_Point>::value || std::is_same<S, PRL_FPoint>::value || std::is_same<S, PRL_DPoint>::value, "At least one PRL point type is required");
+	static_assert(std::is_arithmetic<T>::value, "Arithmetic type is required");
+	return S(p.x * q, p.y * q);
+}
+
+/*template<typename T, typename S>
+S operator*(S const& p, T q) noexcept
+{
+	return q * p;
+}*/
+
+template<typename T, typename S>
+S operator/(S const& p, T q) noexcept
+{
+	static_assert(std::is_same<S, PRL_Point>::value || std::is_same<S, PRL_FPoint>::value || std::is_same<S, PRL_DPoint>::value, "At least one PRL point type is required");
+	static_assert(std::is_arithmetic<T>::value, "Arithmetic type is required");
+	return S(p.x / q, p.y / q);
+}
+
+PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept;
+PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept;
+PRL_Point const& operator-(PRL_Point const& p) noexcept;
+
+PRL_FPoint const& operator+(PRL_FPoint const& p, PRL_FPoint const& q) noexcept;
+PRL_FPoint const& operator-(PRL_FPoint const& p, PRL_FPoint const& q) noexcept;
+PRL_FPoint const& operator-(PRL_FPoint const& p) noexcept;
+
+PRL_DPoint const& operator+(PRL_DPoint const& p, PRL_DPoint const& q) noexcept;
+PRL_DPoint const& operator-(PRL_DPoint const& p, PRL_DPoint const& q) noexcept;
+PRL_DPoint const& operator-(PRL_DPoint const& p) noexcept;
 
 //! Class used to store rectangles with integer coordinates.
 class PRL_Rect

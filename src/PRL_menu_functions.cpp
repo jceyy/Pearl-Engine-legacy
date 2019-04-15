@@ -11,6 +11,10 @@ void printAnimDiagnostics(PRL_Animation* anim);
 
 int PRL_TestZone()
 {
+	PRL_FPoint p(1.0f, 1.0f), q(-1.0f, -1.0f);
+	PRL_FPoint r = -p + q - 2.4598645123*p+0.4*4;
+	cout << "DEBUG: x: " + to_string(r.x) + " y: " + to_string(r.y) << endl;
+
 	// To DO: add save-memory settings flag to reduce loaded textures then implement in load animation
 	bool quit(false);
 
@@ -91,7 +95,8 @@ int PRL_TestZone()
             showmario = true;
         }
 
-        mario_erstatz->makeActive(showmario);
+        //mario_erstatz->enableDisplay();
+	showmario = !showmario;
 
 		handler.update();
 		PRL_Delay(10000);

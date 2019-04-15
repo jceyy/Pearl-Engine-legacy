@@ -17,9 +17,9 @@ using std::endl;
 
 int PRL_Displayable :: dspCount = 0;
 
-PRL_Displayable :: PRL_Displayable() : dspDst({0.0f, 0.0f, 0, 0}), dspTexture(nullptr),
-dspRenderer(handler.display.renderer[0]), dspVelocity({0.0f, 0.0f}), dspIsActive(true), dspAngle(0.0),
-dspDisplayerAddress(0), dspDisplayerAdded(false)
+PRL_Displayable :: PRL_Displayable() : dspMainDst({0.0f, 0.0f, 0, 0}), dspMainTexture(nullptr),
+dspRenderer(handler.display.renderer[0]), dspRotAngle(0.0), dspDisplayerAddress(0), dspDisplayerAdded(false),
+dspCollType(PRL_COLLTYPE_0), dspVelocity(0.0f, 0.0f)
 {
     dspCount++;
 }
@@ -42,7 +42,7 @@ PRL_Displayable :: PRL_Displayable(SDL_Texture *texture, SDL_Renderer *renderer)
 	}
 
 	dspRenderer = renderer;
-	dspTexture = texture;
+	dspMainTexture = texture;
 }
 
 PRL_Displayable :: ~PRL_Displayable()
@@ -52,7 +52,7 @@ PRL_Displayable :: ~PRL_Displayable()
 
 SDL_Texture* PRL_Displayable :: getTexture() const noexcept
 {
-    return dspTexture;
+    return dspMainTexture;
 }
 
 int PRL_Displayable :: set(SDL_Texture *texture, SDL_Renderer *renderer) noexcept
@@ -69,67 +69,97 @@ int PRL_Displayable :: set(SDL_Texture *texture, SDL_Renderer *renderer) noexcep
         return PRL_ERROR;
     }
 	dspRenderer = renderer;
-    dspTexture = texture;
+    dspMainTexture = texture;
     return 0;
 }
 
-void PRL_Displayable :: makeActive(bool b) noexcept
+void PRL_Displayable :: enableDisplay() noexcept
 {
-    dspIsActive = b;
+    dspDisplayEnabled = true;
 }
 
-void PRL_Displayable :: makeStatic(bool b) noexcept
+void PRL_Displayable :: disableDisplay() noexcept
 {
-	dspIsStatic = b;
+    dspDisplayEnabled = false;
 }
 
-bool PRL_Displayable :: isActive() const noexcept
+bool PRL_Displayable :: isDisplayEnabled() const noexcept
 {
-    return dspIsActive;
+    return dspDisplayEnabled;
 }
 
-bool PRL_Displayable :: isStatic() const noexcept
+void PRL_Displayable :: setRotAngle(double angle) noexcept
 {
-	return dspIsStatic;
+    dspRotAngle = angle;
 }
 
-void PRL_Displayable :: setAngle(double angle) noexcept
+double PRL_Displayable :: getRotAngle() const noexcept
 {
-    dspAngle = angle;
-}
-
-double PRL_Displayable :: getAngle() const noexcept
-{
-    return dspAngle;
+    return dspRotAngle;
 }
 
 void PRL_Displayable :: setPos(float x, float y) noexcept
 {
-    dspDst.x = x;
-    dspDst.y = y;
+    dspMainDst.x = x;
+    dspMainDst.y = y;
 }
 
-void PRL_Displayable :: setPos(PRL_FPoint pos) noexcept
+void PRL_Displayable :: setPos(PRL_FPoint const& pos) noexcept
 {
-    dspDst.x = pos.x;
-    dspDst.y = pos.y;
+    dspMainDst.x = pos.x;
+    dspMainDst.y = pos.y;
 }
 
 void PRL_Displayable :: setCenterPos(float x, float y) noexcept
 {
-    dspDst.x = x - dspDst.w/2.0;
-    dspDst.y = y - dspDst.h/2.0;
+    dspMainDst.x = x - dspMainDst.w/2.0;
+    dspMainDst.y = y - dspMainDst.h/2.0;
 }
 
-void PRL_Displayable :: setCenterPos(PRL_FPoint pos) noexcept
+void PRL_Displayable :: setCenterPos(PRL_FPoint const& pos) noexcept
 {
-    dspDst.x = pos.x - dspDst.w/2.0;
-    dspDst.y = pos.y - dspDst.h/2.0;
+    dspMainDst.x = pos.x - dspMainDst.w/2.0;
+    dspMainDst.y = pos.y - dspMainDst.h/2.0;
 }
 
 PRL_FRect const& PRL_Displayable :: getDstRect() const noexcept
 {
-    return dspDst;
+    return dspMainDst;
+}
+
+void PRL_Displayable :: enableCollision() noexcept
+{
+	dspCollEnabled = true;
+}
+
+void PRL_Displayable :: disableCollision() noexcept
+{
+	dspCollEnabled = false;
+}
+
+bool PRL_Displayable :: isCollisionEnabled() const noexcept
+{
+	return dspCollEnabled;
+}
+
+void PRL_Displayable :: setCollisionPriority()
+{
+	;
+}
+
+void PRL_Displayable :: enableMotion() noexcept
+{
+	dspMotionEnabled = true;
+}
+
+void PRL_Displayable :: disableMotion() noexcept
+{
+	dspMotionEnabled = false;
+}
+
+bool PRL_Displayable :: isMotionEnabled() const noexcept
+{
+	return dspMotionEnabled;
 }
 
 void PRL_Displayable :: setVelocity(PRL_FPoint const& velocity) noexcept
@@ -161,7 +191,7 @@ PRL_Displayer :: PRL_Displayer() :  camera(nullptr)
 
 PRL_Displayer :: ~PRL_Displayer()
 {
-    object.clear();
+    displayable.clear();
     dsprCount--;
 }
 
@@ -170,22 +200,16 @@ int PRL_Displayer :: add(PRL_Displayable *obj)
     if (obj == nullptr)
     {
         PRL_SetError("Invalid object (nullptr)");
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << PRL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
         return PRL_ERROR;
     }
     else if (obj->dspDisplayerAdded)
     {
         PRL_SetError("Object already added");
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << PRL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
         return PRL_ERROR;
     }
 
-    object.push_back(obj);
-    obj->dspDisplayerAddress = object.size() - 1;
+    displayable.push_back(obj);
+    obj->dspDisplayerAddress = displayable.size() - 1;
     obj->dspDisplayerAdded = true;
     return 0;
 }
@@ -195,35 +219,30 @@ int PRL_Displayer :: remove(PRL_Displayable *obj)
     if (obj == nullptr)
     {
         PRL_SetError("Invalid object (nullptr)");
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << PRL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
         return PRL_ERROR;
     }
     else if (!obj->dspDisplayerAdded)
     {
         PRL_SetError("Invalid object (not added)");
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << PRL_GetError() << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
         return PRL_ERROR;
     }
 
-    object.erase(object.begin() + obj->dspDisplayerAddress);
+    displayable.erase(displayable.begin() + obj->dspDisplayerAddress);
     obj->dspDisplayerAdded = false;
-    for (size_t i(obj->dspDisplayerAddress); i < object.size(); i++)
+
+    for (size_t i(obj->dspDisplayerAddress); i < displayable.size(); i++)
     {
-        object[i]->dspDisplayerAddress--;
+        displayable[i]->dspDisplayerAddress--;
     }
     return 0;
 }
 
-size_t PRL_Displayer :: getObjectsNumber() const
+int PRL_Displayer :: getAddedNumber() const noexcept
 {
-    return object.size();
+    return (int)displayable.size();
 }
 
-void rect2FRect(PRL_FRect const& frect, SDL_Rect& rect)
+void rect2FRect(PRL_FRect const& frect, SDL_Rect& rect) noexcept
 {
     rect = {(int) floor(frect.x), (int) floor(frect.y), (int) floor(frect.w), (int) floor(frect.h)};
 }
@@ -231,18 +250,15 @@ void rect2FRect(PRL_FRect const& frect, SDL_Rect& rect)
 int PRL_Displayer :: display() const
 {
     SDL_Rect dst;
-    for (size_t i(0); i < object.size(); i++)
+    for (size_t i(0); i < displayable.size(); i++)
     {
-        if (object[i]->dspIsActive)
+        if (displayable[i]->dspDisplayEnabled)
         {
-            rect2FRect(object[i]->dspDst, dst);
-            if (SDL_RenderCopyEx(object[i]->dspRenderer, object[i]->dspTexture, nullptr,
-                &dst, object[i]->dspAngle, NULL, SDL_FLIP_NONE) != 0)
+            rect2FRect(displayable[i]->dspMainDst, dst);
+            if (SDL_RenderCopyEx(displayable[i]->dspRenderer, displayable[i]->dspMainTexture, nullptr,
+                &dst, displayable[i]->dspRotAngle, NULL, SDL_FLIP_NONE) != 0)
             {
                 PRL_SetError(SDL_GetError());
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << PRL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
                 return PRL_ERROR;
             }
         }
@@ -255,22 +271,19 @@ int PRL_Displayer :: displayWithCamera() const
     SDL_Rect dst;
     double zoom = camera->getZoom();
 
-    for (size_t i(0); i < object.size(); i++)
+    for (size_t i(0); i < displayable.size(); i++)
     {
-        if (object[i]->dspIsActive)
+        if (displayable[i]->dspDisplayEnabled)
         {
-            dst.x = zoom * (object[i]->dspDst.x - camera->getUpLeftCorner().x);
-            dst.y = zoom * (object[i]->dspDst.y - camera->getUpLeftCorner().y);
-            dst.w = zoom * object[i]->dspDst.w;
-            dst.h = zoom * object[i]->dspDst.h;
+            dst.x = zoom * (displayable[i]->dspMainDst.x - camera->getUpLeftCorner().x);
+            dst.y = zoom * (displayable[i]->dspMainDst.y - camera->getUpLeftCorner().y);
+            dst.w = zoom * displayable[i]->dspMainDst.w;
+            dst.h = zoom * displayable[i]->dspMainDst.h;
 
-            if (SDL_RenderCopyEx(object[i]->dspRenderer, object[i]->dspTexture, nullptr,
-                &dst, object[i]->dspAngle, NULL, SDL_FLIP_NONE) != 0)
+            if (SDL_RenderCopyEx(displayable[i]->dspRenderer, displayable[i]->dspMainTexture, nullptr,
+                &dst, displayable[i]->dspRotAngle, NULL, SDL_FLIP_NONE) != 0)
             {
                 PRL_SetError(SDL_GetError());
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << PRL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
                 return PRL_ERROR;
             }
         }
@@ -281,13 +294,10 @@ int PRL_Displayer :: displayWithCamera() const
 void PRL_Displayer :: setCamera(PRL_Camera *cam)
 {
     if (cam != nullptr) camera = cam;
-    else
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_Displayer, tried to set a NULL pointer on a camera" << endl;
-        #endif // PRL_USE_WARNINGS
+    else PRL_SetError("Invalid camera (nullptr)");
 }
 
-int PRL_Displayer :: getDsprCount()
+int PRL_Displayer :: getDsprCount() noexcept
 {
     return dsprCount;
 }

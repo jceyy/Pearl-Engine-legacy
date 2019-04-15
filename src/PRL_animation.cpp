@@ -294,7 +294,7 @@ void getline_ne(basic_istream<char>& f, string& line)
 
 int PRL_Image :: imageCount = 0;
 
-int PRL_Image :: getCount()
+int PRL_Image :: getCount() noexcept
 {
 	return imageCount;
 }
@@ -594,7 +594,14 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 
 	image_accessor.addTargeting(image); // Add targeting
 	targetImage = image;
-	image->display.get(dspTexture, dspDst, dspMaskTexture, dspMaskDst);
+	image->display.get(dspMainTexture, dspMainDst, dspMaskTexture, dspMaskDst);
+
+	// Temporary
+	dspMainHitbox.clear();
+	PRL_FRect frect(0.0f, 0.0f, image->display.getSize().x, image->display.getSize().y);
+    PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
+	dspMainHitbox.push_back(hitbox);;
+
 	return 0;
 }
 
@@ -940,6 +947,12 @@ int PRL_Animated :: setAnim(PRL_Animation* anim)
 	dspRenderer = anim->display.getRenderer();
 	updateDisplayable();
 
+	// Temporary
+	dspMainHitbox.clear();
+	PRL_FRect frect(0.0f, 0.0f, anim->display.getSize(0).x, anim->display.getSize(0).y);
+	PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
+	dspMainHitbox.push_back(hitbox);
+
 	return 0;
 }
 
@@ -997,9 +1010,9 @@ void PRL_Animated :: update()
 
 void PRL_Animated :: updateDisplayable()
 {
-	dspTexture = targetAnimation->display.getTexture(currentFrame);
-	dspDst.w = targetAnimation->display.getSize(currentFrame).x;
-	dspDst.h = targetAnimation->display.getSize(currentFrame).y;
+	dspMainTexture = targetAnimation->display.getTexture(currentFrame);
+	dspMainDst.w = targetAnimation->display.getSize(currentFrame).x;
+	dspMainDst.h = targetAnimation->display.getSize(currentFrame).y;
 }
 
 

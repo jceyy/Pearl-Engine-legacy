@@ -22,17 +22,27 @@ PRL_HitBox :: ~PRL_HitBox()
 	;
 }
 
-PRL_FRect frect_temp;
+PRL_FRect _frect_temp;
 PRL_FRect const& PRL_HitBox :: getIncludingRect() const noexcept
 {
-	frect_temp.x = 0.0f;
-	return frect_temp;
+	return _frect_temp;
+}
+
+PRL_FPoint _fpoint_temp;
+PRL_FPoint const& PRL_HitBox :: getCenterOfMass() const noexcept
+{
+	return _fpoint_temp;
+}
+
+void PRL_HitBox :: computeCOM() noexcept
+{
+    ;
 }
 
 
-PRL_HitBoxRect :: PRL_HitBoxRect(PRL_FRect const& rect) : hitboxRect(rect)
+PRL_HitBoxRect :: PRL_HitBoxRect(PRL_FRect const& rect)
 {
-	;
+	includingFRect = rect;
 }
 
 PRL_HitBoxRect :: ~PRL_HitBoxRect()
@@ -42,13 +52,30 @@ PRL_HitBoxRect :: ~PRL_HitBoxRect()
 
 PRL_FRect const& PRL_HitBoxRect :: getIncludingRect() const noexcept
 {
-	return hitboxRect;
+	return includingFRect;
 }
 
-void PRL_HitBoxRect :: get(PRL_FRect& frect) const noexcept
+void PRL_HitBoxRect :: set(PRL_FRect const& rect) noexcept
 {
-	frect = hitboxRect;
+	includingFRect = rect;
 }
+
+PRL_FRect const& PRL_HitBoxRect :: get() const noexcept
+{
+	return includingFRect;
+}
+
+PRL_FPoint const& PRL_HitBoxRect :: getCenterOfMass() const noexcept
+{
+	return centerOfMass;
+}
+
+void PRL_HitBoxRect :: computeCOM() noexcept
+{
+	centerOfMass.x = (includingFRect.x + (float)includingFRect.w)/2.0f;
+	centerOfMass.y = (includingFRect.y + (float)includingFRect.h)/2.0f;
+}
+
 
 typedef struct PRL_Vector PRL_Vector; // to be depreciated
 struct PRL_Vector

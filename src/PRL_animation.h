@@ -298,7 +298,7 @@ public:
 	};
 	_collision collision;
 
-	static int getCount();
+	static int getCount() noexcept;
 
 private:
 

@@ -36,6 +36,11 @@ PRL_FPoint :: PRL_FPoint() : x(0.0), y(0.0)
 	;
 }
 
+PRL_FPoint :: PRL_FPoint(float x_y) : x(x_y), y(x_y)
+{
+	;
+}
+
 PRL_FPoint :: PRL_FPoint(float x_, float y_) : x(x_), y(y_)
 {
 	;
@@ -205,6 +210,80 @@ PRL_FPoint PRL_FCircle :: getCenter() const
 	return p;
 }
 
+PRL_Point point_temp;
+PRL_FPoint fpoint_temp;
+PRL_DPoint dpoint_temp;
+
+/*template<typename T>
+PRL_FPoint const& operator+(PRL_FPoint const& p, T q) noexcept
+{
+	static_assert(std::is_arithmetic<T>::value, "Arithmetic type is required");
+	fpoint_temp.set(p.x + (float)q, p.y + (float)q);
+	return fpoint_temp;
+}
+
+template<typename T>
+PRL_FPoint const& operator+(T q, PRL_FPoint const& p) noexcept
+{
+	return p + q;
+}*/
+
+/*S const& operator-(S const& p, T const& q) noexcept;
+S const& operator-(S const& p) noexcept;*/
+
+PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept
+{
+	point_temp.set(p.x + q.x, p.y + q.y);
+	return point_temp;
+}
+
+PRL_Point const& operator-(PRL_Point const& p, PRL_Point const& q) noexcept
+{
+	point_temp.set(p.x - q.x, p.y - q.y);
+	return point_temp;
+}
+
+PRL_Point const& operator-(PRL_Point const& p) noexcept
+{
+	point_temp.set(-p.x, -p.y);
+	return point_temp;
+}
+
+PRL_FPoint const& operator+(PRL_FPoint const& p, PRL_FPoint const& q) noexcept
+{
+	fpoint_temp.set(p.x + q.x, p.y + q.y);
+	return fpoint_temp;
+}
+
+PRL_FPoint const& operator-(PRL_FPoint const& p, PRL_FPoint const& q) noexcept
+{
+	fpoint_temp.set(p.x - q.x, p.y - q.y);
+	return fpoint_temp;
+}
+
+PRL_FPoint const& operator-(PRL_FPoint const& p) noexcept
+{
+	fpoint_temp.set(-p.x, -p.y);
+	return fpoint_temp;
+}
+
+PRL_DPoint const& operator+(PRL_DPoint const& p, PRL_DPoint const& q) noexcept
+{
+	dpoint_temp.set(p.x + q.x, p.y + q.y);
+	return dpoint_temp;
+}
+
+PRL_DPoint const& operator-(PRL_DPoint const& p, PRL_DPoint const& q) noexcept
+{
+	dpoint_temp.set(p.x - q.x, p.y - q.y);
+	return dpoint_temp;
+}
+
+PRL_DPoint const& operator-(PRL_DPoint const& p) noexcept
+{
+	dpoint_temp.set(-p.x, -p.y);
+	return dpoint_temp;
+}
 
 int PRL_ScalarProduct(PRL_Point p, PRL_Point q) noexcept
 {
