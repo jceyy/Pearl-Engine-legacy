@@ -3,7 +3,7 @@
 
 /// PROGRAMMABLE DEFINES ///
 // changeable by programmers!
-#define PROGRAM_NAME "PEARL Engine (alpha)" //"PEARL Engine 00.49.537a"
+#define PROGRAM_NAME "Pearl Engine (alpha)"
 
 #define DEBUGGING 1 // toggle the console / output.txt std::cout stream destination
 
@@ -31,10 +31,10 @@
 
 
 #define PRL_MAJOR_VERSION 0
-#define PRL_MINOR_VERSION 96
-#define PRL_PATCHLEVEL 9
+#define PRL_MINOR_VERSION 98
+#define PRL_PATCHLEVEL 3
 /*!
-\version {0.96.9}
+\version {0.98.3}
 */
 
 

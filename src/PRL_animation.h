@@ -8,18 +8,18 @@
 #include "PRL_defines.h"
 
 //using std::vector;
-
+/*
 //! Enumeration containing all the hit box types
-/*!
+*!
 The different hit box types are:
 - rectangular (PRL_HITBOX_RECT), the hit box is a rectangle stored as a PRL_FRect
 - circle (PRL_HITBOX_CIRCLE), the hit box is a circle, stored as a PRL_FCircle
 - polygon (PRL_HITBOX_POLYGON), the hit box is an arbitrary shape, described by points arranged in a certain order, and stored as an PRL_FPointList
-*/
+*
 enum PRL_HitBoxType
 {
     PRL_HITBOX_RECT, PRL_HITBOX_CIRCLE, PRL_HITBOX_POLYGON
-};
+};*/
 
 
 /* ********************************************* */
@@ -339,7 +339,7 @@ private:
 /*                 PRL_Sprite	                 */
 /* ********************************************* */
 
-class PRL_Sprite : public PRL_Displayable
+class PRL_Sprite : public PRL_Displayable, public PRL_Collidable
 {
 public:
     PRL_Sprite();
@@ -385,6 +385,7 @@ public:
 		/// Get mask per texture
 		int getMaskNumber() const;
 		SDL_Renderer* getRenderer() const;
+		PRL_Point const& getAnchor(size_t which) const noexcept;
 
 		/// Return the source size (real one without scaling) {width, height}.
 
@@ -399,24 +400,29 @@ public:
 		std::vector <std::vector <PRL_Point> > maskScaledTextureSize;
 		std::vector <std::vector <PRL_FRect> > maskLocalPos;
 
+		std::vector <PRL_Point> anchorPoint;
+
 		PRL_Point refRenderSize;
 		PRL_FPoint scalingRatio;
 		SDL_Renderer *renderer; // the used renderer
-		size_t maskPerTexture;
+		size_t maskPerTexture; // to be depreciated in order to allow non cons mask per texture
 		float frameRate; // FPS
 	};
 	_display display;
 
-	struct _points
+	struct _collision
 	{
+		friend class PRL_Animation;
 	public:
         /*std::vector <PRL_FPointList> action;
         PRL_FPointList anchor;
         std::vector <PRL_HitBox> hitbox;*/
 	private:
+		std::vector <PRL_HitBox*> mainHitbox;
+		std::vector <std::vector <PRL_HitBox*> > maskHitbox;
 		//PRL_FPointCluster *getPointCluster() const; // change to reference?
 	};
-	_points points;
+	_collision collision;
 
 	/// Get the number of PRL_Animation currently declared.
 	static int getCount();
@@ -458,7 +464,7 @@ private:
 /*                 PRL_Animated                  */
 /* ********************************************* */
 
-class PRL_Animated : public PRL_Displayable
+class PRL_Animated : public PRL_Displayable, public PRL_Collidable
 {
 public:
     PRL_Animated();

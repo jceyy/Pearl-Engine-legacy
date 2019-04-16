@@ -5,14 +5,19 @@
 #include <type_traits>
 #include <typeinfo>
 
+class PRL_FPoint;
+class PRL_DPoint;
 
 //! Class to store a 2D point made out of integer coordinates.
 class PRL_Point
 {
 public:
 	PRL_Point();
+	PRL_Point(int x_y);
 	PRL_Point(int x_, int y_);
 	PRL_Point(PRL_Point const& point);
+	PRL_Point(PRL_FPoint const& point);
+	PRL_Point(PRL_DPoint const& point);
 	~PRL_Point();
 
 	void set(int x_, int y_);
@@ -27,7 +32,9 @@ public:
 	PRL_FPoint();
 	PRL_FPoint(float x_y);
 	PRL_FPoint(float x_, float y_);
-	PRL_FPoint(PRL_FPoint const& fpoint);
+	PRL_FPoint(PRL_Point const& point);
+	PRL_FPoint(PRL_FPoint const& point);
+	PRL_FPoint(PRL_DPoint const& point);
 	~PRL_FPoint();
 
 	void set(float x_, float y_);
@@ -40,8 +47,11 @@ class PRL_DPoint
 {
 public:
 	PRL_DPoint();
+	PRL_DPoint(double x_y);
 	PRL_DPoint(double x_, double y_);
-	PRL_DPoint(PRL_DPoint const& dpoint);
+	PRL_DPoint(PRL_Point const& point);
+	PRL_DPoint(PRL_FPoint const& point);
+	PRL_DPoint(PRL_DPoint const& point);
 	~PRL_DPoint();
 
 	void set(double x_, double y_);
@@ -84,15 +94,22 @@ PRL_DPoint const& operator+(PRL_DPoint const& p, PRL_DPoint const& q) noexcept;
 PRL_DPoint const& operator-(PRL_DPoint const& p, PRL_DPoint const& q) noexcept;
 PRL_DPoint const& operator-(PRL_DPoint const& p) noexcept;
 
+class PRL_FRect;
+
 //! Class used to store rectangles with integer coordinates.
 class PRL_Rect
 {
 public:
 	PRL_Rect();
-	PRL_Rect(int x_, int y_, int w_, int h_);
-	PRL_Rect(PRL_Point const& point, int w_, int h_);
+	PRL_Rect(int x, int y, int w, int h);
+	PRL_Rect(PRL_Point const& point, int w, int h);
 	PRL_Rect(PRL_Rect const& rect);
+	PRL_Rect(PRL_FRect const& rect);
 	~PRL_Rect();
+
+	void set(int x, int y) noexcept;
+	void set(int x, int y, int w, int h) noexcept;
+	void set(PRL_Point const& x_y, PRL_Point const& w_h) noexcept;
 
     int x, y; //!< Coordinates.
     int w, h; //!< Weight and height of the rectangle.
@@ -110,8 +127,13 @@ public:
 	PRL_FRect();
 	PRL_FRect(float x_, float y_, int w_, int h_);
 	PRL_FRect(PRL_FPoint const& fpoint, int w_, int h_);
-	PRL_FRect(PRL_FRect const& frect);
+	PRL_FRect(PRL_FRect const& rect);
+	PRL_FRect(PRL_Rect const& rect);
 	~PRL_FRect();
+
+	void set(float x, float y) noexcept;
+	void set(float x, float y, int w, int h) noexcept;
+	void set(PRL_FPoint const& x_y, PRL_Point const& w_h) noexcept;
 
 	//! Coordinates.
     /*!

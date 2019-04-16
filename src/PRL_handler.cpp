@@ -8,6 +8,9 @@ PRL_Handler :: PRL_Handler()
     time.stopwatch.start();
     PRL_Displayer disp0;
     display.displayer.push_back(disp0);
+
+    PRL_Collider colr0;
+    collision.collider.push_back(colr0);
 }
 
 PRL_Handler :: ~PRL_Handler()
@@ -74,6 +77,7 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
 		animd->setAnim(anim);
 		display.animated.push_back(animd);
         display.displayer[0].add(animd);
+        collision.collider[0].add(animd);
 	}
 	else
 		return nullptr;
@@ -158,6 +162,7 @@ void PRL_Handler :: update()
 {
 	input.update();
 	time.update();
+	collision.collider[0].testCollisions();
 	for (size_t i(0); i < display.displayer.size(); ++i)
 	{
 		display.displayer[i].display();

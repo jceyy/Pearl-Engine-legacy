@@ -50,8 +50,21 @@ enum PRL_CollType
 /// Collision group (or rule). You can use it as PRL_CollisionGroup group1 = PRL_COLLTYPE_0 | PRL_COLLTYPE_9 | PRL_COLLTYPE_25
 typedef uint32_t PRL_CollGroup;
 
+//! Enumeration containing all the hit box types
+/*!
+The different hit box types are:
+- rectangular (PRL_HITBOX_RECT), the hit box is a rectangle stored as a PRL_FRect
+- circle (PRL_HITBOX_CIRCLE), the hit box is a circle, stored as a PRL_FCircle
+- polygon (PRL_HITBOX_POLYGON), the hit box is an arbitrary shape, described by points arranged in a certain order, and stored as an PRL_FPointList
+*/
+enum PRL_HitBoxType
+{
+    PRL_HITBOXTYPE_RECT, PRL_HITBOXTYPE_CIRCLE, PRL_HITBOXTYPE_POLY
+};
+
 class PRL_HitBox
 {
+	friend inline bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept;
 public:
     PRL_HitBox();
     virtual ~PRL_HitBox() = 0;
@@ -59,9 +72,12 @@ public:
     virtual PRL_FRect const& getIncludingRect() const noexcept;
     virtual PRL_FPoint const& getCenterOfMass() const noexcept;
 
+    PRL_HitBoxType getType() const noexcept;
+
 protected:
 	PRL_FPoint centerOfMass;
 	PRL_FRect includingFRect; //!< Smaller possible rectangle in which all points fit.
+	PRL_HitBoxType type;
 
 private:
 	virtual void computeCOM() noexcept;
@@ -80,6 +96,91 @@ public:
 
 private:
 	void computeCOM() noexcept override;
+};
+
+inline bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept;
+inline bool PRL_TestCollision(PRL_FPoint const& point, PRL_FRect const& rect) noexcept;
+inline bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) noexcept;
+
+class PRL_Collidable;
+
+class PRL_CollInfo
+{
+	friend class PRL_Collider;
+public:
+    PRL_CollInfo();
+    ~PRL_CollInfo();
+
+    std::vector <int> hitboxHit; // Hitbox of target collidable hit by object
+    std::vector<PRL_Collidable*> target; // Target collidable in collision
+
+    static int getCount() noexcept;
+
+private:
+	static int collInfCount;
+	void clear() noexcept;
+};
+
+
+class PRL_Collidable
+{
+	friend class PRL_Collider;
+public:
+	PRL_Collidable();
+	virtual ~PRL_Collidable() = 0;
+
+	//! @brief Enable collision.
+	void enableCollision() noexcept;
+	//! @brief Disable collision.
+	void disableCollision() noexcept;
+	//! @brief Tell whether collision is enabled or not.
+	bool isCollisionEnabled() const noexcept;
+	//! @brief NOT IMPLEM. YET: Set collision priority.
+	void setCollisionPriority();
+	//! @brief Tell if a collision is happening.
+	bool isColliding() const noexcept;
+
+protected:
+	//! @brief Hit boxes.
+	/*!
+	@detail In PRL_Displayable, the first hit boxes correspond to the main texture, and the rest
+	of them corresponds to the mask textures.
+	*/
+	std::vector <PRL_HitBox*> collHitbox;
+	// TO implement+ action point!
+	//std::vector <std::vector <PRL_HitBox*> > dspMaskHitbox; //!< @brief Mask textures' corresponding hit boxes.
+	bool collEnabled = false; //!< Tell whether collision is enabled or not.
+	bool collIsColliding;
+	PRL_CollType collType = PRL_COLLTYPE_0; //!< Collision type of the collidable.
+	PRL_CollGroup collGroup = PRL_COLLTYPE_0; //!< Collision group in which collisions are tested for this collidable.
+	PRL_CollInfo collInfo; //!< Contains information on collisions concerning this collidable.
+
+private:
+	int collider_address;
+};
+
+
+class PRL_Collider
+{
+public:
+    PRL_Collider();
+    ~PRL_Collider();
+
+    /// Add a collidable to the collider
+    void add(PRL_Collidable *collidable);
+    /// Remove a collidable from the collider
+    void remove(PRL_Collidable *collidable);
+    /// Test the collisions between the different collidables added to the collider
+    void testCollisions() const noexcept;
+
+    static int getCount() noexcept;
+
+private:
+    std::vector <PRL_Collidable*> collidable;
+    /// Check whether the collidable is already added to the collider
+    inline bool isAdded(PRL_Collidable *coll) const noexcept;
+
+    static int dsprCount;
 };
 
 /* ********************************************* */
@@ -204,10 +305,6 @@ private:
     bool isAdded(PRL_CollGroup collGroup) const;
     /// Test collisions between 2 collidables (method used in testCollisions) without any concern about i == j
     void testCollisionsBetween(int i, int j);
-
-    #if PRL_MULTITHREADING == 1
-    std::vector <std::thread> threads;
-    #endif // PRL_MULTITHREADING
 
 public:
     PRL_Collider();

@@ -65,29 +65,13 @@ protected:
 
     bool dspDisplayEnabled = true; //!< Tells whether the PRL_Displayable is currently displayed or not.
     double dspRotAngle; //!< @brief Rotation angle in degrees.
+    PRL_FPoint dspDesiredPos;
 
 private:
     //! @brief Used only by PRL_Displayer: address of the PRL_Displayable.
     size_t dspDisplayerAddress;
     //! @brief Tell whether the PRL_Displayable has been added to a PRL_Displayer or not.
     bool dspDisplayerAdded;
-
-	//! @internal Collision related part @endinternal
-public:
-	//! @brief Enable collision.
-	void enableCollision() noexcept;
-	//! @brief Disable collision.
-	void disableCollision() noexcept;
-	//! @brief Tell whether collision is enabled or not.
-	bool isCollisionEnabled() const noexcept;
-	//! @brief NOT IMPLEM. YET: Set collision priority.
-	void setCollisionPriority();
-
-protected:
-	std::vector <PRL_HitBox*> dspMainHitbox; //!< @brief Main texture's corresponding hit boxes.
-	std::vector <std::vector <PRL_HitBox*> > dspMaskHitbox; //!< @brief Mask textures' corresponding hit boxes.
-	bool dspCollEnabled = false; //!< Tell whether collision is enabled or not.
-	PRL_CollType dspCollType; //!< Collision type.
 
 
 	//! @internal Motion related part @endinternal

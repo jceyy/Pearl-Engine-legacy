@@ -39,8 +39,8 @@ public:
 
 	struct _time
 	{
-		friend PRL_Handler;
-		friend PRL_Animated;
+		friend class PRL_Handler;
+		friend class PRL_Animated;
 
 	public:
 		PRL_Stopwatch stopwatch; // automatically started
@@ -52,9 +52,14 @@ public:
 	};
 	_time time;
 
-	struct collision
+	struct _collision
 	{
+		friend class PRL_Collider;
+
+	public:
+		std::vector <PRL_Collider> collider;
 	};
+	_collision collision;
 
 	struct network
 	{

@@ -8,12 +8,27 @@ PRL_Point :: PRL_Point() : x(0), y(0)
 	;
 }
 
+PRL_Point :: PRL_Point(int x_y) : x(x_y), y(x_y)
+{
+	;
+}
+
 PRL_Point :: PRL_Point(int x_, int y_) : x(x_), y(y_)
 {
 	;
 }
 
 PRL_Point :: PRL_Point(PRL_Point const& point) : x(point.x), y(point.y)
+{
+	;
+}
+
+PRL_Point :: PRL_Point(PRL_FPoint const& point) : x(static_cast<int>(point.x)), y(static_cast<int>(point.y))
+{
+	;
+}
+
+PRL_Point :: PRL_Point(PRL_DPoint const& point) : x(static_cast<int>(point.x)), y(static_cast<int>(point.y))
 {
 	;
 }
@@ -51,6 +66,16 @@ PRL_FPoint :: PRL_FPoint(PRL_FPoint const& fpoint) : x(fpoint.x), y(fpoint.y)
 	;
 }
 
+PRL_FPoint :: PRL_FPoint(PRL_Point const& point) : x(static_cast<float>(point.x)), y(static_cast<float>(point.y))
+{
+	;
+}
+
+PRL_FPoint :: PRL_FPoint(PRL_DPoint const& point) : x(static_cast<float>(point.x)), y(static_cast<float>(point.y))
+{
+	;
+}
+
 PRL_FPoint :: ~PRL_FPoint()
 {
 	;
@@ -69,12 +94,27 @@ PRL_DPoint :: PRL_DPoint() : x(0.0), y(0.0)
 	;
 }
 
+PRL_DPoint :: PRL_DPoint(double x_y) : x(x_y), y(x_y)
+{
+	;
+}
+
 PRL_DPoint :: PRL_DPoint(double x_, double y_) : x(x_), y(y_)
 {
 	;
 }
 
 PRL_DPoint :: PRL_DPoint(PRL_DPoint const& dpoint) : x(dpoint.x), y(dpoint.y)
+{
+	;
+}
+
+PRL_DPoint :: PRL_DPoint(PRL_Point const& point) : x(static_cast<double>(point.x)), y(static_cast<double>(point.y))
+{
+	;
+}
+
+PRL_DPoint :: PRL_DPoint(PRL_FPoint const& point) : x(static_cast<double>(point.x)), y(static_cast<double>(point.y))
 {
 	;
 }
@@ -112,6 +152,34 @@ PRL_Rect :: PRL_Rect(PRL_Rect const& rect) : x(rect.x), y(rect.y), w(rect.w), h(
 	;
 }
 
+PRL_Rect :: PRL_Rect(PRL_FRect const& rect) : x(static_cast<int>(rect.x)), y(static_cast<int>(rect.y)),
+w(rect.w), h(rect.h)
+{
+	;
+}
+
+void PRL_Rect :: set(int x_, int y_) noexcept
+{
+	x = x_;
+	y = y_;
+}
+
+void PRL_Rect :: set(int x_, int y_, int w_, int h_) noexcept
+{
+	x = x_;
+	y = y_;
+	w = w_;
+	h = h_;
+}
+
+void PRL_Rect :: set(PRL_Point const& x_y, PRL_Point const& w_h) noexcept
+{
+    x = x_y.x;
+    y = x_y.y;
+    w = w_h.x;
+    h = w_h.y;
+}
+
 PRL_Rect :: ~PRL_Rect()
 {
 	;
@@ -129,14 +197,42 @@ PRL_FRect :: PRL_FRect(float x_, float y_, int w_, int h_) : x(x_), y(y_), w(w_)
 	;
 }
 
-PRL_FRect :: PRL_FRect(PRL_FPoint const& fpoint, int w_, int h_) : x(fpoint.x), y(fpoint.y), w(w_), h(h_)
+PRL_FRect :: PRL_FRect(PRL_FPoint const& point, int w_, int h_) : x(point.x), y(point.y), w(w_), h(h_)
 {
 	;
 }
 
-PRL_FRect :: PRL_FRect(PRL_FRect const& frect) : x(frect.x), y(frect.y), w(frect.w), h(frect.h)
+PRL_FRect :: PRL_FRect(PRL_FRect const& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h)
 {
 	;
+}
+
+PRL_FRect :: PRL_FRect(PRL_Rect const& rect) : x(static_cast<float>(rect.x)), y(static_cast<float>(rect.y)),
+w(rect.w), h(rect.h)
+{
+	;
+}
+
+void PRL_FRect :: set(float x_, float y_) noexcept
+{
+	x = x_;
+	y = y_;
+}
+
+void PRL_FRect :: set(float x_, float y_, int w_, int h_) noexcept
+{
+	x = x_;
+	y = y_;
+	w = w_;
+	h = h_;
+}
+
+void PRL_FRect :: set(PRL_FPoint const& x_y, PRL_Point const& w_h) noexcept
+{
+    x = x_y.x;
+    y = x_y.y;
+    w = w_h.x;
+    h = w_h.y;
 }
 
 PRL_FRect :: ~PRL_FRect()
@@ -210,26 +306,10 @@ PRL_FPoint PRL_FCircle :: getCenter() const
 	return p;
 }
 
+
 PRL_Point point_temp;
 PRL_FPoint fpoint_temp;
 PRL_DPoint dpoint_temp;
-
-/*template<typename T>
-PRL_FPoint const& operator+(PRL_FPoint const& p, T q) noexcept
-{
-	static_assert(std::is_arithmetic<T>::value, "Arithmetic type is required");
-	fpoint_temp.set(p.x + (float)q, p.y + (float)q);
-	return fpoint_temp;
-}
-
-template<typename T>
-PRL_FPoint const& operator+(T q, PRL_FPoint const& p) noexcept
-{
-	return p + q;
-}*/
-
-/*S const& operator-(S const& p, T const& q) noexcept;
-S const& operator-(S const& p) noexcept;*/
 
 PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept
 {

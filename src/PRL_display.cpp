@@ -17,9 +17,9 @@ using std::endl;
 
 int PRL_Displayable :: dspCount = 0;
 
-PRL_Displayable :: PRL_Displayable() : dspMainDst({0.0f, 0.0f, 0, 0}), dspMainTexture(nullptr),
+PRL_Displayable :: PRL_Displayable() : dspMainDst(0.0f, 0.0f, 0, 0), dspMainTexture(nullptr),
 dspRenderer(handler.display.renderer[0]), dspRotAngle(0.0), dspDisplayerAddress(0), dspDisplayerAdded(false),
-dspCollType(PRL_COLLTYPE_0), dspVelocity(0.0f, 0.0f)
+dspVelocity(0.0f, 0.0f)
 {
     dspCount++;
 }
@@ -100,12 +100,14 @@ double PRL_Displayable :: getRotAngle() const noexcept
 
 void PRL_Displayable :: setPos(float x, float y) noexcept
 {
+	dspDesiredPos.set(x, y);
     dspMainDst.x = x;
     dspMainDst.y = y;
 }
 
 void PRL_Displayable :: setPos(PRL_FPoint const& pos) noexcept
 {
+	dspDesiredPos = pos;
     dspMainDst.x = pos.x;
     dspMainDst.y = pos.y;
 }
@@ -114,12 +116,14 @@ void PRL_Displayable :: setCenterPos(float x, float y) noexcept
 {
     dspMainDst.x = x - dspMainDst.w/2.0;
     dspMainDst.y = y - dspMainDst.h/2.0;
+    dspDesiredPos.set(dspMainDst.x, dspMainDst.y);
 }
 
 void PRL_Displayable :: setCenterPos(PRL_FPoint const& pos) noexcept
 {
     dspMainDst.x = pos.x - dspMainDst.w/2.0;
     dspMainDst.y = pos.y - dspMainDst.h/2.0;
+    dspDesiredPos.set(dspMainDst.x, dspMainDst.y);
 }
 
 PRL_FRect const& PRL_Displayable :: getDstRect() const noexcept
@@ -127,26 +131,7 @@ PRL_FRect const& PRL_Displayable :: getDstRect() const noexcept
     return dspMainDst;
 }
 
-void PRL_Displayable :: enableCollision() noexcept
-{
-	dspCollEnabled = true;
-}
-
-void PRL_Displayable :: disableCollision() noexcept
-{
-	dspCollEnabled = false;
-}
-
-bool PRL_Displayable :: isCollisionEnabled() const noexcept
-{
-	return dspCollEnabled;
-}
-
-void PRL_Displayable :: setCollisionPriority()
-{
-	;
-}
-
+// Motion
 void PRL_Displayable :: enableMotion() noexcept
 {
 	dspMotionEnabled = true;

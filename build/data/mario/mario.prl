@@ -11,17 +11,20 @@ mario3.png
 [mask]
 0
 
-[hitbox-rect]
+[collision]
+-1
+
+[rectangle]
 0
 
-[hitbox-circle]
+[circle]
 0
 
-[hitbox-polygon]
+[polygon]
 0
 
 [action-point]
 0
 
-[anchor-point]
+[anchor]
 0

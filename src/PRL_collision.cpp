@@ -34,6 +34,11 @@ PRL_FPoint const& PRL_HitBox :: getCenterOfMass() const noexcept
 	return _fpoint_temp;
 }
 
+PRL_HitBoxType PRL_HitBox :: getType() const noexcept
+{
+	return type;
+}
+
 void PRL_HitBox :: computeCOM() noexcept
 {
     ;
@@ -42,6 +47,7 @@ void PRL_HitBox :: computeCOM() noexcept
 
 PRL_HitBoxRect :: PRL_HitBoxRect(PRL_FRect const& rect)
 {
+	type = PRL_HITBOXTYPE_RECT;
 	includingFRect = rect;
 }
 
@@ -75,6 +81,216 @@ void PRL_HitBoxRect :: computeCOM() noexcept
 	centerOfMass.x = (includingFRect.x + (float)includingFRect.w)/2.0f;
 	centerOfMass.y = (includingFRect.y + (float)includingFRect.h)/2.0f;
 }
+
+
+
+
+
+PRL_Collidable :: PRL_Collidable() : collIsColliding(false)
+{
+	;
+}
+
+PRL_Collidable :: ~PRL_Collidable()
+{
+	;
+}
+
+void PRL_Collidable :: enableCollision() noexcept
+{
+	collEnabled = true;
+}
+
+void PRL_Collidable :: disableCollision() noexcept
+{
+	collEnabled = false;
+}
+
+bool PRL_Collidable :: isCollisionEnabled() const noexcept
+{
+	return collEnabled;
+}
+
+void PRL_Collidable :: setCollisionPriority()
+{
+	;
+}
+
+bool PRL_Collidable :: isColliding() const noexcept
+{
+	return collIsColliding;
+}
+
+
+
+bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept
+{
+	if (PRL_TestCollision(hitbox1.getIncludingRect(), hitbox2.getIncludingRect()))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool PRL_TestCollision(PRL_FPoint const& point, PRL_FRect const& frect) noexcept
+{
+	if (point.x >= frect.x && point.x <= frect.x + frect.w && point.y >= frect.y && point.y <= frect.y + frect.h)
+		return true;
+	else
+		return false;
+}
+
+PRL_FPoint fpoint1, fpoint2, fpoint3, fpoint4;
+bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) noexcept
+{
+	fpoint1.set(rect1.x, rect1.y);
+	fpoint2.set(rect1.x + static_cast<float>(rect1.w), rect1.y);
+	fpoint3.set(rect1.x, rect1.y + static_cast<float>(rect1.h));
+	fpoint4.set(rect1.x + static_cast<float>(rect1.w), rect1.y + static_cast<float>(rect1.h));
+
+	if (PRL_TestCollision(fpoint1, rect2) && PRL_TestCollision(fpoint2, rect2) &&
+		PRL_TestCollision(fpoint3, rect2) && PRL_TestCollision(fpoint4, rect2))
+	{
+			return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_CollInfo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+
+int PRL_CollInfo :: collInfCount = 0;
+
+PRL_CollInfo :: PRL_CollInfo()
+{
+	collInfCount++;
+}
+
+PRL_CollInfo :: ~PRL_CollInfo()
+{
+	collInfCount--;
+}
+
+void PRL_CollInfo :: clear() noexcept
+{
+	hitboxHit.clear();
+	target.clear();
+}
+
+int PRL_CollInfo :: getCount() noexcept
+{
+	return collInfCount;
+}
+
+
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_Collider %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+int PRL_Collider :: dsprCount = 0;
+
+PRL_Collider :: PRL_Collider()
+{
+    dsprCount++;
+}
+
+PRL_Collider :: ~PRL_Collider()
+{
+    dsprCount--;
+}
+
+void PRL_Collider :: add(PRL_Collidable *newColl)
+{
+    if (!isAdded(newColl))
+    {
+        collidable.push_back(newColl);
+        newColl->collider_address = collidable.size() - 1;
+    }
+    else
+    {
+        PRL_SetError("Collidable already added");
+    }
+}
+
+void PRL_Collider :: remove(PRL_Collidable* rmColl)
+{
+    if (isAdded(rmColl))
+    {
+        for (size_t i(rmColl->collider_address+1); i < collidable.size(); ++i) // update addresses greater than the removed collidable
+        {
+            collidable[i]->collider_address--;
+        }
+
+        collidable.erase(collidable.begin() + rmColl->collider_address);
+        rmColl->collider_address = -1;
+    }
+    else
+    {
+        PRL_SetError("Provided collidable doesn't belong to collider");
+    }
+}
+
+bool PRL_Collider :: isAdded(PRL_Collidable *coll) const noexcept
+{
+    for (size_t i(0); i < collidable.size(); ++i)
+    {
+        if (collidable[i] == coll)
+            return true;
+    }
+    return false;
+}
+
+void PRL_Collider :: testCollisions() const noexcept
+{
+	for (size_t i(0); i < collidable.size(); ++i)
+	{
+		collidable[i]->collInfo.clear();
+		collidable[i]->collIsColliding = false;
+	}
+
+	for (size_t i(0); i < collidable.size() - 1; ++i)
+	{
+		for (size_t j(i + 1); j < collidable.size(); ++j)
+		{
+			size_t sz_i(collidable[i]->collHitbox.size());
+			size_t sz_j(collidable[j]->collHitbox.size());
+
+			for (size_t k(0); k < sz_i; ++k) // k loops over hit boxes of i
+			{
+				for (size_t l(0); l < sz_j; ++l) // l loops over hit boxes of j
+				{
+					if (PRL_TestCollision(*collidable[i]->collHitbox[k],
+											*collidable[j]->collHitbox[l]) == true)
+					{
+						// Update CollInfo for collidable i
+						collidable[i]->collInfo.target.push_back(collidable[j]);
+						collidable[i]->collInfo.hitboxHit.push_back(l);
+						collidable[i]->collIsColliding = true;
+
+						// Update CollInfo for collidable j
+						collidable[j]->collInfo.target.push_back(collidable[i]);
+						collidable[j]->collInfo.hitboxHit.push_back(k);
+						collidable[j]->collIsColliding = true;
+					}
+				}
+			}
+		}
+	}
+}
+
+int PRL_Collider :: getCount() noexcept
+{
+	return dsprCount;
+}
+
+
+///%%%%%%%%%%%%%%%%%%%%%%%%%%%% OLD IMPLEMENTATION %%%%%%%%%%%%%%%%%%%%%%
 
 
 typedef struct PRL_Vector PRL_Vector; // to be depreciated

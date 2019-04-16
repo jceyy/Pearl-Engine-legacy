@@ -597,10 +597,10 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 	image->display.get(dspMainTexture, dspMainDst, dspMaskTexture, dspMaskDst);
 
 	// Temporary
-	dspMainHitbox.clear();
+	collHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, image->display.getSize().x, image->display.getSize().y);
     PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
-	dspMainHitbox.push_back(hitbox);;
+	collHitbox.push_back(hitbox);
 
 	return 0;
 }
@@ -642,6 +642,16 @@ PRL_Animation :: ~PRL_Animation()
 	clear_CPU();
 	clear_GPU();
 	animationCount--;
+
+	for (size_t i(0); i < collision.mainHitbox.size(); ++i)
+	{
+        delete collision.mainHitbox[i];
+
+        for (size_t j(0); j < collision.mainHitbox.size(); ++j)
+		{
+			delete collision.maskHitbox[i][j];
+		}
+	}
 }
 
 int PRL_Animation :: load_CPU()
@@ -727,7 +737,55 @@ int PRL_Animation :: load_CPU()
 				getline(file, line);
 			}
 		}
-		// Points: still to do
+
+		while (line != "[collision]")
+		{
+			getline(file, line);
+		}
+        getline(file, line);
+
+        if (stoi(line) == -1) // no use of collision, default hit box is entire texture
+		{
+			PRL_FRect local_rect; PRL_FPoint local_p(0.0f, 0.0f);
+			for (size_t i(0); false && i < framesNb; ++i)
+			{
+				// Main hit boxes
+				local_rect.set(local_p, display.mainScaledTextureSize[i]);
+				PRL_HitBoxRect* hb_r = new PRL_HitBoxRect(local_rect);
+				if (hb_r == nullptr)
+				{
+					PRL_SetError("Unable to create main hit box", false);
+					return PRL_ERROR;
+				}
+				collision.mainHitbox.push_back(hb_r);
+				collision.maskHitbox.resize(framesNb);
+
+				// Mask hit boxes
+				for (size_t j(0); j < display.maskSurface[i].size(); ++j)
+				{
+					local_rect.set(local_p, display.mainScaledTextureSize[i]);
+					PRL_HitBoxRect* hb_r_m = new PRL_HitBoxRect(local_rect);
+					if (hb_r_m == nullptr)
+					{
+						PRL_SetError("Unable to create mask hit box", false);
+						return PRL_ERROR;
+					}
+					collision.maskHitbox[i].push_back(hb_r_m);
+				}
+			}
+		}
+		else
+		{
+			PRL_SetError(string("-- Pearl Beta -- Collision should be set to -1 in file: ") + filePath, true);
+		}
+		// points
+
+		// TEMP: anchor file
+		display.anchorPoint.clear();
+		for (size_t i(0); i < framesNb; ++i)
+		{
+			display.anchorPoint.push_back(PRL_Point(0, 0));
+		}
 
 		file.close();
 	}
@@ -879,6 +937,11 @@ SDL_Renderer* PRL_Animation :: _display :: getRenderer() const
 	return renderer;
 }
 
+PRL_Point const& PRL_Animation :: _display :: getAnchor(size_t which) const noexcept
+{
+	return anchorPoint[which];
+}
+
 /* ********************************************* */
 /*            _PRL_AnimationAccessor             */
 /* ********************************************* */
@@ -948,10 +1011,10 @@ int PRL_Animated :: setAnim(PRL_Animation* anim)
 	updateDisplayable();
 
 	// Temporary
-	dspMainHitbox.clear();
+	collHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, anim->display.getSize(0).x, anim->display.getSize(0).y);
 	PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
-	dspMainHitbox.push_back(hitbox);
+	collHitbox.push_back(hitbox);
 
 	return 0;
 }
@@ -1008,9 +1071,13 @@ void PRL_Animated :: update()
 	}
 }
 
+PRL_Point temp_point;
 void PRL_Animated :: updateDisplayable()
 {
+	temp_point = targetAnimation->display.getAnchor(currentFrame);
 	dspMainTexture = targetAnimation->display.getTexture(currentFrame);
+	dspMainDst.x = dspDesiredPos.x - temp_point.x;
+	dspMainDst.y = dspDesiredPos.y - temp_point.y;
 	dspMainDst.w = targetAnimation->display.getSize(currentFrame).x;
 	dspMainDst.h = targetAnimation->display.getSize(currentFrame).y;
 }

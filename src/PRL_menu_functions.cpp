@@ -19,17 +19,21 @@ int PRL_TestZone()
 	bool quit(false);
 
 	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.prl");
+	PRL_Animation* animWow = handler.loadAnimation("data/wow/wow.prl");
 	PRL_Image* image = handler.loadImage("data/imgtest/img.prl");
-	if (animMario == nullptr || image == nullptr) // error
+	if (animMario == nullptr || image == nullptr || animWow == nullptr) // error
 	{
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
 	}
 
+
 	PRL_Sprite* sprite = handler.createSprite(image);
 	PRL_Animated* mario = handler.createAnimated(animMario);
+	PRL_Animated* wowGuy = handler.createAnimated(animWow);
 	PRL_Animated* mario_erstatz = handler.createAnimated(animMario);
-	if (mario == nullptr || mario_erstatz == nullptr || sprite == nullptr) // error
+
+	if (mario == nullptr || mario_erstatz == nullptr || sprite == nullptr || wowGuy == nullptr) // error
 	{
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
@@ -40,10 +44,12 @@ int PRL_TestZone()
 
 	//printAnimDiagnostics(animMario);
 
-	PRL_FPoint mpos({0.0,0.0});
-	PRL_FPoint mepos({0.0,0.0});
+	PRL_FPoint mpos(0.0, 0.0);
+	PRL_FPoint mepos(0.0, 0.0);
+	PRL_FPoint wowpos(0.0, 0.0);
 	bool showmario = false;
 
+	long long cpt(0);
 	while(!quit)
 	{
 		if (handler.input.quitEvent())
@@ -68,8 +74,28 @@ int PRL_TestZone()
             mpos.x += 50;
         }
 
+        if (handler.input.isKeyPressed(SDL_SCANCODE_I))
+        {
+            wowpos.y -= 50;
+        }
+		if (handler.input.isKeyPressed(SDL_SCANCODE_K))
+        {
+            wowpos.y += 50;
+        }
+		if (handler.input.isKeyPressed(SDL_SCANCODE_J))
+        {
+            wowpos.x -= 50;
+        }
+		if (handler.input.isKeyPressed(SDL_SCANCODE_L))
+        {
+            wowpos.x += 50;
+        }
+
         mario->setPos(mpos);
 		mario->update();
+		wowGuy->setPos(wowpos);
+		wowGuy->update();
+
         mario_erstatz->setPos(mpos);
 		mario_erstatz->update();
         showmario = false;
@@ -96,12 +122,19 @@ int PRL_TestZone()
         }
 
         //mario_erstatz->enableDisplay();
-	showmario = !showmario;
+		showmario = !showmario;
 
 		handler.update();
+
+		if (wowGuy->isColliding() && mario->isColliding())
+		{
+			cpt++;
+			cout << "Collision detected! " + to_string(cpt) << endl;
+		}
 		PRL_Delay(10000);
 	}
-    return 0;
+
+	return 0;
 }
 
 void printAnimDiagnostics(PRL_Animation* anim)
