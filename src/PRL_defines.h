@@ -37,7 +37,8 @@
 \version {0.98.3}
 */
 
-
+#define PRL_PLAN_MAX 32
+#define PRL_PLAN_HUD 0
 
 /// FILE ///
 #define PRL_CONFIG_FILE_PATH "config/settings.txt"

@@ -29,9 +29,9 @@ int PRL_TestZone()
 
 
 	PRL_Sprite* sprite = handler.createSprite(image);
-	PRL_Animated* mario = handler.createAnimated(animMario);
 	PRL_Animated* wowGuy = handler.createAnimated(animWow);
 	PRL_Animated* mario_erstatz = handler.createAnimated(animMario);
+    PRL_Animated* mario = handler.createAnimated(animMario);
 
 	if (mario == nullptr || mario_erstatz == nullptr || sprite == nullptr || wowGuy == nullptr) // error
 	{
@@ -93,8 +93,10 @@ int PRL_TestZone()
 
         mario->setPos(mpos);
 		mario->update();
+        mario->setRotAngle((double)sqrt(mpos.x*mpos.x+mpos.y*mpos.y)/100);
 		wowGuy->setPos(wowpos);
-		wowGuy->update();
+		wowGuy->setRotAngle((double)sqrt(wowpos.x*wowpos.x+wowpos.y*wowpos.y)/10);
+        wowGuy->update();
 
         mario_erstatz->setPos(mpos);
 		mario_erstatz->update();
@@ -121,7 +123,7 @@ int PRL_TestZone()
             showmario = true;
         }
 
-        //mario_erstatz->enableDisplay();
+        mario_erstatz->disableDisplay();
 		showmario = !showmario;
 
 		handler.update();

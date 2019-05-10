@@ -7,10 +7,14 @@ PRL_Handler :: PRL_Handler()
 {
     time.stopwatch.start();
     PRL_Displayer disp0;
-    display.displayer.push_back(disp0);
 
     PRL_Collider colr0;
-    collision.collider.push_back(colr0);
+    
+    for (size_t i(0); i < PRL_PLAN_MAX; ++i)
+    {
+        display.displayer.push_back(disp0);
+        collision.collider.push_back(colr0);
+    }
 }
 
 PRL_Handler :: ~PRL_Handler()
@@ -54,7 +58,7 @@ PRL_Animation* PRL_Handler :: loadAnimation(const std::string& file_path, SDL_Re
 	return anim;
 }
 
-PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
+PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim, int plan)
 {
 	if (anim == nullptr)
 	{
@@ -76,7 +80,7 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim)
 	{
 		animd->setAnim(anim);
 		display.animated.push_back(animd);
-        display.displayer[0].add(animd);
+        display.displayer[0].add(animd); cout << "DEBUG HANDLER " + to_string(plan) << endl;
         collision.collider[0].add(animd);
 	}
 	else
@@ -116,7 +120,7 @@ PRL_Image* PRL_Handler :: loadImage(const std::string& file_path, SDL_Renderer* 
 	return img;
 }
 
-PRL_Sprite* PRL_Handler :: createSprite(PRL_Image* image)
+PRL_Sprite* PRL_Handler :: createSprite(PRL_Image* image, int plan)
 {
 	if (image == nullptr)
 	{
@@ -162,13 +166,22 @@ void PRL_Handler :: update()
 {
 	input.update();
 	time.update();
-	collision.collider[0].testCollisions();
+    collision.collider[0].testCollisions();
+    
+    for (size_t i(0); i < display.renderer.size(); ++i)
+    {
+        SDL_RenderClear(display.renderer[i]);
+    }
+    
 	for (size_t i(0); i < display.displayer.size(); ++i)
 	{
 		display.displayer[i].display();
-		SDL_RenderPresent(display.renderer[i]);
-		SDL_RenderClear(display.renderer[i]);
 	}
+	
+	for (size_t i(0); i < display.renderer.size(); ++i)
+    {
+        SDL_RenderPresent(display.renderer[i]);
+    }
 }
 
 /*PRL_Animated* PRL_Handler :: createAnimated()

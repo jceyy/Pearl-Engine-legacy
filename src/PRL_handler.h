@@ -77,8 +77,8 @@ public:
 	PRL_Image* loadImage(const std::string& file_path, SDL_Renderer* render);
 
 	//
-    PRL_Animated* createAnimated(PRL_Animation* anim);
-	PRL_Sprite* createSprite(PRL_Image* image);
+    PRL_Animated* createAnimated(PRL_Animation* anim, int plan = PRL_PLAN_MAX);
+	PRL_Sprite* createSprite(PRL_Image* image, int plan = PRL_PLAN_MAX);
 
     void update();
 
@@ -96,13 +96,13 @@ public:
 	// Current FPS function?
 
 	// Updater, Collider, Displayer, Physic system
+    // update animations here
 
 	static int getHandlerCount();
 
 private:
 	static int handlerCount;
 
-	//std::vector <PRL_Sprite*> sprite;
 
 	// Threads/ networking, out screen update
 

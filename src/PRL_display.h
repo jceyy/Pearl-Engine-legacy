@@ -55,6 +55,18 @@ public:
     virtual void setCenterPos(PRL_FPoint const& pos) noexcept;
     //! @brief Get destination rectangle used for display.
     PRL_FRect const& getDstRect() const noexcept;
+    
+    void setAlpha(float alpha);
+    void setAlpha(float alpha, long long us);
+    
+    void setScale(float scale);
+    void setScale(float scale, long long us);
+    
+    void setAngle(double angle);
+    void setAngle(double angle, long long us);
+    
+    void setColorMode(SDL_Color const& color);
+    void setColorMode(SDL_Color const& color, long long us);
 
 protected:
     PRL_FRect dspMainDst; //!< @brief Main texture's destination rectangle.
