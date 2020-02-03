@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     //PRL_Logo();
     //PRL_LoadingScreen();
     main_return = PRL_TestZone();
-    PRL_Delay(500000);
+    //PRL_Delay(500000);
 
     PRL_Quit();
     return main_return;

@@ -61,6 +61,8 @@ add_executable(pearl-engine
 	src/PRL_time.cpp
 
 	src/PRL_types.cpp
+	
+	src/PRL_text.cpp
 )
 
 target_link_libraries(pearl-engine ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})

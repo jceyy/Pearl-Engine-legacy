@@ -231,24 +231,25 @@ public:
     This method returns the last error that was set. Use this function to help with debugging.
     This function is similar to PRL_GetError();
     */
-    static std::string getError();
+    static std::string getError() noexcept;
     //! Set an error.
     /*!
     Use this function to help with debugging. This function is similar to PRL_SetError().
     */
-    static void setError(std::string const& msg);
+    static void setError(std::string const& msg) noexcept;
     //! Get how many errors happened.
     /*!
     At each time the function setError() is called, the error count is incremented.
     This function is similar to PRL_ErrorCount().
     */
-    static int getErrorCount();
+    static int getErrorCount() noexcept;
 
 private:
-	//! Write the last error to the error file
-	static void writeError();
+	//! Write the errors to the error file
+	static void writeErrors();
     static std::string last_err; //!< Last error.
     static int err_count; //!< Errors count.
+    static std::vector <std::string> error; //!< Vector of all the errors.
 };
 
 //! Function responsible for the initialization of the Pearl Engine.

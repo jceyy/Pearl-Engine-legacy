@@ -382,8 +382,14 @@ void PRL_Quit()
 {
     cout << PRL_TimeStamp() << " Quitting..." << endl << endl;
 
-    cout << "Errors count: " << PRL_ErrorCount() << endl;
+    cout << "Errors: " << PRL_ErrorCount() << endl;
     cout << "Quitting PRL" << endl;
+
+    if (PRL_ErrorCount() != 0)
+	{
+		cerr << "List of the errors" << endl;
+
+	}
     SDL_EnableScreenSaver();
     handler.freeall();
 
@@ -425,30 +431,30 @@ void PRL_LoadingScreen() // whether or not to display the loading percentage.
 
 std::string PRL_ErrorHandling :: last_err = std::string("");
 int PRL_ErrorHandling :: err_count = 0;
+std::vector <std::string> PRL_ErrorHandling :: error;
 
-std::string PRL_ErrorHandling :: getError()
+std::string PRL_ErrorHandling :: getError() noexcept
 {
     return last_err;
 }
 
-void PRL_ErrorHandling :: setError(std::string const& msg)
+void PRL_ErrorHandling :: setError(std::string const& msg) noexcept
 {
     err_count++;
     last_err = PRL_TimeStamp() + " " + msg;
-
-    #if PRL_AUTO_WRITE_ERRORS == 1
-	writeError();
-	#endif // PRL_AUTO_WRITE_ERRORS
 }
 
-int PRL_ErrorHandling :: getErrorCount()
+int PRL_ErrorHandling :: getErrorCount() noexcept
 {
     return err_count;
 }
 
-void PRL_ErrorHandling::writeError()
+void PRL_ErrorHandling :: writeErrors()
 {
-	cerr << PRL_GetError() << endl;
+	if (err_count != 0)
+		cerr << err_count << " errors" << endl;
+	for (size_t i(0); i < error.size(); ++i)
+		cerr << error[i] << endl;
 }
 
 /* ************ PRL_Config ************* */

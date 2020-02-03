@@ -1,6 +1,7 @@
 #include "PRL.h"
 
 #include <iostream>
+#include <cmath>
 
 using std::cout;
 using std::cerr;
@@ -8,13 +9,10 @@ using std::endl;
 using std::string;
 
 void printAnimDiagnostics(PRL_Animation* anim);
+void printClassDiagnostics();
 
 int PRL_TestZone()
 {
-	PRL_FPoint p(1.0f, 1.0f), q(-1.0f, -1.0f);
-	PRL_FPoint r = -p + q - 2.4598645123*p+0.4*4;
-	cout << "DEBUG: x: " + to_string(r.x) + " y: " + to_string(r.y) << endl;
-
 	// To DO: add save-memory settings flag to reduce loaded textures then implement in load animation
 	bool quit(false);
 
@@ -40,7 +38,6 @@ int PRL_TestZone()
 	}
 
 	sprite->setPos(1000.0, 100.0);
-	//sprite->makeActive(true);
 
 	//printAnimDiagnostics(animMario);
 
@@ -49,7 +46,17 @@ int PRL_TestZone()
 	PRL_FPoint wowpos(0.0, 0.0);
 	bool showmario = false;
 
+	// Textbox test
+	SDL_Color color_white = {255, 128, 255, 0};
+	int font_size = 180;
+    PRL_Font test_font("data/fonts/cooper.ttf", font_size, TTF_STYLE_ITALIC, color_white);
+	PRL_TextLabel* textLabelTest = handler.createTextLabel("Mangez des pommes", test_font);
+	textLabelTest->setPos(400, 500);
+
+
+
 	long long cpt(0);
+	printClassDiagnostics();
 	while(!quit)
 	{
 		if (handler.input.quitEvent())
@@ -60,18 +67,30 @@ int PRL_TestZone()
 		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))
         {
             mpos.y -= 50;
+
+            font_size += 2;
+            test_font.setSize(font_size);
+            textLabelTest->setRenderStyle(PRL_TEXTSTYLE_BLENDED);
+            textLabelTest->setText("Mangez des pommes up!");
         }
 		if (handler.input.isKeyPressed(SDL_SCANCODE_DOWN))
         {
             mpos.y += 50;
+
+            font_size -= 2;
+            test_font.setSize(font_size);
+            textLabelTest->setRenderStyle(PRL_TEXTSTYLE_SOLID);
+            textLabelTest->setText("Mangez des pommes down!");
         }
 		if (handler.input.isKeyPressed(SDL_SCANCODE_LEFT))
         {
             mpos.x -= 50;
+            test_font.setStyle(TTF_STYLE_UNDERLINE|TTF_STYLE_ITALIC);
         }
 		if (handler.input.isKeyPressed(SDL_SCANCODE_RIGHT))
         {
             mpos.x += 50;
+            test_font.setStyle(TTF_STYLE_STRIKETHROUGH);
         }
 
         if (handler.input.isKeyPressed(SDL_SCANCODE_I))
@@ -146,4 +165,18 @@ void printAnimDiagnostics(PRL_Animation* anim)
 	cout << "Frames number: " << anim->display.getFramesNumber() << endl;
 	cout << "Frame rate: " << anim->display.getFPS() << endl;
 	cout << "Reference render size: " << p.x << "x" << p.y << endl << endl;
+}
+
+void printClassDiagnostics()
+{
+	cout << endl << "Class currently active:" << endl;
+	cout << "PRL_Displayable: " << PRL_Displayable::getCount() << endl;
+	//cout << "PRL_Displayer: " << PRL_Displayer::getCount() << endl;
+	cout << "PRL_Image: " << PRL_Image::getCount() << endl;
+	cout << "PRL_Sprite: " << PRL_Sprite::getCount() << endl;
+	cout << "PRL_Animation: " << PRL_Animation::getCount() << endl;
+	cout << "PRL_Animated: " << PRL_Animated::getCount() << endl;
+	cout << "PRL_Handler: " << PRL_Handler::getCount() << endl;
+	cout << "PRL_Font: " << PRL_Font::getCount() << endl;
+	cout << "PRL_TextLabel: " << PRL_TextLabel::getCount() << endl;
 }

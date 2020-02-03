@@ -50,6 +50,7 @@
 #include "PRL_input.h"
 #include "PRL_math.h"
 #include "PRL_HUD.h"
+#include "PRL_text.h"
 #include "PRL_time.h"
 #include "PRL_handler.h"
 

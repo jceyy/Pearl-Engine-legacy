@@ -2,24 +2,33 @@
 
 #include "PRL_handler.h"
 
+int PRL_Handler :: handlerCount = 0;
+
+int PRL_Handler :: getCount() noexcept
+{
+	return handlerCount;
+}
 
 PRL_Handler :: PRL_Handler()
 {
     time.stopwatch.start();
     PRL_Displayer disp0;
 
-    PRL_Collider colr0;
-    
+    PRL_Collider col0;
+
     for (size_t i(0); i < PRL_PLAN_MAX; ++i)
     {
         display.displayer.push_back(disp0);
-        collision.collider.push_back(colr0);
+        collision.collider.push_back(col0);
     }
+
+    handlerCount++;
 }
 
 PRL_Handler :: ~PRL_Handler()
 {
     freeall();
+    handlerCount--;
 }
 
 void PRL_Handler :: freeall()
@@ -80,7 +89,7 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim, int plan)
 	{
 		animd->setAnim(anim);
 		display.animated.push_back(animd);
-        display.displayer[0].add(animd); cout << "DEBUG HANDLER " + to_string(plan) << endl;
+        display.displayer[0].add(animd); cout << "DEBUG HANDLER (plan) " + to_string(plan) << endl;
         collision.collider[0].add(animd);
 	}
 	else
@@ -122,6 +131,7 @@ PRL_Image* PRL_Handler :: loadImage(const std::string& file_path, SDL_Renderer* 
 
 PRL_Sprite* PRL_Handler :: createSprite(PRL_Image* image, int plan)
 {
+	plan ++; // plan is not used yet
 	if (image == nullptr)
 	{
 		PRL_SetError("Invalid animation");
@@ -150,6 +160,23 @@ PRL_Sprite* PRL_Handler :: createSprite(PRL_Image* image, int plan)
 	return sprite;
 }
 
+PRL_TextLabel* PRL_Handler :: createTextLabel(std::string const& text, PRL_Font const& font)
+{
+	PRL_TextLabel* textLabel(nullptr);
+	try
+	{
+		textLabel = new PRL_TextLabel(text, font);
+	}
+	catch (std::exception e)
+	{
+		return nullptr;
+	}
+
+	display.textLabel.push_back(textLabel);
+	textLabel->renderText();
+	display.displayer[0].add(textLabel);
+	return textLabel;
+}
 // Time
 
 long long PRL_Handler :: _time :: getTimeUpdated() const
@@ -167,21 +194,28 @@ void PRL_Handler :: update()
 	input.update();
 	time.update();
     collision.collider[0].testCollisions();
-    
+	// text update here?
+
     for (size_t i(0); i < display.renderer.size(); ++i)
     {
         SDL_RenderClear(display.renderer[i]);
     }
-    
+
 	for (size_t i(0); i < display.displayer.size(); ++i)
 	{
 		display.displayer[i].display();
 	}
-	
+
 	for (size_t i(0); i < display.renderer.size(); ++i)
     {
         SDL_RenderPresent(display.renderer[i]);
     }
+
+    for (size_t i(0); i < display.textLabel.size(); ++i)
+	{
+		if (display.textLabel[i]->hasChanged())
+			display.textLabel[i]->renderText();
+	}
 }
 
 /*PRL_Animated* PRL_Handler :: createAnimated()

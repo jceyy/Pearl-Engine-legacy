@@ -349,8 +349,11 @@ public:
     ///
     int setImage(PRL_Image* image);
 
+	static int getCount() noexcept;
 protected:
     PRL_Image* targetImage;
+
+    static int spriteCount;
 };
 
 
@@ -472,21 +475,23 @@ public:
     ~PRL_Animated();
 
     ///
-    int setAnim(PRL_Animation* anim);
+    void setAnim(PRL_Animation* anim);
     /// Start or resume an animation and pause all the others
-    void start();
+    void start() noexcept;
     /// Reset and start an animation
-    void restart();
+    void restart() noexcept;
     /// Stop an animation and set the current frame to 0
-    void stop();
+    void stop() noexcept;
     /// Check whether the animation is started
-    bool isStarted() const;
+    bool isStarted() const noexcept;
     /// Return the current frame of the currently used animation
-    int getCurrentFrame() const;
+    int getCurrentFrame() const noexcept;
     /// Return how many times the currently active animation has repeated without stopping
-    int getRepeatCount() const;
+    int getRepeatCount() const noexcept;
     ///
 	void update();
+
+	static int getCount() noexcept;
 
 protected:
     PRL_Animation* targetAnimation;
@@ -494,8 +499,10 @@ protected:
     int currentFrame;
     int repeatCount;
     bool started;
+	static int animatedCount;
 
     void updateDisplayable();
+
     // Used when an animation is started to pause all the others.
     //void pauseAllExcept(const int which); // Keep private!
 };

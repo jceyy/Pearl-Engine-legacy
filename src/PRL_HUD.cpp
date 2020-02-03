@@ -911,8 +911,8 @@ void PRL_TextBox :: stopUsingBackground()
 }
 
 void PRL_TextBox :: renderText_surfaceManipulation(int lineNb) // split the work between surface manipulation and texture manipulation to allow multi-threading optimization
-{*/
-    /*if (lineNb >= linesNumber)
+{
+    if (lineNb >= linesNumber)
         cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_TextBox, invalid line number (" << lineNb << ")" << endl;
     if (surface != NULL)
     {
@@ -1911,5 +1911,6 @@ void PRL_HScrollBar :: renderBar()
 void PRL_HScrollBar :: updateOutput()
 {
     barOutput = 1.0 * (barPos.x + dspDst.x - minx) / (maxx - minx + 1);
-}*/
+}
+*/
 

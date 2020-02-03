@@ -556,10 +556,16 @@ void _PRL_ImageAccessor :: removeTargeting(PRL_Image* img) const
 	img->removeTargeting();
 }
 
+int PRL_Sprite :: spriteCount = 0;
+
+int PRL_Sprite :: getCount() noexcept
+{
+	return spriteCount;
+}
 
 PRL_Sprite :: PRL_Sprite() : targetImage(nullptr)
 {
-	;
+	spriteCount++;
 }
 
 
@@ -569,11 +575,12 @@ PRL_Sprite :: PRL_Sprite(PRL_Image* image)
 	{
 		throw (std::runtime_error(PRL_GetError()));
 	}
+	spriteCount++;
 }
 
 PRL_Sprite :: ~PRL_Sprite()
 {
-	;
+	spriteCount--;
 }
 
 
@@ -970,31 +977,38 @@ void _PRL_AnimationAccessor :: removeTarget(PRL_Animation* anim) const
 /*            		PRL_Animated                 */
 /* ********************************************* */
 
+int PRL_Animated :: animatedCount = 0;
+
+int PRL_Animated :: getCount() noexcept
+{
+	return animatedCount;
+}
+
 _PRL_AnimationAccessor accessor_animated;
 
 PRL_Animated :: PRL_Animated() : targetAnimation(nullptr), timeCurrent(0), timePrevUpdate(0),
 currentFrame(0), repeatCount(0), started(false)
 {
-	;
+	animatedCount++;
 }
 
 PRL_Animated :: PRL_Animated(PRL_Animation* anim) : targetAnimation(nullptr), timeCurrent(0),
 timePrevUpdate(0), currentFrame(0), repeatCount(0), started(false)
 {
 	setAnim(anim);
+	animatedCount++;
 }
 
 PRL_Animated :: ~PRL_Animated()
 {
-	;
+	animatedCount--;
 }
 
-int PRL_Animated :: setAnim(PRL_Animation* anim)
+void PRL_Animated :: setAnim(PRL_Animation* anim)
 {
 	if (anim == nullptr)
 	{
-		SDL_SetError("Invalid animation");
-		return PRL_ERROR;
+		PRL_SetError("Invalid animation (nullptr)", true);
 	}
 
 	accessor_animated.addTarget(anim);
@@ -1016,38 +1030,37 @@ int PRL_Animated :: setAnim(PRL_Animation* anim)
 	PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
 	collHitbox.push_back(hitbox);
 
-	return 0;
 }
 
-void PRL_Animated :: start()
+void PRL_Animated :: start() noexcept
 {
 	started = true;
 	timePrevUpdate = handler.time.getTimeUpdated();
 }
 
-void PRL_Animated :: restart()
+void PRL_Animated :: restart() noexcept
 {
 	started = true;
 	timePrevUpdate = handler.time.getTimeUpdated();
     currentFrame = 0;
 }
 
-void PRL_Animated :: stop()
+void PRL_Animated :: stop() noexcept
 {
 	started = false;
 }
 
-bool PRL_Animated :: isStarted() const
+bool PRL_Animated :: isStarted() const noexcept
 {
 	return started;
 }
 
-int PRL_Animated :: getCurrentFrame() const
+int PRL_Animated :: getCurrentFrame() const noexcept
 {
 	return currentFrame;
 }
 
-int PRL_Animated :: getRepeatCount() const
+int PRL_Animated :: getRepeatCount() const noexcept
 {
 	return repeatCount;
 }

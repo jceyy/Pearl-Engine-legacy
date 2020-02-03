@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 
+#include "PRL_text.h"
 #include "PRL_time.h"
 #include "PRL_configuration.h"
 #include "PRL_input.h"
@@ -31,6 +32,7 @@ public:
 		std::vector <PRL_Animated*> animated;
 		std::vector <PRL_Image*> image;
 		std::vector <PRL_Sprite*> sprite;
+		std::vector <PRL_TextLabel*> textLabel;
 
 		std::vector <PRL_Displayer> displayer;
 		PRL_Displayer hudDisplayer;
@@ -79,6 +81,7 @@ public:
 	//
     PRL_Animated* createAnimated(PRL_Animation* anim, int plan = PRL_PLAN_MAX);
 	PRL_Sprite* createSprite(PRL_Image* image, int plan = PRL_PLAN_MAX);
+	PRL_TextLabel* createTextLabel(std::string const& text, PRL_Font const& font);
 
     void update();
 
@@ -98,7 +101,7 @@ public:
 	// Updater, Collider, Displayer, Physic system
     // update animations here
 
-	static int getHandlerCount();
+	static int getCount() noexcept;
 
 private:
 	static int handlerCount;
