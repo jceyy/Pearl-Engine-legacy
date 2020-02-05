@@ -74,13 +74,13 @@ S operator*(S const& p, T q) noexcept
 	return q * p;
 }*/
 
-template<typename T, typename S>
+/*template<typename T, typename S>
 S operator/(S const& p, T q) noexcept
 {
 	static_assert(std::is_same<S, PRL_Point>::value || std::is_same<S, PRL_FPoint>::value || std::is_same<S, PRL_DPoint>::value, "At least one PRL point type is required");
 	static_assert(std::is_arithmetic<T>::value, "Arithmetic type is required");
 	return S(p.x / q, p.y / q);
-}
+}*/
 
 PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept;
 PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept;
@@ -112,7 +112,7 @@ public:
 	void set(PRL_Point const& x_y, PRL_Point const& w_h) noexcept;
 
     int x, y; //!< Coordinates.
-    int w, h; //!< Weight and height of the rectangle.
+    int w, h; //!< Width and height of the rectangle.
 };
 
 
