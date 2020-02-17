@@ -218,13 +218,17 @@ void PRL_Handler :: update()
 	}
 }
 
-/*PRL_Animated* PRL_Handler :: createAnimated()
+
+void PRL_Handler :: printClassDiagnostics() const noexcept
 {
-	PRL_Animated* animd(nullptr);
-	animd = new PRL_Animated();
-
-	if (animd != nullptr)
-		display.animated.push_back(animd);
-
-	return animd;
-}*/
+	cout << endl << "Classes currently active:" << endl;
+	cout << "PRL_Displayable: " << PRL_Displayable::getCount() << endl;
+	//cout << "PRL_Displayer: " << PRL_Displayer::getCount() << endl;
+	cout << "PRL_Image: " << PRL_Image::getCount() << endl;
+	cout << "PRL_Sprite: " << PRL_Sprite::getCount() << endl;
+	cout << "PRL_Animation: " << PRL_Animation::getCount() << endl;
+	cout << "PRL_Animated: " << PRL_Animated::getCount() << endl;
+	cout << "PRL_Handler: " << PRL_Handler::getCount() << endl;
+	cout << "PRL_Font: " << PRL_Font::getCount() << endl;
+	cout << "PRL_TextLabel: " << PRL_TextLabel::getCount() << endl;
+}

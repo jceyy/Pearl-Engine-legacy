@@ -101,6 +101,9 @@ public:
 	// Updater, Collider, Displayer, Physic system
     // update animations here
 
+    void printClassDiagnostics() const noexcept;
+
+
 	static int getCount() noexcept;
 
 private:
