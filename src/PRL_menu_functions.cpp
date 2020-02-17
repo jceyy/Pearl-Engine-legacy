@@ -9,7 +9,10 @@ using std::endl;
 using std::string;
 
 void printAnimDiagnostics(PRL_Animation* anim);
-void printClassDiagnostics();
+
+/// PRIORITIES
+/// Collisions (rect at least)
+/// Motion (instead of += cst for positions)
 
 int PRL_TestZone()
 {
@@ -24,7 +27,6 @@ int PRL_TestZone()
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
 	}
-
 
 	PRL_Sprite* sprite = handler.createSprite(image);
 	PRL_Animated* wowGuy = handler.createAnimated(animWow);
@@ -53,16 +55,18 @@ int PRL_TestZone()
 	PRL_TextLabel* textLabelTest = handler.createTextLabel("Mangez des pommes", test_font);
 	textLabelTest->setPos(400, 500);
 
-
-
-	long long cpt(0);
-	printClassDiagnostics();
+	//long long cpt(0);
+	handler.printClassDiagnostics();
 	while(!quit)
 	{
 		if (handler.input.quitEvent())
 		{
 			quit = true;
 		}
+		if (handler.input.isKeyPressed(SDL_SCANCODE_ESCAPE))
+        {
+            quit = true;
+        }
 
 		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))
         {
@@ -147,11 +151,11 @@ int PRL_TestZone()
 
 		handler.update();
 
-		if (wowGuy->isColliding() && mario->isColliding())
+		/*if (wowGuy->isColliding() && mario->isColliding())
 		{
 			cpt++;
 			cout << "Collision detected! " + to_string(cpt) << endl;
-		}
+		}*/
 		PRL_Delay(10000);
 	}
 
@@ -167,16 +171,3 @@ void printAnimDiagnostics(PRL_Animation* anim)
 	cout << "Reference render size: " << p.x << "x" << p.y << endl << endl;
 }
 
-void printClassDiagnostics()
-{
-	cout << endl << "Class currently active:" << endl;
-	cout << "PRL_Displayable: " << PRL_Displayable::getCount() << endl;
-	//cout << "PRL_Displayer: " << PRL_Displayer::getCount() << endl;
-	cout << "PRL_Image: " << PRL_Image::getCount() << endl;
-	cout << "PRL_Sprite: " << PRL_Sprite::getCount() << endl;
-	cout << "PRL_Animation: " << PRL_Animation::getCount() << endl;
-	cout << "PRL_Animated: " << PRL_Animated::getCount() << endl;
-	cout << "PRL_Handler: " << PRL_Handler::getCount() << endl;
-	cout << "PRL_Font: " << PRL_Font::getCount() << endl;
-	cout << "PRL_TextLabel: " << PRL_TextLabel::getCount() << endl;
-}
