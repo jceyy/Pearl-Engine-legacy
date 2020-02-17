@@ -12,43 +12,43 @@
 // CLASSES //
 
 /// Collision types (flags). They can be customizable like int32_t WALL = PRL_COLLTYPE_0, GROUND = PRL_COLLTYPE_1, PLAYER = PRL_COLLTYPE_2, ...
-enum PRL_CollType
+enum PRL_ColType : uint32_t
 {
-    PRL_COLLTYPE_0 = 1<<0,
-    PRL_COLLTYPE_1 = 1<<1,
-    PRL_COLLTYPE_2 = 1<<2,
-    PRL_COLLTYPE_3 = 1<<3,
-    PRL_COLLTYPE_4 = 1<<4,
-    PRL_COLLTYPE_5 = 1<<5,
-    PRL_COLLTYPE_6 = 1<<6,
-    PRL_COLLTYPE_7 = 1<<7,
-    PRL_COLLTYPE_8 = 1<<8,
-    PRL_COLLTYPE_9 = 1<<9,
-    PRL_COLLTYPE_10 = 1<<10,
-    PRL_COLLTYPE_11 = 1<<11,
-    PRL_COLLTYPE_12 = 1<<12,
-    PRL_COLLTYPE_13 = 1<<13,
-    PRL_COLLTYPE_14 = 1<<14,
-    PRL_COLLTYPE_15 = 1<<15,
-    PRL_COLLTYPE_16 = 1<<16,
-    PRL_COLLTYPE_17 = 1<<17,
-    PRL_COLLTYPE_18 = 1<<18,
-    PRL_COLLTYPE_19 = 1<<19,
-    PRL_COLLTYPE_20 = 1<<20,
-    PRL_COLLTYPE_21 = 1<<21,
-    PRL_COLLTYPE_22 = 1<<22,
-    PRL_COLLTYPE_23 = 1<<23,
-    PRL_COLLTYPE_24 = 1<<24,
-    PRL_COLLTYPE_25 = 1<<25,
-    PRL_COLLTYPE_26 = 1<<26,
-    PRL_COLLTYPE_27 = 1<<27,
-    PRL_COLLTYPE_28 = 1<<28,
-    PRL_COLLTYPE_29 = 1<<29,
-    PRL_COLLTYPE_30 = 1<<30,
+    PRL_COLTYPE_0 = 1<<0,
+    PRL_COLTYPE_1 = 1<<1,
+    PRL_COLTYPE_2 = 1<<2,
+    PRL_COLTYPE_3 = 1<<3,
+    PRL_COLTYPE_4 = 1<<4,
+    PRL_COLTYPE_5 = 1<<5,
+    PRL_COLTYPE_6 = 1<<6,
+    PRL_COLTYPE_7 = 1<<7,
+    PRL_COLTYPE_8 = 1<<8,
+    PRL_COLTYPE_9 = 1<<9,
+    PRL_COLTYPE_10 = 1<<10,
+    PRL_COLTYPE_11 = 1<<11,
+    PRL_COLTYPE_12 = 1<<12,
+    PRL_COLTYPE_13 = 1<<13,
+    PRL_COLTYPE_14 = 1<<14,
+    PRL_COLTYPE_15 = 1<<15,
+    PRL_COLTYPE_16 = 1<<16,
+    PRL_COLTYPE_17 = 1<<17,
+    PRL_COLTYPE_18 = 1<<18,
+    PRL_COLTYPE_19 = 1<<19,
+    PRL_COLTYPE_20 = 1<<20,
+    PRL_COLTYPE_21 = 1<<21,
+    PRL_COLTYPE_22 = 1<<22,
+    PRL_COLTYPE_23 = 1<<23,
+    PRL_COLTYPE_24 = 1<<24,
+    PRL_COLTYPE_25 = 1<<25,
+    PRL_COLTYPE_26 = 1<<26,
+    PRL_COLTYPE_27 = 1<<27,
+    PRL_COLTYPE_28 = 1<<28,
+    PRL_COLTYPE_29 = 1<<29,
+    PRL_COLTYPE_30 = 1<<30,
 };
 
 /// Collision group (or rule). You can use it as PRL_CollisionGroup group1 = PRL_COLLTYPE_0 | PRL_COLLTYPE_9 | PRL_COLLTYPE_25
-typedef uint32_t PRL_CollGroup;
+typedef uint32_t PRL_ColGroup;
 
 //! Enumeration containing all the hit box types
 /*!
@@ -104,12 +104,13 @@ inline bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) no
 
 class PRL_Collidable;
 
-class PRL_CollInfo
+//! Class capable of storing informations about a specific collision.
+class PRL_ColInfo
 {
 	friend class PRL_Collider;
 public:
-    PRL_CollInfo();
-    ~PRL_CollInfo();
+    PRL_ColInfo();
+    ~PRL_ColInfo();
 
     std::vector <int> hitboxHit; // Hitbox of target collidable hit by object
     std::vector<PRL_Collidable*> target; // Target collidable in collision
@@ -117,7 +118,7 @@ public:
     static int getCount() noexcept;
 
 private:
-	static int collInfCount;
+	static int colInfCount;
 	void clear() noexcept;
 };
 
@@ -130,30 +131,30 @@ public:
 	virtual ~PRL_Collidable() = 0;
 
 	//! @brief Enable collision.
-	void enableCollision() noexcept;
+	void enable() noexcept;
 	//! @brief Disable collision.
-	void disableCollision() noexcept;
+	void disable() noexcept;
 	//! @brief Tell whether collision is enabled or not.
-	bool isCollisionEnabled() const noexcept;
+	bool isEnabled() const noexcept;
 	//! @brief NOT IMPLEM. YET: Set collision priority.
 	void setCollisionPriority();
 	//! @brief Tell if a collision is happening.
 	bool isColliding() const noexcept;
 
 protected:
-	//! @brief Hit boxes.
+	//! @brief Hit boxes composing the collidable.
 	/*!
 	@detail In PRL_Displayable, the first hit boxes correspond to the main texture, and the rest
 	of them corresponds to the mask textures.
 	*/
-	std::vector <PRL_HitBox*> collHitbox;
+	std::vector <PRL_HitBox*> colHitbox;
 	// TO implement+ action point!
 	//std::vector <std::vector <PRL_HitBox*> > dspMaskHitbox; //!< @brief Mask textures' corresponding hit boxes.
-	bool collEnabled = false; //!< Tell whether collision is enabled or not.
-	bool collIsColliding;
-	PRL_CollType collType = PRL_COLLTYPE_0; //!< Collision type of the collidable.
-	PRL_CollGroup collGroup = PRL_COLLTYPE_0; //!< Collision group in which collisions are tested for this collidable.
-	PRL_CollInfo collInfo; //!< Contains information on collisions concerning this collidable.
+	bool colEnabled = false; //!< Tell whether collision is enabled or not.
+	bool colIsColliding;
+	PRL_ColType colType = PRL_COLTYPE_0; //!< Collision type of the collidable.
+	PRL_ColGroup colGroup = PRL_COLTYPE_0; //!< Collision group in which collisions are tested for this collidable.
+	PRL_ColInfo colInfo; //!< Contains information on collisions concerning this collidable.
 
 private:
 	int collider_address;
@@ -178,7 +179,7 @@ public:
 private:
     std::vector <PRL_Collidable*> collidable;
     /// Check whether the collidable is already added to the collider
-    inline bool isAdded(PRL_Collidable *coll) const noexcept;
+    inline bool isAdded(PRL_Collidable *col) const noexcept;
 
     static int dsprCount;
 };

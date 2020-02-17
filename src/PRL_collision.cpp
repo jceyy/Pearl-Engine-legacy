@@ -86,7 +86,7 @@ void PRL_HitBoxRect :: computeCOM() noexcept
 
 
 
-PRL_Collidable :: PRL_Collidable() : collIsColliding(false)
+PRL_Collidable :: PRL_Collidable() : colIsColliding(false)
 {
 	;
 }
@@ -96,19 +96,19 @@ PRL_Collidable :: ~PRL_Collidable()
 	;
 }
 
-void PRL_Collidable :: enableCollision() noexcept
+void PRL_Collidable :: enable() noexcept
 {
-	collEnabled = true;
+	colEnabled = true;
 }
 
-void PRL_Collidable :: disableCollision() noexcept
+void PRL_Collidable :: disable() noexcept
 {
-	collEnabled = false;
+	colEnabled = false;
 }
 
-bool PRL_Collidable :: isCollisionEnabled() const noexcept
+bool PRL_Collidable :: isEnabled() const noexcept
 {
-	return collEnabled;
+	return colEnabled;
 }
 
 void PRL_Collidable :: setCollisionPriority()
@@ -118,7 +118,7 @@ void PRL_Collidable :: setCollisionPriority()
 
 bool PRL_Collidable :: isColliding() const noexcept
 {
-	return collIsColliding;
+	return colIsColliding;
 }
 
 
@@ -165,27 +165,27 @@ bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) noexcept
  @endinternal
 */
 
-int PRL_CollInfo :: collInfCount = 0;
+int PRL_ColInfo :: colInfCount = 0;
 
-PRL_CollInfo :: PRL_CollInfo()
+PRL_ColInfo :: PRL_ColInfo()
 {
-	collInfCount++;
+	colInfCount++;
 }
 
-PRL_CollInfo :: ~PRL_CollInfo()
+PRL_ColInfo :: ~PRL_ColInfo()
 {
-	collInfCount--;
+	colInfCount--;
 }
 
-void PRL_CollInfo :: clear() noexcept
+void PRL_ColInfo :: clear() noexcept
 {
 	hitboxHit.clear();
 	target.clear();
 }
 
-int PRL_CollInfo :: getCount() noexcept
+int PRL_ColInfo :: getCount() noexcept
 {
-	return collInfCount;
+	return colInfCount;
 }
 
 
@@ -250,33 +250,33 @@ void PRL_Collider :: testCollisions() const noexcept
 {
 	for (size_t i(0); i < collidable.size(); ++i)
 	{
-		collidable[i]->collInfo.clear();
-		collidable[i]->collIsColliding = false;
+		collidable[i]->colInfo.clear();
+		collidable[i]->colIsColliding = false;
 	}
 
 	for (size_t i(0); i < collidable.size() - 1; ++i)
 	{
 		for (size_t j(i + 1); j < collidable.size(); ++j)
 		{
-			size_t sz_i(collidable[i]->collHitbox.size());
-			size_t sz_j(collidable[j]->collHitbox.size());
+			size_t sz_i(collidable[i]->colHitbox.size());
+			size_t sz_j(collidable[j]->colHitbox.size());
 
 			for (size_t k(0); k < sz_i; ++k) // k loops over hit boxes of i
 			{
 				for (size_t l(0); l < sz_j; ++l) // l loops over hit boxes of j
 				{
-					if (PRL_TestCollision(*collidable[i]->collHitbox[k],
-											*collidable[j]->collHitbox[l]) == true)
+					if (PRL_TestCollision(*collidable[i]->colHitbox[k],
+											*collidable[j]->colHitbox[l]) == true)
 					{
 						// Update CollInfo for collidable i
-						collidable[i]->collInfo.target.push_back(collidable[j]);
-						collidable[i]->collInfo.hitboxHit.push_back(l);
-						collidable[i]->collIsColliding = true;
+						collidable[i]->colInfo.target.push_back(collidable[j]);
+						collidable[i]->colInfo.hitboxHit.push_back(l);
+						collidable[i]->colIsColliding = true;
 
 						// Update CollInfo for collidable j
-						collidable[j]->collInfo.target.push_back(collidable[i]);
-						collidable[j]->collInfo.hitboxHit.push_back(k);
-						collidable[j]->collIsColliding = true;
+						collidable[j]->colInfo.target.push_back(collidable[i]);
+						collidable[j]->colInfo.hitboxHit.push_back(k);
+						collidable[j]->colIsColliding = true;
 					}
 				}
 			}
