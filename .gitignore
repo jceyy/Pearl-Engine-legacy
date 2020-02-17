@@ -1,0 +1,12 @@
+# ignore dlls
+build/*.dll
+
+# ignore build files
+build/obj/*
+build/x32_dll/*
+build/x64_dll/*
+build/*.exe
+
+# ignore code blocks specifics
+#codeblocks/*.depend
+#codeblocks/*.layout
