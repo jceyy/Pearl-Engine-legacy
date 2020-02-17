@@ -604,10 +604,10 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 	image->display.get(dspMainTexture, dspMainDst, dspMaskTexture, dspMaskDst);
 
 	// Temporary
-	collHitbox.clear();
+	colHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, image->display.getSize().x, image->display.getSize().y);
     PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
-	collHitbox.push_back(hitbox);
+	colHitbox.push_back(hitbox);
 
 	return 0;
 }
@@ -1025,10 +1025,10 @@ void PRL_Animated :: setAnim(PRL_Animation* anim)
 	updateDisplayable();
 
 	// Temporary
-	collHitbox.clear();
+	colHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, anim->display.getSize(0).x, anim->display.getSize(0).y);
 	PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
-	collHitbox.push_back(hitbox);
+	colHitbox.push_back(hitbox);
 
 }
 
