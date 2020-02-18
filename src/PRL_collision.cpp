@@ -11,19 +11,30 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_HitBox %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+
+int PRL_HitBox :: hbCount = 0;
+
+int PRL_HitBox :: getCount() noexcept
+{
+    return hbCount;
+}
 
 PRL_HitBox :: PRL_HitBox()
 {
-	;
+	hbCount++;
 }
 
 PRL_HitBox :: ~PRL_HitBox()
 {
-	;
+	hbCount--;
 }
 
 PRL_FRect _frect_temp;
-PRL_FRect const& PRL_HitBox :: getIncludingRect() const noexcept
+PRL_FRect const& PRL_HitBox :: getRectAround() const noexcept
 {
 	return _frect_temp;
 }
@@ -34,7 +45,7 @@ PRL_FPoint const& PRL_HitBox :: getCenterOfMass() const noexcept
 	return _fpoint_temp;
 }
 
-PRL_HitBoxType PRL_HitBox :: getType() const noexcept
+PRL_HBType PRL_HitBox :: getType() const noexcept
 {
 	return type;
 }
@@ -45,75 +56,124 @@ void PRL_HitBox :: computeCOM() noexcept
 }
 
 
-PRL_HitBoxRect :: PRL_HitBoxRect(PRL_FRect const& rect)
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_HBRect %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+
+int PRL_HBRect :: hbRectCount = 0;
+
+int PRL_HBRect :: getCount() noexcept
 {
-	type = PRL_HITBOXTYPE_RECT;
-	includingFRect = rect;
+    return hbRectCount;
 }
 
-PRL_HitBoxRect :: ~PRL_HitBoxRect()
+PRL_HBRect :: PRL_HBRect(PRL_FRect const& rect)
 {
-	;
+    type = PRL_HBTYPE_RECT;
+    rectAround = rect;
+	hbRectCount++;
+
+	computeCOM();
 }
 
-PRL_FRect const& PRL_HitBoxRect :: getIncludingRect() const noexcept
+PRL_HBRect :: ~PRL_HBRect()
 {
-	return includingFRect;
+	hbRectCount--;
 }
 
-void PRL_HitBoxRect :: set(PRL_FRect const& rect) noexcept
+PRL_FRect const& PRL_HBRect :: getRectAround() const noexcept
 {
-	includingFRect = rect;
+	return rectAround;
 }
 
-PRL_FRect const& PRL_HitBoxRect :: get() const noexcept
+void PRL_HBRect :: set(PRL_FRect const& rect) noexcept
 {
-	return includingFRect;
+	rectAround = rect;
+	computeCOM();
 }
 
-PRL_FPoint const& PRL_HitBoxRect :: getCenterOfMass() const noexcept
+PRL_FRect const& PRL_HBRect :: get() const noexcept
+{
+	return rectAround;
+}
+
+PRL_FPoint const& PRL_HBRect :: getCenterOfMass() const noexcept
 {
 	return centerOfMass;
 }
 
-void PRL_HitBoxRect :: computeCOM() noexcept
+void PRL_HBRect :: computeCOM() noexcept
 {
-	centerOfMass.x = (includingFRect.x + (float)includingFRect.w)/2.0f;
-	centerOfMass.y = (includingFRect.y + (float)includingFRect.h)/2.0f;
+	centerOfMass.x = (rectAround.x + (float)rectAround.w)/2.0f;
+	centerOfMass.y = (rectAround.y + (float)rectAround.h)/2.0f;
 }
 
 
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_CollInfo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+
+int PRL_ColInfo :: colInfCount = 0;
+
+int PRL_ColInfo :: getCount() noexcept
+{
+	return colInfCount;
+}
+
+PRL_ColInfo :: PRL_ColInfo()
+{
+	colInfCount++;
+}
+
+PRL_ColInfo :: ~PRL_ColInfo()
+{
+	colInfCount--;
+}
+
+void PRL_ColInfo :: clear() noexcept
+{
+	involvedHitBox.clear();
+	target.clear();
+}
 
 
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_CollInfo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+
+int PRL_Collidable :: colCount = 0;
+
+int PRL_Collidable :: getCount() noexcept
+{
+    return colCount;
+}
 
 PRL_Collidable :: PRL_Collidable() : colIsColliding(false)
 {
-	;
+	colCount++;
 }
 
 PRL_Collidable :: ~PRL_Collidable()
 {
-	;
+	colCount--;
 }
 
-void PRL_Collidable :: enable() noexcept
+void PRL_Collidable :: enableCol() noexcept
 {
 	colEnabled = true;
 }
 
-void PRL_Collidable :: disable() noexcept
+void PRL_Collidable :: disableCol() noexcept
 {
 	colEnabled = false;
 }
 
-bool PRL_Collidable :: isEnabled() const noexcept
+bool PRL_Collidable :: isColEnabled() const noexcept
 {
 	return colEnabled;
-}
-
-void PRL_Collidable :: setCollisionPriority()
-{
-	;
 }
 
 bool PRL_Collidable :: isColliding() const noexcept
@@ -121,11 +181,25 @@ bool PRL_Collidable :: isColliding() const noexcept
 	return colIsColliding;
 }
 
+void PRL_Collidable :: setColType(PRL_ColType type) noexcept
+{
+    colType = type;
+}
+
+void PRL_Collidable :: setColGroup(PRL_ColGroup group) noexcept
+{
+    colGroup = group;
+}
+
+void PRL_Collidable :: setColPriority(int p)
+{
+	colPriority = p;
+}
 
 
 bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept
 {
-	if (PRL_TestCollision(hitbox1.getIncludingRect(), hitbox2.getIncludingRect()))
+	if (PRL_TestCollision(hitbox1.getRectAround(), hitbox2.getRectAround()))
 	{
 		return true;
 	}
@@ -160,49 +234,26 @@ bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) noexcept
 }
 
 
-/*! @internal
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_CollInfo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- @endinternal
-*/
-
-int PRL_ColInfo :: colInfCount = 0;
-
-PRL_ColInfo :: PRL_ColInfo()
-{
-	colInfCount++;
-}
-
-PRL_ColInfo :: ~PRL_ColInfo()
-{
-	colInfCount--;
-}
-
-void PRL_ColInfo :: clear() noexcept
-{
-	hitboxHit.clear();
-	target.clear();
-}
-
-int PRL_ColInfo :: getCount() noexcept
-{
-	return colInfCount;
-}
-
 
 /*! @internal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_Collider %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  @endinternal
 */
-int PRL_Collider :: dsprCount = 0;
+int PRL_Collider :: colCount = 0;
+
+int PRL_Collider :: getCount() noexcept
+{
+	return colCount;
+}
 
 PRL_Collider :: PRL_Collider()
 {
-    dsprCount++;
+    colCount++;
 }
 
 PRL_Collider :: ~PRL_Collider()
 {
-    dsprCount--;
+    colCount--;
 }
 
 void PRL_Collider :: add(PRL_Collidable *newColl)
@@ -270,23 +321,18 @@ void PRL_Collider :: testCollisions() const noexcept
 					{
 						// Update CollInfo for collidable i
 						collidable[i]->colInfo.target.push_back(collidable[j]);
-						collidable[i]->colInfo.hitboxHit.push_back(l);
+						collidable[i]->colInfo.involvedHitBox.push_back(l);
 						collidable[i]->colIsColliding = true;
 
 						// Update CollInfo for collidable j
 						collidable[j]->colInfo.target.push_back(collidable[i]);
-						collidable[j]->colInfo.hitboxHit.push_back(k);
+						collidable[j]->colInfo.involvedHitBox.push_back(k);
 						collidable[j]->colIsColliding = true;
 					}
 				}
 			}
 		}
 	}
-}
-
-int PRL_Collider :: getCount() noexcept
-{
-	return dsprCount;
 }
 
 

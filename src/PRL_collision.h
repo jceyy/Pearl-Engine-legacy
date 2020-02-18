@@ -11,7 +11,10 @@
 
 // CLASSES //
 
-/// Collision types (flags). They can be customizable like int32_t WALL = PRL_COLLTYPE_0, GROUND = PRL_COLLTYPE_1, PLAYER = PRL_COLLTYPE_2, ...
+//! @brief Collision types (flags).
+/*! @details Types can be used in a custom way, as int32_t WALL = PRL_COLLTYPE_0,
+GROUND = PRL_COLLTYPE_1, PLAYER = PRL_COLLTYPE_2, ...
+*/
 enum PRL_ColType : uint32_t
 {
     PRL_COLTYPE_0 = 1<<0,
@@ -47,21 +50,25 @@ enum PRL_ColType : uint32_t
     PRL_COLTYPE_30 = 1<<30,
 };
 
-/// Collision group (or rule). You can use it as PRL_CollisionGroup group1 = PRL_COLLTYPE_0 | PRL_COLLTYPE_9 | PRL_COLLTYPE_25
+//! @brief Collision group (or rule).
+//! @details You can use it as PRL_CollisionGroup group1 = PRL_COLLTYPE_0 | PRL_COLLTYPE_9 | PRL_COLLTYPE_25
 typedef uint32_t PRL_ColGroup;
 
-//! Enumeration containing all the hit box types
-/*!
-The different hit box types are:
-- rectangular (PRL_HITBOX_RECT), the hit box is a rectangle stored as a PRL_FRect
+//! @brief Enumeration containing all the hit box types
+/*! @details The different hit box types are:
+- rectangular (PRL_HBTYPE_RECT), the hit box is a rectangle stored as a PRL_FRect
 - circle (PRL_HITBOX_CIRCLE), the hit box is a circle, stored as a PRL_FCircle
-- polygon (PRL_HITBOX_POLYGON), the hit box is an arbitrary shape, described by points arranged in a certain order, and stored as an PRL_FPointList
+- polygon (PRL_HITBOX_POLYGON), the hit box is an arbitrary shape, described by points
+arranged in a certain order, and stored as an PRL_FPointList
 */
-enum PRL_HitBoxType
+enum PRL_HBType
 {
-    PRL_HITBOXTYPE_RECT, PRL_HITBOXTYPE_CIRCLE, PRL_HITBOXTYPE_POLY
+    PRL_HBTYPE_RECT, PRL_HBTYPE_CIRCLE, PRL_HBTYPE_POLY
 };
 
+//! @brief Abstract class describing hit boxes.
+/*! @details The different types of hit boxes derive from this class and override most of its methods.
+*/
 class PRL_HitBox
 {
 	friend inline bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept;
@@ -69,42 +76,58 @@ public:
     PRL_HitBox();
     virtual ~PRL_HitBox() = 0;
 
-    virtual PRL_FRect const& getIncludingRect() const noexcept;
+    //! @brief Get the smallest rectangle surrounding the hit box.
+    virtual PRL_FRect const& getRectAround() const noexcept;
+    //! @brief Get the center of mass of the hit box (in local coordinates).
     virtual PRL_FPoint const& getCenterOfMass() const noexcept;
-
-    PRL_HitBoxType getType() const noexcept;
+    //! @brief Get the type of the hit box.
+    PRL_HBType getType() const noexcept;
+    //! @brief Get the count of currently used hit boxes (of any type).
+    static int getCount() noexcept;
 
 protected:
-	PRL_FPoint centerOfMass;
-	PRL_FRect includingFRect; //!< Smaller possible rectangle in which all points fit.
-	PRL_HitBoxType type;
+	PRL_FPoint centerOfMass; //!< Center of mass of the hit box.
+	PRL_HBType type; //!< Actual type of the hit box.
+	PRL_FRect rectAround; //!< Smaller possible rectangle in which all points fit.
 
 private:
+    //! @brief Compute the center of mass of the hit box.
+    /*! @details Can be used only internally to update the center of mass when the hit box is updated,
+    for instance when points are added to a polygon hit box or simply when the hit box has been changed.*/
 	virtual void computeCOM() noexcept;
+	static int hbCount; //!< Count of hit boxes, without distinction.
 };
 
-class PRL_HitBoxRect : public PRL_HitBox
+class PRL_HBRect : public PRL_HitBox
 {
 public:
-	PRL_HitBoxRect(PRL_FRect const& rect);
-	~PRL_HitBoxRect();
+	PRL_HBRect(PRL_FRect const& rect);
+	~PRL_HBRect();
 
-    PRL_FRect const& getIncludingRect() const noexcept override;
+	//! @brief Simply return the rectangle, same function as get().
+    PRL_FRect const& getRectAround() const noexcept override;
+    //! @brief Set a new rectangle hit box.
+    //! @details This will automatically result in a calculation of the new center of mass.
     void set(PRL_FRect const& rect) noexcept;
+    //! @brief Get the rectangle.
     PRL_FRect const& get() const noexcept;
+    //! @brief Get the center of mass of the rectangle (in local coordinates).
     PRL_FPoint const& getCenterOfMass() const noexcept override;
 
+    //! @brief Get the count of currently used rectangle hit boxes.
+    static int getCount() noexcept;
+
 private:
+    //! @brief Compute the center of mass of the rectangle.
+    //! @details This is only called when a new hit box is set and in the constructor.
 	void computeCOM() noexcept override;
+	static int hbRectCount; //!< Count of rectangle hit boxes.
 };
 
-inline bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept;
-inline bool PRL_TestCollision(PRL_FPoint const& point, PRL_FRect const& rect) noexcept;
-inline bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) noexcept;
 
 class PRL_Collidable;
 
-//! Class capable of storing informations about a specific collision.
+//! @brief Class capable of storing informations about a specific collision.
 class PRL_ColInfo
 {
 	friend class PRL_Collider;
@@ -112,17 +135,24 @@ public:
     PRL_ColInfo();
     ~PRL_ColInfo();
 
-    std::vector <int> hitboxHit; // Hitbox of target collidable hit by object
-    std::vector<PRL_Collidable*> target; // Target collidable in collision
+    //! @brief Vector containing all the hit boxes of a collidable that collided.
+    /*! @details It can contain the same hit box several times, since every element corresponds to an element of
+    the target vector.
+    */
+    std::vector<int> involvedHitBox;
+    //! @brief Vector containing all target collidables of the collision event involving the corresponding hit box.
+    std::vector<PRL_Collidable*> target;
 
+    //! @brief Get the count of currently used PRL_ColInfo classes.
     static int getCount() noexcept;
 
 private:
-	static int colInfCount;
+	static int colInfCount; //!< Count of collision information classes.
+	//! @brief Clear the 2 vectors of the class.
 	void clear() noexcept;
 };
 
-
+//! @brief Abstract class introducing the collision properties of objects.
 class PRL_Collidable
 {
 	friend class PRL_Collider;
@@ -131,33 +161,43 @@ public:
 	virtual ~PRL_Collidable() = 0;
 
 	//! @brief Enable collision.
-	void enable() noexcept;
+	void enableCol() noexcept;
 	//! @brief Disable collision.
-	void disable() noexcept;
+	void disableCol() noexcept;
 	//! @brief Tell whether collision is enabled or not.
-	bool isEnabled() const noexcept;
-	//! @brief NOT IMPLEM. YET: Set collision priority.
-	void setCollisionPriority();
+	bool isColEnabled() const noexcept;
 	//! @brief Tell if a collision is happening.
 	bool isColliding() const noexcept;
+	//! @brief Set the collision type.
+	void setColType(PRL_ColType type) noexcept;
+	//! @brief Set the collision group the collidable belongs to.
+	void setColGroup(PRL_ColGroup group) noexcept;
+	//! @brief Set collision priority.
+	void setColPriority(int priority);
+    //! @brief Get the count of PRL_Collidable currently in use.
+	static int getCount() noexcept;
+
+	void addHitBox(PRL_HitBox* hb);
+	void addPoint(PRL_FPoint p);
+
+	PRL_ColInfo colInfo; //!< Contains information on collisions concerning this collidable.
 
 protected:
 	//! @brief Hit boxes composing the collidable.
-	/*!
-	@detail In PRL_Displayable, the first hit boxes correspond to the main texture, and the rest
-	of them corresponds to the mask textures.
-	*/
 	std::vector <PRL_HitBox*> colHitbox;
-	// TO implement+ action point!
-	//std::vector <std::vector <PRL_HitBox*> > dspMaskHitbox; //!< @brief Mask textures' corresponding hit boxes.
-	bool colEnabled = false; //!< Tell whether collision is enabled or not.
-	bool colIsColliding;
-	PRL_ColType colType = PRL_COLTYPE_0; //!< Collision type of the collidable.
-	PRL_ColGroup colGroup = PRL_COLTYPE_0; //!< Collision group in which collisions are tested for this collidable.
-	PRL_ColInfo colInfo; //!< Contains information on collisions concerning this collidable.
+    std::vector <PRL_FPoint> hitPoint;
+
+	bool colEnabled = true; //!< Tell whether collision is enabled or not.
+	bool colIsColliding; //!< Tell if a collision is occurring.
+	PRL_ColType colType; //!< Collision type of the collidable.
+	PRL_ColGroup colGroup; //!< Collision group in which collisions are tested for this collidable.
+	int colPriority; //!< Priority in a collision.
 
 private:
-	int collider_address;
+	int collider_address; //!< Address within th collider (only used by the collider).
+	static int colCount; //!< Count of collidables currently in use.
+
+	//std::vector <std::vector <PRL_HitBox*> > dspMaskHitbox; !< brief Mask textures' corresponding hit boxes.
 };
 
 
@@ -181,8 +221,13 @@ private:
     /// Check whether the collidable is already added to the collider
     inline bool isAdded(PRL_Collidable *col) const noexcept;
 
-    static int dsprCount;
+    static int colCount;
 };
+
+inline bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept;
+inline bool PRL_TestCollision(PRL_FPoint const& point, PRL_FRect const& rect) noexcept;
+inline bool PRL_TestCollision(PRL_FRect const& rect1, PRL_FRect const& rect2) noexcept;
+
 
 /* ********************************************* */
 /*                PRL_CollInfos                  */
