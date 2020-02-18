@@ -12,12 +12,12 @@ int PRL_Handler :: getCount() noexcept
 PRL_Handler :: PRL_Handler()
 {
     time.stopwatch.start();
-    PRL_Displayer disp0;
 
-    PRL_Collider col0;
 
     for (size_t i(0); i < PRL_PLAN_MAX; ++i)
     {
+        PRL_Displayer disp0;
+        PRL_Collider col0;
         display.displayer.push_back(disp0);
         collision.collider.push_back(col0);
     }
@@ -222,13 +222,22 @@ void PRL_Handler :: update()
 void PRL_Handler :: printClassDiagnostics() const noexcept
 {
 	cout << endl << "Classes currently active:" << endl;
+	cout << "PRL_Handler: " << PRL_Handler::getCount() << endl;
+
 	cout << "PRL_Displayable: " << PRL_Displayable::getCount() << endl;
 	//cout << "PRL_Displayer: " << PRL_Displayer::getCount() << endl;
 	cout << "PRL_Image: " << PRL_Image::getCount() << endl;
 	cout << "PRL_Sprite: " << PRL_Sprite::getCount() << endl;
 	cout << "PRL_Animation: " << PRL_Animation::getCount() << endl;
 	cout << "PRL_Animated: " << PRL_Animated::getCount() << endl;
-	cout << "PRL_Handler: " << PRL_Handler::getCount() << endl;
+
 	cout << "PRL_Font: " << PRL_Font::getCount() << endl;
 	cout << "PRL_TextLabel: " << PRL_TextLabel::getCount() << endl;
+
+	cout << "PRL_HitBox: " << PRL_HitBox::getCount() << endl;
+	cout << "PRL_HBRect: " << PRL_HBRect::getCount() << endl;
+	cout << "PRL_ColInfo: " << PRL_ColInfo::getCount() << endl;
+	cout << "PRL_Collidable: " << PRL_Collidable::getCount() << endl;
+	cout << "PRL_Collider: " << PRL_Collider::getCount() << endl;
+	cout << endl;
 }
