@@ -56,7 +56,7 @@ add_executable(pearl-engine
 
 	src/PRL_math.cpp
 
-	src/PRL_menu_functions.cpp
+	src/PRL_testzone.cpp
 
 	src/PRL_time.cpp
 
