@@ -72,7 +72,8 @@
 		<Unit filename="../src/PRL_input.h" />
 		<Unit filename="../src/PRL_math.cpp" />
 		<Unit filename="../src/PRL_math.h" />
-		<Unit filename="../src/PRL_menu_functions.cpp" />
+		<Unit filename="../src/PRL_testzone.cpp" />
+		<Unit filename="../src/PRL_testzone.h" />
 		<Unit filename="../src/PRL_text.cpp" />
 		<Unit filename="../src/PRL_text.h" />
 		<Unit filename="../src/PRL_time.cpp" />
