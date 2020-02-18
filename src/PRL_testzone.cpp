@@ -13,6 +13,7 @@ using std::string;
 /// Collisions (rect at least)
 /// Motion (instead of += cst for positions)
 /// UI Elements
+/// Define to control throwing exceptions on error or only returns
 
 int PRL_TestZone()
 {
