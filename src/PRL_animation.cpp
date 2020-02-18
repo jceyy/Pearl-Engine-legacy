@@ -606,7 +606,7 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 	// Temporary
 	colHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, image->display.getSize().x, image->display.getSize().y);
-    PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
+    PRL_HBRect* hitbox = new PRL_HBRect(frect);
 	colHitbox.push_back(hitbox);
 
 	return 0;
@@ -758,7 +758,7 @@ int PRL_Animation :: load_CPU()
 			{
 				// Main hit boxes
 				local_rect.set(local_p, display.mainScaledTextureSize[i]);
-				PRL_HitBoxRect* hb_r = new PRL_HitBoxRect(local_rect);
+				PRL_HBRect* hb_r = new PRL_HBRect(local_rect);
 				if (hb_r == nullptr)
 				{
 					PRL_SetError("Unable to create main hit box", false);
@@ -771,7 +771,7 @@ int PRL_Animation :: load_CPU()
 				for (size_t j(0); j < display.maskSurface[i].size(); ++j)
 				{
 					local_rect.set(local_p, display.mainScaledTextureSize[i]);
-					PRL_HitBoxRect* hb_r_m = new PRL_HitBoxRect(local_rect);
+					PRL_HBRect* hb_r_m = new PRL_HBRect(local_rect);
 					if (hb_r_m == nullptr)
 					{
 						PRL_SetError("Unable to create mask hit box", false);
@@ -1027,7 +1027,7 @@ void PRL_Animated :: setAnim(PRL_Animation* anim)
 	// Temporary
 	colHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, anim->display.getSize(0).x, anim->display.getSize(0).y);
-	PRL_HitBoxRect* hitbox = new PRL_HitBoxRect(frect);
+	PRL_HBRect* hitbox = new PRL_HBRect(frect);
 	colHitbox.push_back(hitbox);
 
 }
