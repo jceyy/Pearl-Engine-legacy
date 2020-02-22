@@ -4,7 +4,7 @@
 # If a specific setting is not defined here, the default one will be loaded.
 
 high-dpi = false
-vsync = false
+vsync = true
 cpu-relieve = true
 resizable = true
 borderless = false
@@ -25,7 +25,7 @@ mouse-sensitivity = 0.500
 render-resolution = 3840 x 2160
 resolution = 1440 x 810
 
-driver = default
+driver = opengl
 language = english
 
 

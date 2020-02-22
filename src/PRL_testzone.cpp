@@ -72,8 +72,7 @@ int PRL_TestZone()
 		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))
         {
             mpos.y -= 50;
-
-            font_size += 2;
+            //font_size += 2;
             test_font.setSize(font_size);
             textLabelTest->setRenderStyle(PRL_TEXTSTYLE_BLENDED);
             textLabelTest->setText("Mangez des pommes up!");
@@ -81,8 +80,7 @@ int PRL_TestZone()
 		if (handler.input.isKeyPressed(SDL_SCANCODE_DOWN))
         {
             mpos.y += 50;
-
-            font_size -= 2;
+            //font_size -= 2;
             test_font.setSize(font_size);
             textLabelTest->setRenderStyle(PRL_TEXTSTYLE_SOLID);
             textLabelTest->setText("Mangez des pommes down!");
@@ -117,9 +115,9 @@ int PRL_TestZone()
 
         mario->setPos(mpos);
 		mario->update();
-        mario->setRotAngle((double)sqrt(mpos.x*mpos.x+mpos.y*mpos.y)/100);
+        //mario->setRotAngle((double)sqrt(mpos.x*mpos.x+mpos.y*mpos.y)/100);
 		wowGuy->setPos(wowpos);
-		wowGuy->setRotAngle((double)sqrt(wowpos.x*wowpos.x+wowpos.y*wowpos.y)/10);
+		//wowGuy->setRotAngle((double)sqrt(wowpos.x*wowpos.x+wowpos.y*wowpos.y)/10);
         wowGuy->update();
 
         mario_erstatz->setPos(mpos);
@@ -157,7 +155,6 @@ int PRL_TestZone()
 			cpt++;
 			cout << "Collision detected! " + to_string(cpt) << endl;
 		}*/
-		PRL_Delay(10000);
 	}
 
 	return 0;
@@ -171,4 +168,3 @@ void printAnimDiagnostics(PRL_Animation* anim)
 	cout << "Frame rate: " << anim->display.getFPS() << endl;
 	cout << "Reference render size: " << p.x << "x" << p.y << endl << endl;
 }
-

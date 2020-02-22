@@ -55,16 +55,16 @@ public:
     virtual void setCenterPos(PRL_FPoint const& pos) noexcept;
     //! @brief Get destination rectangle used for display.
     PRL_FRect const& getDstRect() const noexcept;
-    
+
     void setAlpha(float alpha);
     void setAlpha(float alpha, long long us);
-    
+
     void setScale(float scale);
     void setScale(float scale, long long us);
-    
+
     void setAngle(double angle);
     void setAngle(double angle, long long us);
-    
+
     void setColorMode(SDL_Color const& color);
     void setColorMode(SDL_Color const& color, long long us);
 
@@ -73,9 +73,11 @@ protected:
     SDL_Texture* dspMainTexture; //!< @brief Main texture.
     std::vector <PRL_FRect> dspMaskDst; //!< @brief Masks' destination rectangles.
     std::vector <SDL_Texture*> dspMaskTexture; //!< @brief Masks' textures.
+    std::vector <SDL_Texture*> dspTexture; //!< @brief Masks' textures.
+    std::vector <PRL_FRect> dstDst;
     SDL_Renderer* dspRenderer; //!< @brief Renderer used for the current set of textures.
 
-    bool dspDisplayEnabled = true; //!< Tells whether the PRL_Displayable is currently displayed or not.
+    bool dspEnabled = true; //!< Tells whether the PRL_Displayable is currently displayed or not.
     double dspRotAngle; //!< @brief Rotation angle in degrees.
     PRL_FPoint dspDesiredPos;
 

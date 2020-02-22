@@ -216,6 +216,18 @@ void PRL_Handler :: update()
 		if (display.textLabel[i]->hasChanged())
 			display.textLabel[i]->renderText();
 	}
+
+	// Wait to match FPS
+	handler.time.update();
+	long long ellapsed(handler.time.getTimeUpdated() - handler.time.timeUpdated);
+	long long delta_fps_us(1000000 / handler.config.fps);
+
+    if (ellapsed < delta_fps_us - 1000 && !handler.config.vsync)
+    {
+        PRL_Delay(delta_fps_us - ellapsed - 1000);
+    }
+    // Update time for next loop
+    handler.time.update();
 }
 
 

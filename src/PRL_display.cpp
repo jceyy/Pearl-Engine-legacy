@@ -75,17 +75,17 @@ int PRL_Displayable :: set(SDL_Texture *texture, SDL_Renderer *renderer) noexcep
 
 void PRL_Displayable :: enableDisplay() noexcept
 {
-    dspDisplayEnabled = true;
+    dspEnabled = true;
 }
 
 void PRL_Displayable :: disableDisplay() noexcept
 {
-    dspDisplayEnabled = false;
+    dspEnabled = false;
 }
 
 bool PRL_Displayable :: isDisplayEnabled() const noexcept
 {
-    return dspDisplayEnabled;
+    return dspEnabled;
 }
 
 void PRL_Displayable :: setRotAngle(double angle) noexcept
@@ -237,7 +237,7 @@ int PRL_Displayer :: display() const
     SDL_Rect dst;
     for (size_t i(0); i < displayable.size(); i++)
     {
-        if (displayable[i]->dspDisplayEnabled)
+        if (displayable[i]->dspEnabled)
         {
             rect2FRect(displayable[i]->dspMainDst, dst);
             if (SDL_RenderCopyEx(displayable[i]->dspRenderer, displayable[i]->dspMainTexture, nullptr,
@@ -258,7 +258,7 @@ int PRL_Displayer :: displayWithCamera() const
 
     for (size_t i(0); i < displayable.size(); i++)
     {
-        if (displayable[i]->dspDisplayEnabled)
+        if (displayable[i]->dspEnabled)
         {
             dst.x = zoom * (displayable[i]->dspMainDst.x - camera->getUpLeftCorner().x);
             dst.y = zoom * (displayable[i]->dspMainDst.y - camera->getUpLeftCorner().y);
