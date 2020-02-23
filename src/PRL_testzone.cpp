@@ -14,10 +14,10 @@ using std::string;
 /// Motion (instead of += cst for positions)
 /// UI Elements
 /// Define to control throwing exceptions on error or only returns
+// To DO: add save-memory settings flag to reduce loaded textures then implement in load animation
 
 int PRL_TestZone()
 {
-	// To DO: add save-memory settings flag to reduce loaded textures then implement in load animation
 	bool quit(false);
 
 	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.prl");
@@ -29,35 +29,32 @@ int PRL_TestZone()
 		return PRL_ERROR;
 	}
 
-	PRL_Sprite* sprite = handler.createSprite(image);
+	PRL_Sprite* background = handler.createSprite(image);
 	PRL_Animated* wowGuy = handler.createAnimated(animWow);
-	PRL_Animated* mario_erstatz = handler.createAnimated(animMario);
     PRL_Animated* mario = handler.createAnimated(animMario);
-
-	if (mario == nullptr || mario_erstatz == nullptr || sprite == nullptr || wowGuy == nullptr) // error
+	if (mario == nullptr || background == nullptr || wowGuy == nullptr) // error
 	{
 		cout << "Loading failed: " << PRL_GetError() << endl;
 		return PRL_ERROR;
 	}
 
-	sprite->setPos(1000.0, 100.0);
-
-	//printAnimDiagnostics(animMario);
-
+	background->setPos(1000.0, 100.0);
 	PRL_FPoint mpos(0.0, 0.0);
-	PRL_FPoint mepos(0.0, 0.0);
 	PRL_FPoint wowpos(0.0, 0.0);
-	bool showmario = false;
 
 	// Textbox test
-	SDL_Color color_white = {255, 128, 255, 0};
+	SDL_Color color_white = {255, 128, 255, 25};
 	int font_size = 180;
     PRL_Font test_font("data/fonts/cooper.ttf", font_size, TTF_STYLE_ITALIC, color_white);
-	PRL_TextLabel* textLabelTest = handler.createTextLabel("Mangez des pommes", test_font);
+	PRL_TextLabel* textLabelTest = handler.createTextLabel("Text box test", test_font);
 	textLabelTest->setPos(400, 500);
 
-	//long long cpt(0);
 	handler.printClassDiagnostics();
+
+	background->hide();
+	mario->hide();
+	wowGuy->hide();
+
 	while(!quit)
 	{
 		if (handler.input.quitEvent())
@@ -72,16 +69,12 @@ int PRL_TestZone()
 		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))
         {
             mpos.y -= 50;
-            //font_size += 2;
-            test_font.setSize(font_size);
             textLabelTest->setRenderStyle(PRL_TEXTSTYLE_BLENDED);
             textLabelTest->setText("Mangez des pommes up!");
         }
 		if (handler.input.isKeyPressed(SDL_SCANCODE_DOWN))
         {
             mpos.y += 50;
-            //font_size -= 2;
-            test_font.setSize(font_size);
             textLabelTest->setRenderStyle(PRL_TEXTSTYLE_SOLID);
             textLabelTest->setText("Mangez des pommes down!");
         }
@@ -115,48 +108,11 @@ int PRL_TestZone()
 
         mario->setPos(mpos);
 		mario->update();
-        //mario->setRotAngle((double)sqrt(mpos.x*mpos.x+mpos.y*mpos.y)/100);
 		wowGuy->setPos(wowpos);
-		//wowGuy->setRotAngle((double)sqrt(wowpos.x*wowpos.x+wowpos.y*wowpos.y)/10);
         wowGuy->update();
 
-        mario_erstatz->setPos(mpos);
-		mario_erstatz->update();
-        showmario = false;
-
-		if (mpos.y <= 0)
-		{
-            mepos.y = handler.config.getRenderResolution().y;
-            showmario = true;
-		}
-        else if (mpos.y >= handler.config.getRenderResolution().y + animMario->display.getSize((size_t) mario->getCurrentFrame()).y)
-        {
-            mepos.y = -animMario->display.getSize((size_t) mario_erstatz->getCurrentFrame()).y;
-            showmario = true;
-        }
-        if (mpos.x <= 0)
-        {
-            mepos.x = handler.config.getRenderResolution().x;
-            showmario = true;
-        }
-        else if (mpos.x >= handler.config.getRenderResolution().x + animMario->display.getSize((size_t) mario->getCurrentFrame()).x)
-        {
-            mepos.x = -animMario->display.getSize((size_t) mario_erstatz->getCurrentFrame()).x;
-            showmario = true;
-        }
-
-        mario_erstatz->disableDisplay();
-		showmario = !showmario;
-
 		handler.update();
-
-		/*if (wowGuy->isColliding() && mario->isColliding())
-		{
-			cpt++;
-			cout << "Collision detected! " + to_string(cpt) << endl;
-		}*/
 	}
-
 	return 0;
 }
 

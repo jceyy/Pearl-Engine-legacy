@@ -6,20 +6,7 @@
 #include <SDL2/SDL.h>
 #include "PRL_display.h"
 #include "PRL_defines.h"
-
-//using std::vector;
-/*
-//! Enumeration containing all the hit box types
-*!
-The different hit box types are:
-- rectangular (PRL_HITBOX_RECT), the hit box is a rectangle stored as a PRL_FRect
-- circle (PRL_HITBOX_CIRCLE), the hit box is a circle, stored as a PRL_FCircle
-- polygon (PRL_HITBOX_POLYGON), the hit box is an arbitrary shape, described by points arranged in a certain order, and stored as an PRL_FPointList
-*
-enum PRL_HitBoxType
-{
-    PRL_HITBOX_RECT, PRL_HITBOX_CIRCLE, PRL_HITBOX_POLYGON
-};*/
+#include "PRL_collision.h"
 
 
 /* ********************************************* */
@@ -272,19 +259,15 @@ public:
 
 		/// Return the source size (real one without scaling) {width, height}.
 		/// Update main texture, mask textures, main dst and mask dst.
-		void get(SDL_Texture*& mainTex, PRL_FRect& mainDst, std::vector<SDL_Texture*>& maskTex,
-				std::vector<PRL_FRect>& maskDst) const;
+		void get(std::vector<SDL_Texture*>& imgTex,
+			std::vector<PRL_FRect>& imgDst) const;
 
 	private:
-		SDL_Texture* mainTexture;
-		SDL_Surface* mainSurface;
-		std::vector <SDL_Texture*> maskTexture;
-		std::vector <SDL_Surface*> maskSurface;
-		PRL_Point mainTextureTrueSize;
-		PRL_Point mainTextureScaledSize;
-		std::vector <PRL_Point> maskTrueSize;
-		std::vector <PRL_Point> maskScaledSize;
-		std::vector <PRL_FRect> maskLocalPos;
+		std::vector <SDL_Texture*> imgTexture;
+		std::vector <SDL_Surface*> imgSurface;
+		std::vector <PRL_Point> imgTrueSize;
+		std::vector <PRL_Point> imgScaledSize;
+		std::vector <PRL_FRect> imgLocalPos; // pos with respect to the first texture
 
 		PRL_Point refRenderSize;
 		PRL_FPoint scalingRatio;
@@ -294,7 +277,8 @@ public:
 
 	struct _collision
 	{
-
+		std::vector <PRL_HitBox*> hitBox;
+		std::vector <PRL_FPoint> hitPoint;
 	};
 	_collision collision;
 

@@ -37,6 +37,7 @@
 					<Add directory="../../../../../Program Files (x86)/CodeBlocks/SDL2/i686-w64-mingw32/include" />
 				</Compiler>
 				<Linker>
+					<Add option="-O3" />
 					<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf" />
 					<Add directory="../../../../../Program Files (x86)/CodeBlocks/SDL2/i686-w64-mingw32/lib" />
 				</Linker>

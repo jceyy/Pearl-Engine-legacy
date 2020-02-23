@@ -9,7 +9,7 @@ int PRL_Handler :: getCount() noexcept
 	return handlerCount;
 }
 
-PRL_Handler :: PRL_Handler()
+PRL_Handler :: PRL_Handler() // add variables initialization
 {
     time.stopwatch.start();
 
@@ -179,14 +179,21 @@ PRL_TextLabel* PRL_Handler :: createTextLabel(std::string const& text, PRL_Font 
 }
 // Time
 
-long long PRL_Handler :: _time :: getTimeUpdated() const
+long long PRL_Handler :: _time :: getTimeUpdated() const noexcept
 {
 	return timeUpdated;
 }
 
+long long PRL_Handler :: _time :: getDeltaT() const noexcept
+{
+	return deltaT;
+}
+
 void PRL_Handler :: _time :: update()
 {
+	previousTime = timeUpdated;
 	timeUpdated = PRL_GetTicks();
+	deltaT = timeUpdated - previousTime;
 }
 
 void PRL_Handler :: update()

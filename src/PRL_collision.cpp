@@ -140,7 +140,7 @@ void PRL_ColInfo :: clear() noexcept
 
 
 /*! @internal
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_CollInfo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_Collidable %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  @endinternal
 */
 
@@ -151,7 +151,8 @@ int PRL_Collidable :: getCount() noexcept
     return colCount;
 }
 
-PRL_Collidable :: PRL_Collidable() : colIsColliding(false)
+PRL_Collidable :: PRL_Collidable() : colIsColliding(false), colType(PRL_COLTYPE_0),
+colGroup(PRL_COLTYPE_0), colPriority(0), collider_address(-1)
 {
 	colCount++;
 }
@@ -196,6 +197,24 @@ void PRL_Collidable :: setColPriority(int p)
 	colPriority = p;
 }
 
+int PRL_Collidable :: addHitBox(PRL_HitBox* hb)
+{
+	if (hb == nullptr)
+	{
+		PRL_SetError("Invalid hitbox");
+		return PRL_ERROR;
+	}
+    else
+	{
+		colHitbox.push_back(hb);
+		return 0;
+	}
+}
+
+void PRL_Collidable :: addHitPoint(PRL_FPoint const& p)
+{
+    colHitPoint.push_back(p);
+}
 
 bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept
 {
@@ -263,27 +282,19 @@ void PRL_Collider :: add(PRL_Collidable *newColl)
         collidable.push_back(newColl);
         newColl->collider_address = collidable.size() - 1;
     }
-    else
-    {
-        PRL_SetError("Collidable already added");
-    }
 }
 
 void PRL_Collider :: remove(PRL_Collidable* rmColl)
 {
     if (isAdded(rmColl))
     {
-        for (size_t i(rmColl->collider_address+1); i < collidable.size(); ++i) // update addresses greater than the removed collidable
+        for (size_t i(rmColl->collider_address + 1); i < collidable.size(); ++i) // update addresses greater than the removed collidable
         {
             collidable[i]->collider_address--;
         }
 
         collidable.erase(collidable.begin() + rmColl->collider_address);
         rmColl->collider_address = -1;
-    }
-    else
-    {
-        PRL_SetError("Provided collidable doesn't belong to collider");
     }
 }
 

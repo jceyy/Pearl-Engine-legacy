@@ -46,10 +46,12 @@ public:
 
 	public:
 		PRL_Stopwatch stopwatch; // automatically started
-		long long getTimeUpdated() const;
+		long long getTimeUpdated() const noexcept;
+		long long getDeltaT() const noexcept;
 	private:
 		long long timeUpdated;
-
+		long long previousTime;
+		long long deltaT;
 		void update();
 	};
 	_time time;

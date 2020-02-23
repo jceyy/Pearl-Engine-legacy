@@ -148,7 +148,7 @@ public:
 
 private:
 	static int colInfCount; //!< Count of collision information classes.
-	//! @brief Clear the 2 vectors of the class.
+	//! @brief Clear the vectors of the class.
 	void clear() noexcept;
 };
 
@@ -177,15 +177,18 @@ public:
     //! @brief Get the count of PRL_Collidable currently in use.
 	static int getCount() noexcept;
 
-	void addHitBox(PRL_HitBox* hb);
-	void addPoint(PRL_FPoint p);
+	int addHitBox(PRL_HitBox* hb);
+	void addHitPoint(PRL_FPoint const& p);
 
 	PRL_ColInfo colInfo; //!< Contains information on collisions concerning this collidable.
 
 protected:
 	//! @brief Hit boxes composing the collidable.
-	std::vector <PRL_HitBox*> colHitbox;
-    std::vector <PRL_FPoint> hitPoint;
+	//! @details Hit boxes are stored in a two dimensional array for animations.
+	std::vector /*<std::vector */<PRL_HitBox*>  colHitbox;
+	//! @brief Hit points composing the collidable.
+	//! @details Hit points are stored in a two dimensional array for animations.
+    std::vector /*<std::vector*/ <PRL_FPoint> colHitPoint;
 
 	bool colEnabled = true; //!< Tell whether collision is enabled or not.
 	bool colIsColliding; //!< Tell if a collision is occurring.
@@ -207,21 +210,24 @@ public:
     PRL_Collider();
     ~PRL_Collider();
 
-    /// Add a collidable to the collider
+    //! @brief Add a collidable to the collider.
+    //! @details Does nothing if the collidable has already been added.
     void add(PRL_Collidable *collidable);
-    /// Remove a collidable from the collider
+    //! @brief Remove a collidable from the collider.
+    //! @details Does nothing if the collidable has not been added.
     void remove(PRL_Collidable *collidable);
-    /// Test the collisions between the different collidables added to the collider
+    //! @brief Test the collisions between the different collidables added to the collider
     void testCollisions() const noexcept;
-
+    //! @brief Get the count of PRL_Collider currently in use.
     static int getCount() noexcept;
 
 private:
+	//! @brief Vector containing all the added collidables.
     std::vector <PRL_Collidable*> collidable;
-    /// Check whether the collidable is already added to the collider
+    //! @brief Check whether the collidable is already added to the collider.
     inline bool isAdded(PRL_Collidable *col) const noexcept;
 
-    static int colCount;
+    static int colCount; //!< Number of colliders currently in use.
 };
 
 inline bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept;

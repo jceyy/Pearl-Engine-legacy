@@ -206,12 +206,12 @@ void PRL_TextLabel :: renderText()
     if (texture == nullptr)
 		PRL_SetError(string("Text rendering failed: ") + string(SDL_GetError()), true);
 
-	if (dspMainTexture != nullptr)
-		SDL_DestroyTexture(dspMainTexture);
+	if (dspTexture[0] != nullptr)
+		SDL_DestroyTexture(dspTexture[0]);
 
-	dspMainTexture = texture;
-	dspMainDst.w = surface->w;
-	dspMainDst.h = surface->h;
+	dspTexture[0] = texture;
+	dspDst[0].w = surface->w;
+	dspDst[0].h = surface->h;
 
 	SDL_FreeSurface(surface);
 	hasChanged_ = false;

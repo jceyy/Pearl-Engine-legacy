@@ -34,11 +34,11 @@ public:
     //! @brief Set a texture alongside with its renderer.
     int set(SDL_Texture *texture, SDL_Renderer *renderer) noexcept;
     //! @brief Get the main texture to be displayed. Method to be removed?
-    SDL_Texture* getTexture() const noexcept;
+    SDL_Texture* getTexture() const noexcept; // add parameter int index = 0?
     //! @brief Make the PRL_Displayable being displayed on the screen.
-    void enableDisplay() noexcept;
+    void show() noexcept;
     //! @brief Stop the PRL_Displayable from being displayed on the screen.
-    void disableDisplay() noexcept;
+    void hide() noexcept;
     //! @brief Tell whether the PRL_Displayable object is displayed on screen or not.
     bool isDisplayEnabled() const noexcept;
     //! @brief Set the display angle.
@@ -56,6 +56,9 @@ public:
     //! @brief Get destination rectangle used for display.
     PRL_FRect const& getDstRect() const noexcept;
 
+    //! @brief Get how many PRL_Displayable are currently in use.
+    static int getCount() noexcept;
+
     void setAlpha(float alpha);
     void setAlpha(float alpha, long long us);
 
@@ -69,23 +72,20 @@ public:
     void setColorMode(SDL_Color const& color, long long us);
 
 protected:
-    PRL_FRect dspMainDst; //!< @brief Main texture's destination rectangle.
-    SDL_Texture* dspMainTexture; //!< @brief Main texture.
-    std::vector <PRL_FRect> dspMaskDst; //!< @brief Masks' destination rectangles.
-    std::vector <SDL_Texture*> dspMaskTexture; //!< @brief Masks' textures.
-    std::vector <SDL_Texture*> dspTexture; //!< @brief Masks' textures.
-    std::vector <PRL_FRect> dstDst;
-    SDL_Renderer* dspRenderer; //!< @brief Renderer used for the current set of textures.
+	std::vector <SDL_Texture*> dspTexture; //!< @brief Textures composing the displayable.
+    std::vector <PRL_FRect> dspDst; //!< @brief Textures' destination rectangles.
+    SDL_Renderer* dspRenderer; //!< @brief Renderer used for the set of textures.
 
     bool dspEnabled = true; //!< Tells whether the PRL_Displayable is currently displayed or not.
     double dspRotAngle; //!< @brief Rotation angle in degrees.
-    PRL_FPoint dspDesiredPos;
+    PRL_FPoint dspDesiredPos; /// USED in update displayable in animated (anchor point)
 
 private:
     //! @brief Used only by PRL_Displayer: address of the PRL_Displayable.
     size_t dspDisplayerAddress;
     //! @brief Tell whether the PRL_Displayable has been added to a PRL_Displayer or not.
     bool dspDisplayerAdded;
+    static int dspCount; //!< @brief Number of currently declared PRL_Displayable.
 
 
 	//! @internal Motion related part @endinternal
@@ -104,15 +104,6 @@ public:
 protected:
 	PRL_FPoint dspVelocity; //!< @brief Velocity in pixels per second.
 	bool dspMotionEnabled = false; //!< @brief Tell whether motion is enabled or not.
-
-
-	//! @internal General related part @endinternal
-public:
-	//! @brief Get how many PRL_Displayable are currently in use.
-    static int getCount() noexcept;
-
-private:
-    static int dspCount; //!< @brief Number of currently declared PRL_Displayable.
 };
 
 

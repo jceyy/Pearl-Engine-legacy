@@ -279,7 +279,7 @@ void PRL_FPointCluster :: setAnchorPoint(int frame, PRL_FPoint const& point)
 
 /// ---------------------------------------------------------------------------------------------------------------
 
-
+// Get non empty line from file
 void getline_ne(basic_istream<char>& f, string& line)
 {
 	getline(f, line);
@@ -304,6 +304,10 @@ PRL_Image :: PRL_Image(const std::string& path, SDL_Renderer *_renderer)
 	// Loading of anim file.
 	filePath = path;
 	display.renderer = _renderer;
+	display.imgSurface.resize(1);
+	display.imgTexture.resize(1);
+	display.imgTrueSize.resize(1);
+	display.imgScaledSize.resize(1);
 
 	if (load_CPU() != 0)
 	{
@@ -338,9 +342,8 @@ int PRL_Image :: load_CPU()
 
 	if (file.is_open())
 	{
-		PRL_Point temp;
 		string parentDir;
-		string line, maskPath;
+		string line;
 
 		getline(file, line); // First line: [display]
 		getline_ne(file, line); // Reference renderer
@@ -355,19 +358,19 @@ int PRL_Image :: load_CPU()
 		getline_ne(file, line); // Main texture name
 		PRL_GetParentDir(filePath, parentDir);
 		line = parentDir + string("/") + line;
-        display.mainSurface = IMG_Load(line.c_str());
+        display.imgSurface[0] = IMG_Load(line.c_str());
 
-        if (display.mainSurface == nullptr)
+        if (display.imgSurface[0] == nullptr)
 		{
-			PRL_SetError(string("Unable to load main surface: ") + string(SDL_GetError()));
+			PRL_SetError(string("Unable to load surface: ") + string(SDL_GetError()));
 			return PRL_ERROR;
 		}
 
 		display.scalingRatio.x = 1.0f * handler.config.getRenderResolution().x / display.refRenderSize.x;
 		display.scalingRatio.y = 1.0f * handler.config.getRenderResolution().y / display.refRenderSize.y;
-		display.mainTextureTrueSize.set(display.mainSurface->w, display.mainSurface->h);
-		display.mainTextureScaledSize.set((int)(display.mainSurface->w * display.scalingRatio.x), (int)(display.mainSurface->h * display.scalingRatio.y));
-
+		display.imgTrueSize[0].set(display.imgSurface[0]->w, display.imgSurface[0]->h);
+		display.imgScaledSize[0].set((int)(display.imgSurface[0]->w * display.scalingRatio.x), (int)(display.imgSurface[0]->h * display.scalingRatio.y));
+		cout << "Ok so far\n";
 		// Load masks
 		PRL_Point sz;
 		int current_mask(0);
@@ -375,7 +378,8 @@ int PRL_Image :: load_CPU()
 
 		getline_ne(file, line); // [mask]
 
-		while (0 && line != "[hitbox-rect]")
+		string maskPath;
+		while (false && line != "[hitbox-rect]")
 		{
 			if (line != string(""))
 			{
@@ -390,13 +394,13 @@ int PRL_Image :: load_CPU()
 					return PRL_ERROR;
 
 				}
-				display.maskSurface.push_back(surface);
+				display.imgSurface.push_back(surface);
 
 				// Update true and scaled sizes
 				sz.set(surface->w, surface->h);
-				display.maskTrueSize.push_back(sz);
+				display.imgTrueSize.push_back(sz);
 				sz.set((int)(surface->w * display.scalingRatio.x), (int)(surface->h * display.scalingRatio.y));
-				display.maskScaledSize.push_back(sz);
+				display.imgScaledSize.push_back(sz);
 
 				// Load local pos!
 
@@ -408,12 +412,12 @@ int PRL_Image :: load_CPU()
 
 		// resize all the vectors
 
-		if (display.maskTrueSize.size() != 0)
+		if (display.imgTrueSize.size() != 0)
 		{
-			display.maskSurface.resize(display.maskTrueSize.size());
-			display.maskTexture.resize(display.maskTrueSize.size());
-			display.maskScaledSize.resize(display.maskTrueSize.size());
-			display.maskLocalPos.resize(display.maskTrueSize.size());
+			display.imgSurface.resize(display.imgTrueSize.size());
+			display.imgTexture.resize(display.imgTrueSize.size());
+			display.imgScaledSize.resize(display.imgTrueSize.size());
+			display.imgLocalPos.resize(display.imgTrueSize.size() - 1);
 		}
 
 		// Points: still to do
@@ -430,16 +434,16 @@ int PRL_Image :: load_CPU()
 
 int PRL_Image :: load_GPU()
 {
-	display.mainTexture = SDL_CreateTextureFromSurface(display.renderer, display.mainSurface);
+	display.imgTexture[0] = SDL_CreateTextureFromSurface(display.renderer, display.imgSurface[0]);
 	//SDL_Texture *mask(nullptr);
 
-	if (display.mainTexture == nullptr)
+	if (display.imgTexture[0] == nullptr)
 	{
 		PRL_SetError(string("Unable to load main texture: ") + string(SDL_GetError()));
 		return PRL_ERROR;
 	}
 
-	for (size_t i(0); i < display.maskTexture.size(); ++i)
+	for (size_t i(0); i < display.imgTexture.size(); ++i)
 	{
         ;
 	}
@@ -449,45 +453,39 @@ int PRL_Image :: load_GPU()
 
 void PRL_Image :: clear_CPU()
 {
-	SDL_FreeSurface(display.mainSurface);
-	display.mainSurface = nullptr;
-
-	for (size_t i(0); i < display.maskSurface.size(); ++i)
+	for (size_t i(0); i < display.imgSurface.size(); ++i)
 	{
-		SDL_FreeSurface(display.maskSurface[i]);
-		display.maskSurface[i] = nullptr;
+		SDL_FreeSurface(display.imgSurface[i]);
+		display.imgSurface[i] = nullptr;
 	}
-	display.maskSurface.clear();
-	display.maskTrueSize.clear();
-	display.maskScaledSize.clear();
+	display.imgSurface.clear();
+	display.imgTrueSize.clear();
+	display.imgScaledSize.clear();
 }
 
 void PRL_Image :: clear_GPU()
 {
-	SDL_DestroyTexture(display.mainTexture);
-	display.mainTexture = nullptr;
-
-	for (size_t i(0); i < display.maskTexture.size(); ++i)
+	for (size_t i(0); i < display.imgTexture.size(); ++i)
 	{
-		SDL_DestroyTexture(display.maskTexture[i]);
-		display.maskTexture[i] = nullptr;
+		SDL_DestroyTexture(display.imgTexture[i]);
+		display.imgTexture[i] = nullptr;
 	}
-	display.maskTexture.clear();
+	display.imgTexture.clear();
 }
 
 SDL_Texture* PRL_Image :: _display :: getTexture() const
 {
-	return mainTexture;
+	return imgTexture[0];
 }
 
 const PRL_Point& PRL_Image :: _display :: getSize() const
 {
-	return mainTextureScaledSize;
+	return imgScaledSize[0];
 }
 
 const PRL_Point& PRL_Image :: _display :: getTrueSize() const
 {
-	return mainTextureTrueSize;
+	return imgTrueSize[0];
 }
 
 const PRL_Point& PRL_Image :: _display :: getRefRenderSize() const
@@ -507,7 +505,7 @@ void PRL_Image :: removeTargeting()
 
 int PRL_Image :: _display :: getMaskNumber() const
 {
-	return (int) maskTrueSize.size();
+	return (int) imgTrueSize.size() - 1;
 }
 
 SDL_Renderer* PRL_Image :: _display :: getRenderer() const
@@ -515,20 +513,15 @@ SDL_Renderer* PRL_Image :: _display :: getRenderer() const
 	return renderer;
 }
 
-void PRL_Image :: _display :: get(SDL_Texture*& mainTex, PRL_FRect& mainDst, std::vector<SDL_Texture*>& maskTex,
-				std::vector<PRL_FRect>& maskDst) const
+void PRL_Image :: _display :: get(std::vector<SDL_Texture*>& imgTex,
+								std::vector<PRL_FRect>& imgDst) const
 {
-	mainTex = mainTexture;
-	maskTex = maskTexture;
-	mainDst.w = mainTextureScaledSize.x;
-	mainDst.h = mainTextureScaledSize.y;
+	imgTex = imgTexture;
 
-	maskDst.resize(maskScaledSize.size());
-
-	for (size_t i(0); i < maskScaledSize.size(); ++i)
+	for (size_t i(0); i < imgScaledSize.size(); ++i)
 	{
-		maskDst[i].w = maskScaledSize[i].x;
-		maskDst[i].h = maskScaledSize[i].y;
+		imgDst[i].w = imgScaledSize[i].x;
+		imgDst[i].h = imgScaledSize[i].y;
 	}
 }
 
@@ -601,7 +594,7 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 
 	image_accessor.addTargeting(image); // Add targeting
 	targetImage = image;
-	image->display.get(dspMainTexture, dspMainDst, dspMaskTexture, dspMaskDst);
+	image->display.get(dspTexture, dspDst);
 
 	// Temporary
 	colHitbox.clear();
@@ -1084,976 +1077,14 @@ void PRL_Animated :: update()
 	}
 }
 
-PRL_Point temp_point;
+PRL_Point temp_anchor;
 void PRL_Animated :: updateDisplayable()
 {
-	temp_point = targetAnimation->display.getAnchor(currentFrame);
-	dspMainTexture = targetAnimation->display.getTexture(currentFrame);
-	dspMainDst.x = dspDesiredPos.x - temp_point.x;
-	dspMainDst.y = dspDesiredPos.y - temp_point.y;
-	dspMainDst.w = targetAnimation->display.getSize(currentFrame).x;
-	dspMainDst.h = targetAnimation->display.getSize(currentFrame).y;
+	temp_anchor = targetAnimation->display.getAnchor(currentFrame);
+	dspTexture[0] = targetAnimation->display.getTexture(currentFrame);
+	dspDst[0].x = dspDesiredPos.x - temp_anchor.x;
+	dspDst[0].y = dspDesiredPos.y - temp_anchor.y;
+	dspDst[0].w = targetAnimation->display.getSize(currentFrame).x;
+	dspDst[0].h = targetAnimation->display.getSize(currentFrame).y;
 }
-
-
-// Old implementation
-
-/*
-
-
-// Parameters for char strings names
-const int FILENAME_LENGTH(400), FORMAT_LENGTH(20);
-
-PRL_AnimationSimple :: PRL_AnimationSimple() : framesNumber(0), frameRate(0), loaded(false), rect({0}),
-srcRect({0}), reference_renderer({0}), renderer(renderer_GLOBAL[0])
-{
-    texture.clear();
-    dstSizes.clear();
-    srcSizes.clear();
-}
-
-PRL_AnimationSimple :: ~PRL_AnimationSimple()
-{
-    clear();
-}
-
-void PRL_AnimationSimple :: clear()
-{
-    size_t sz = texture.size();
-
-    for (size_t i(0); i < sz; ++i)
-        if (texture[i] != nullptr)
-            SDL_DestroyTexture(texture[i]);
-
-    texture.clear();
-    dstSizes.clear();
-    srcSizes.clear();
-}
-
-int PRL_AnimationSimple :: load(const char file_path[])
-{
-    string str = file_path;
-    return load(str);
-}
-
-int PRL_AnimationSimple :: load(string& file) /// To DO: interpolation + downscale
-{
-    if (loaded) // if already loaded, free the memory
-    {
-        for (int i(0); i<framesNumber; i++)
-        {
-            SDL_DestroyTexture(texture[i]);
-        }
-    }
-
-    int firstFrameNumber(0), lastFrameNumber(0), ret(0);
-    string  fileName(""), fileFormat(""), filePath("");
-    string loadingName("");
-    SDL_Surface *surface(nullptr);
-
-    FILE* filep = fopen(file.c_str(), "r");
-
-    PRL_GetPath(file, filePath, fileName, fileFormat);
-
-    if (fileName.size() == 0 || fileFormat.size() == 0)
-    {
-        fclose(filep);
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << "In PRL_AnimationSimple, the provided file has no format or name: " << file << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-        PRL_SetError(string("Provided file incorrect: ") + file);
-        return PRL_ERROR;
-    }
-
-    if (filep == nullptr)
-    {
-        #if PRL_AUTO_WRITE_ERRORS == 1
-        cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not open " << file << endl;
-        #endif // PRL_AUTO_WRITE_ERRORS
-        PRL_SetError(string("Could not open ") + file);
-        return PRL_ERROR;
-    }
-
-    char c(0);
-    int cpt(0);
-    fileName = "";
-    fileFormat = "";
-
-    do
-    {
-        c = fgetc(filep);
-        if (c == ':')
-            cpt++;
-        else if (cpt == 0)
-            fileName += c;
-        else
-            fileFormat += c;
-    }while(cpt < 2);
-
-    fscanf(filep, "%d:%d:%f:", &firstFrameNumber, &lastFrameNumber, &frameRate);
-    fscanf(filep, "%d:%d", &reference_renderer.x, &reference_renderer.y);
-
-    framesNumber = lastFrameNumber - firstFrameNumber + 1;
-
-    if (framesNumber > PRL_MAX_FRAMES_ANIM_SIMPLE)
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __CERR_REF__ << "In PRL_AnimationSimple, tried to create an animation of " << framesNumber << " frames but the maximum is " << PRL_MAX_FRAMES_ANIM_SIMPLE << ": limiting the number of frames to the maximum" << endl;
-        #endif // PRL_USE_WARNINGS
-        framesNumber = PRL_MAX_FRAMES_ANIM_SIMPLE; // malloc depends directly on this variable
-    }
-
-    fclose(filep); // close the file
-
-    float xratio(1.0*config_GLOBAL.renderResolution.x / reference_renderer.x); // prepares the ratio to change the rect size for correct display
-    float yratio(1.0*config_GLOBAL.renderResolution.y / reference_renderer.y);
-    texture.resize(framesNumber);
-
-    if (reference_renderer.x * reference_renderer.y <= config_GLOBAL.renderResolution.x * config_GLOBAL.renderResolution.y) // reference renderer <= current renderer
-    {
-        cout << "Normal memory usage" << endl;
-        for (int i(0); i < framesNumber; i++)
-        {
-            loadingName = filePath + "/" + fileName + to_string((int)(i+firstFrameNumber)) + "." + fileFormat;
-            surface = IMG_Load(loadingName.c_str());
-
-            if (surface == nullptr)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Surface not loaded: ") + string(SDL_GetError()));
-                clear();
-                return PRL_ERROR;
-            }
-
-            dstSizes.push_back((PRL_Point) {(int) floor(xratio*surface->w), (int) floor(yratio*surface->h)}); // display sizes
-            srcSizes.push_back((PRL_Point) {surface->w, surface->h}); // display size
-
-            texture[i] = SDL_CreateTextureFromSurface(renderer, surface);
-            SDL_FreeSurface(surface);
-
-            if (texture[i] == nullptr)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not create the texture: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture creation problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-            else if (SDL_SetTextureBlendMode(texture[i], SDL_BLENDMODE_BLEND) != 0)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, a problem occurred when changing texture blend mode: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture blend mode problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-        }
-    }
-    else // reference renderer > current renderer
-    {
-        cout << "Reducing memory usage" << endl;
-        SDL_Texture *temp_texture(nullptr);
-        SDL_Rect temp_dst({0});
-
-        for (int i(0); i < framesNumber; i++)
-        {
-            loadingName = filePath + string("/") + fileName + to_string((int)(i+firstFrameNumber)) + string(".") + fileFormat;
-            surface = IMG_Load(loadingName.c_str());
-
-            if (surface == nullptr)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Surface not loaded: ") + string(SDL_GetError()));
-                clear();
-                return PRL_ERROR;
-            }
-
-            dstSizes.push_back((PRL_Point) {(int) floor(xratio*surface->w), (int) floor(yratio*surface->h)}); // display sizes
-            srcSizes.push_back(dstSizes[i]);//((PRL_Point) {surface->w, surface->h}); // display size
-
-            temp_dst = {0, 0, dstSizes[i].x, dstSizes[i].y};
-
-            temp_texture = SDL_CreateTextureFromSurface(renderer, surface);
-            SDL_FreeSurface(surface);
-
-            if (temp_texture == nullptr)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not create the texture: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture creation problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-
-            texture[i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, temp_dst.w, temp_dst.h);
-
-            if (texture[i] == nullptr)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not create the texture: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture creation problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-
-            if (SDL_SetRenderTarget(renderer, texture[i]) != 0)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not set render target: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture render problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-            if (SDL_RenderCopy(renderer, temp_texture, NULL, &temp_dst) != 0)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not copy texture: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture copy problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-            SDL_DestroyTexture(temp_texture);
-
-            if (SDL_SetRenderTarget(renderer, NULL) != 0)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, could not set render to default: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture render problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-
-            if (SDL_SetTextureBlendMode(texture[i], SDL_BLENDMODE_BLEND) != 0)
-            {
-                #if PRL_AUTO_WRITE_ERRORS == 1
-                cerr << __CERR_REF__ << "In PRL_AnimationSimple, a problem occurred when changing texture blend mode: " << SDL_GetError() << endl;
-                #endif // PRL_AUTO_WRITE_ERRORS
-                PRL_SetError(string("Texture blend mode problem: ") + string(SDL_GetError()));
-                return PRL_ERROR;
-            }
-        }
-    }
-
-    loaded = true;
-    return ret;
-}
-
-SDL_Texture* PRL_AnimationSimple :: getTexture(size_t which) const
-{
-    if (which > size_t(framesNumber - 1))
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationSimple, requested the frame " << which << " and maximum is " << framesNumber-1 << " (counting from 0 with " << framesNumber << " frames): returning the first one" << endl;
-        #endif // PRL_USE_WARNINGS
-        return nullptr;//texture[0]; // null?
-    }
-    return texture[which];
-}
-
-PRL_Point PRL_AnimationSimple :: getSize(size_t which) const
-{
-    return dstSizes[which];
-}
-
-PRL_Point PRL_AnimationSimple :: getSrcSize(size_t which) const
-{
-    return srcSizes[which];
-}
-
-PRL_Point PRL_AnimationSimple :: getRefRendSize() const
-{
-    return reference_renderer;
-}
-
-int PRL_AnimationSimple :: getFramesNumber() const
-{
-    return framesNumber;
-}
-
-void PRL_AnimationSimple :: setRenderer(const SDL_Renderer *newRenderer)
-{
-    if (!loaded)
-    {
-        renderer = (SDL_Renderer*) newRenderer;
-    }
-    else
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationSimple, the renderer can only be changed before the loading occurs" << endl;
-        #endif // PRL_USE_WARNINGS
-}
-
-float PRL_AnimationSimple :: getFrameRate() const
-{
-    return frameRate;
-}
-
-bool PRL_AnimationSimple :: isLoaded() const
-{
-    return loaded;
-}
-
-PRL_FPointCluster* PRL_AnimationSimple :: getPointCluster() const
-{
-    return (PRL_FPointCluster*) &pointCluster;
-}
-
-
-
-PRL_AnimatedSimple :: PRL_AnimatedSimple() : started(false), paused(false), current_anim_repeat_count(0), current_anim_index(0), currentTimeAnim(0), previousTimeAnim(0)
-{
-    ;
-}
-
-PRL_AnimatedSimple :: ~PRL_AnimatedSimple()
-{
-    targetAnimation.clear();
-    currentFrame.clear();
-}
-
-bool PRL_AnimatedSimple :: isAdded(const PRL_AnimationSimple *target) const
-{
-    size_t sz(targetAnimation.size());
-    for (size_t i(0); i < sz; ++i)
-    {
-        if (target == targetAnimation[i]) return true;
-    }
-    return false;
-}
-
-bool PRL_AnimatedSimple :: isAdded(const PRL_AnimationSimple *target, size_t& index) const
-{
-    size_t sz(targetAnimation.size());
-    for (size_t i(0); i < sz; i++)
-    {
-        if (target == targetAnimation[i])
-        {
-            index = i;
-            return true;
-        }
-    }
-    index = -1;
-    return false;
-}
-
-int PRL_AnimatedSimple :: makeAnimActive(size_t which)
-{
-    current_anim_index = which;
-}
-
-int PRL_AnimatedSimple :: add(const PRL_AnimationSimple *target)
-{
-    if (targetAnimation.size() <= PRL_ANIMATION_MAX_TARGETS)
-    {
-        if (target == nullptr)
-        {
-            #if PRL_AUTO_WRITE_ERRORS == 1
-            cerr << __CERR_REF__ << "In PRL_AnimatedSimple, the target sent to be added is invalid (nullptr)" << endl;
-            #endif // PRL_AUTO_WRITE_ERRORS
-            PRL_SetError("Invalid pointer on target animation");
-            return PRL_ERROR;
-        }
-        else if (isAdded(target))
-        {
-            #if PRL_USE_WARNINGS == 1
-            cout << __CERR_REF__ << "In PRL_AnimatedSimple, the target sent to be added is already added" << endl;
-            #endif // PRL_USE_WARNINGS
-            return PRL_WARNING;
-        }
-        else
-        {
-            targetAnimation.push_back((PRL_AnimationSimple*) target);
-            currentFrame.push_back(0);
-            current_anim_index = (size_t) (targetAnimation.size() - 1);
-            return 0;
-        }
-    }
-    else
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __CERR_REF__ << "In PRL_AnimatedSimple, tried to add more than " << PRL_ANIMATION_MAX_TARGETS << " animation targets: it will be ignored" << endl;
-        #endif // PRL_USE_WARNINGS
-        return PRL_WARNING;
-    }
-} /// re read stopped here!!!!!!!!!!!!!!
-
-void PRL_AnimatedSimple :: startAnim()
-{
-    paused = false;
-    started = true;
-
-    PRL_Point dst(targetAnimation[current_anim_index]->getSize(currentFrame[current_anim_index]));
-    PRL_Point src(targetAnimation[current_anim_index]->getSrcSize(currentFrame[current_anim_index]));
-    dspDst.w = dst.x;
-    dspDst.h = dst.y;
-    dspSrc.w = src.x;
-    dspSrc.h = src.y;
-}
-
-void PRL_AnimatedSimple :: restartAnim()
-{
-    currentFrame[current_anim_index] = 0; // reset frame number
-    current_anim_repeat_count = 0;
-
-    paused = false;
-    started = true;
-
-    PRL_Point dst(targetAnimation[current_anim_index]->getSize(currentFrame[current_anim_index]));
-    PRL_Point src(targetAnimation[current_anim_index]->getSrcSize(currentFrame[current_anim_index]));
-    dspDst.w = dst.x;
-    dspDst.h = dst.y;
-    dspSrc.w = src.x;
-    dspSrc.h = src.y;
-}
-
-void PRL_AnimatedSimple :: pauseAnim()
-{
-    paused = true;
-}
-
-void PRL_AnimatedSimple :: stopAnim()
-{
-    started = paused = false;
-    currentFrame[current_anim_index] = 0;
-    current_anim_repeat_count = 0;
-}
-
-bool PRL_AnimatedSimple :: isAnimStarted() const
-{
-    return started;
-}
-
-bool PRL_AnimatedSimple :: isAnimPaused() const
-{
-    return paused;
-}
-
-bool PRL_AnimatedSimple :: isAnimStopped() const // delete?
-{
-    return !started;
-}
-
-int PRL_AnimatedSimple :: getCurrentFrame() const
-{
-    return currentFrame[current_anim_index];
-}
-
-int PRL_AnimatedSimple :: getFramesNumber() const
-{
-    return targetAnimation[current_anim_index]->getFramesNumber();
-}
-
-void PRL_AnimatedSimple :: updateAnim()
-{
-    currentTimeAnim = timer_GLOBAL.us();
-
-    size_t i(0);
-
-    #if PRL_ANIMATION_CHECK_TIME_AT_UPDATE == 1
-    if (started && currentTimeAnim - previousTimeAnim >= PRL_ANIMATION_FPS_CORRECTION_FACTOR/targetAnimation[i]->getFrameRate())
-    #else
-    if (started)
-    #endif // PRL_ANIMATION_CHECK_TIME_AT_UPDATE
-    {
-        #if PRL_ANIMATION_CHECK_TIME_AT_UPDATE == 1
-        previousTimeAnim = currentTimeAnim; // Update he time, independent of the animation being paused or not
-        #endif // PRL_ANIMATION_CHECK_TIME_AT_UPDATE
-
-        if (!paused)
-        {
-            if (currentFrame[i] == targetAnimation.at(i)->getFramesNumber() - 1)
-            {
-                currentFrame[i] = 0;
-                ++current_anim_repeat_count;
-            }
-            else
-            {
-                ++currentFrame[i];
-            }
-
-            dspTexture = targetAnimation[i]->getTexture(currentFrame[i]);
-        }
-    }
-
-}
-
-
-
-
-
-
-PRL_AnimationVideo :: PRL_AnimationVideo(int buff) : bufferSz(buff), framesFilledInBufferAtUpdate(1)
-{
-    texture = (SDL_Texture**) malloc(PRL_ANIM_VIDEO_BUFFER*sizeof(SDL_Texture*));
-    rect = (SDL_Rect*) malloc(PRL_ANIM_VIDEO_BUFFER*sizeof(SDL_Rect));
-    if (texture == NULL || rect == NULL)
-        cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, unable to prepare the buffer of " << PRL_ANIM_VIDEO_BUFFER << " frames" << endl;
-    else
-        for (int i(0); i<bufferSz; i++)
-        {
-            texture[i] = NULL;
-            rect[i] = {0};
-        }
-
-    path = (char*) malloc (FILENAME_LENGTH * sizeof(char));
-    filename = (char*) malloc (FILENAME_LENGTH * sizeof(char));
-    format = (char*) malloc (FORMAT_LENGTH * sizeof(char));
-    strcpy(path, "");
-    strcpy(filename, "");
-    strcpy(format, "");
-    reference_renderer = {0};
-    referenceFramePosition = {0};
-    framesNumber = 0;
-    frameRate = 0;
-    framesReady = currentFrame = 0;
-    loaded = started = paused = fillBuffAtUpdate = false;
-    firstFrameNumber = lastFrameNumber = 0;
-    previousTimeAnim = 0;
-    dump_texture = NULL;
-}
-
-PRL_AnimationVideo :: ~PRL_AnimationVideo()
-{
-    for (int i(0); i < bufferSz; i++)
-        if (texture[i] != NULL) SDL_DestroyTexture(texture[i]);
-
-    if (texture != NULL) free(texture);
-    if (rect != NULL) free(rect);
-
-    if (path != NULL) free(path);
-    if (filename != NULL) free(filename);
-    if (format != NULL) free(format);
-    if (dump_texture != NULL) SDL_DestroyTexture(dump_texture);
-}
-
-SDL_Rect PRL_AnimationVideo :: getSize(int bufferedFrameNb) const
-{
-    if (bufferedFrameNb >= 0 && bufferedFrameNb < bufferSz)
-        return rect[bufferedFrameNb];
-    else
-    {
-        return {0, 0, 0, 0};
-    }
-}
-
-SDL_Rect PRL_AnimationVideo :: getReferenceRendererSize() const
-{
-    return reference_renderer;
-}
-
-int PRL_AnimationVideo :: getFramesNumber() const
-{
-    return framesNumber;
-}
-
-void PRL_AnimationVideo :: setBufferSize(const int buff)
-{
-    if (loaded) // this condition restricts the usage of setBuffer to the case of a still unloaded animation
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, tried to change the buffer after having called load()" << endl;
-        #endif // PRL_USE_WARNINGS
-    }
-    else if (buff < 1)
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, tried to set a negative or null buffer value (" << buff << ")" << endl;
-        #endif // PRL_USE_WARNINGS
-    }
-    else
-    {
-        SDL_Texture **p = (SDL_Texture**) malloc(buff * sizeof(SDL_Texture*));
-        SDL_Rect *p2 = (SDL_Rect*) malloc(buff * sizeof(SDL_Rect));
-        if (p == NULL || p2 == NULL)
-        {
-            #if PRL_USE_WARNINGS == 1
-            cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, unable to reallocate memory for the new buffer of " << buff << ". Ancient buffer of " << bufferSz << " is kept" << endl;
-            #endif // PRL_USE_WARNINGS
-        }
-        else
-        {
-            int i(0);
-            int minbuff(bufferSz);
-            if (bufferSz > buff) minbuff = buff;
-            for (i = 0; i < minbuff; i++)
-            {
-                p[i] = texture[i];
-                p2[i] = rect[i];
-            }
-
-            if (buff < bufferSz)
-            {
-                for (; i < bufferSz; i++)
-                {
-                    if (texture[i] != NULL) SDL_DestroyTexture(texture[i]);
-                    rect[i] = {0};
-                }
-            }
-            free(texture);
-            free(rect);
-            texture = p;
-            rect = p2;
-            bufferSz = buff;
-        }
-    }
-}
-
-int PRL_AnimationVideo :: getBufferSize() const
-{
-    return bufferSz;
-}
-
-int PRL_AnimationVideo :: getBufferReady() const
-{
-    return framesReady;
-}
-
-int PRL_AnimationVideo :: load(const char file[])
-// Retrieve path, name, format, frames number, fps, ...
-{
-    if (loaded) // if already loaded, free the memory
-    {
-        for (int i(0); i<framesNumber; i++)
-        {
-            if (texture[i] != NULL)
-            {
-                SDL_DestroyTexture(texture[i]);
-                texture[i] = NULL;
-                rect[i] = {0};
-            }
-        }
-    }
-    FILE* filep = fopen(file, "r");
-    if (filep == NULL)
-    {
-        cerr << "Error: could not open " << file << ": the file may be missing, locked or used" << endl;
-        return PRL_ERROR;
-    }
-
-    // initialized in the constructor
-    strcpy(path, "");
-    strcpy(filename, "");
-    strcpy(format, "");
-
-    char temp[FILENAME_LENGTH] = "", c = -1;
-    int filename_count(0), format_count(0), pathlength(0);
-    bool reading(true);
-
-    #if PRL_ALLOW_FLOAT_FPS == 1
-    fscanf(filep, "%d:%d:%f:", &firstFrameNumber, &lastFrameNumber, &frameRate);
-    #else
-    fscanf(filep, "%d:%d:%d:", &firstFrameNumber, &lastFrameNumber, &frameRate);
-    #endif // PRL_ALLOW_FLOAT_FPS
-
-    framesNumber = lastFrameNumber-firstFrameNumber+1;
-
-    if (framesNumber > PRL_MAX_FRAMES_ANIM_SIMPLE)
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, tried to create an animation of " << framesNumber << " frames but the maximum is " << PRL_MAX_FRAMES_ANIM_SIMPLE << ": limiting the number of frames to the maximum" << endl;
-        #endif // PRL_USE_WARNINGS
-        framesNumber = PRL_MAX_FRAMES_ANIM_SIMPLE; // malloc depends directly on this variable
-    }
-
-    while (reading) // reading filename
-    {
-        c = fgetc(filep);
-        if (c == EOF)
-        {
-            cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, the .anim file " << file << " is badly defined" << endl;
-            return PRL_ERROR;
-        }
-        else if (c == PRL_FILE_SEPARATION_CHARACTER) // end of the current char variable
-        {
-            reading = false;
-        }
-        else
-        {
-            if (filename_count == FILENAME_LENGTH)
-            {
-                cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, the .anim file " << file << " contains an animation file name of more than " << FILENAME_LENGTH << " characters" << endl;
-                return PRL_ERROR;
-            }
-            sprintf(temp, "%c", c);
-            strcat(filename, temp);
-            filename_count++;
-        }
-    }
-
-    reading = true; int var_to_check_format_point(0);
-    while (reading) // reading format
-    {
-        c = fgetc(filep); var_to_check_format_point++;
-        if (c == EOF)
-        {
-            cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, the .anim file " << file << " is badly defined" << endl;
-            return PRL_ERROR;
-        }
-        else if (c == '.' && var_to_check_format_point == 0) // do not read the first format point if written (to be added later!)
-        {
-            ;
-        }
-        else if (c == PRL_FILE_SEPARATION_CHARACTER) // end of the current char variable
-        {
-            reading = false;
-        }
-        else
-        {
-            if (format_count == FORMAT_LENGTH)
-            {
-                cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, the .anim file " << file << " contains an animation file format of more than " << FORMAT_LENGTH << " characters" << endl;
-                return PRL_ERROR;
-            }
-            sprintf(temp, "%c", c);
-            strcat(format, temp);
-            format_count++;
-        }
-        var_to_check_format_point++;
-    }
-    fscanf(filep, "%d/%d", &reference_renderer.x, &reference_renderer.y);
-    reference_renderer.w = reference_renderer.x;
-    reference_renderer.h = reference_renderer.y;
-
-    for (int i(strlen(file)-1); i > 0; i--) // extract path
-    {
-        if (file[i] == '/' || file[i] == '\\') // if we reached the end of the file name
-        {
-            pathlength = i+1; // +1 to have the '/' character at the end of the string
-            i = -1;
-            char temp_path[4] = ""; strcpy(temp, "");
-            for (int j(0); j < pathlength; j++)
-            {
-                sprintf(temp_path, "%c", file[j]);
-                strcat(temp, temp_path);
-            }
-            //strcat(temp, filename); // adds the root filename to the path: not needed here
-            strcpy(path, temp);
-        }
-    }
-    fclose(filep); // close the file
-
-    fillBuffer(bufferSz);
-
-    loaded = true;
-    return 0;
-}
-
-int PRL_AnimationVideo :: fillBuffer(const int frames)
-{
-    bool timeHasArrived(false);
-    char loadingName[FORMAT_LENGTH+FILENAME_LENGTH+10] = ""; // + 1 for the point and + 9 for the number string length (000001)
-    char temp[FILENAME_LENGTH] = "";
-    SDL_Surface *surface = NULL;
-
-    float xratio = 1.0 * config_GLOBAL.renderResolution.x / reference_renderer.x; // prepares the ratio to change the rect size for correct display
-    float yratio = 1.0 * config_GLOBAL.renderResolution.y / reference_renderer.y;
-
-    if (frames > 0) timeHasArrived = true;
-
-    int cpt(0);
-    for (int i(0); (cpt<frames || !timeHasArrived) && i<bufferSz; i++)
-    {
-        if (texture[i] == NULL)
-        {
-            strcpy(loadingName, path); // add the path
-            strcat(loadingName, filename); // add the filename
-            sprintf(temp, "%d.%s", currentFrame+framesReady+firstFrameNumber, format); // prepare number . format
-            strcat(loadingName, temp); // add the number . format
-            surface = IMG_Load(loadingName);
-
-            if (surface == NULL)
-            {
-                cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo: " << SDL_GetError() << endl;
-                return PRL_ERROR;
-            }
-            rect[i].x = rect[i].w = xratio*surface->w; // set the size of every frame
-            rect[i].y = rect[i].h = xratio*surface->h;
-
-            texture[i] = SDL_CreateTextureFromSurface(dspRenderer, surface);
-            SDL_FreeSurface(surface); surface = NULL;
-
-            if (texture[i] == NULL)
-            {
-                cerr << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, could not create the texture: " << SDL_GetError() << endl;
-                return PRL_ERROR;
-            }
-            if (SDL_SetTextureBlendMode(texture[i], SDL_BLENDMODE_BLEND) != 0)
-            {
-                #if PRL_USE_WARNINGS == 1
-                cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, a problem occurred when changing texture blend mode: " << SDL_GetError() << ". Blend mode not changed" << endl;
-                #endif // PRL_USE_WARNINGS
-            }
-
-            framesReady++;
-
-            if (frames <= 0) // if loading continuously
-            {
-                if (timer_GLOBAL.us() - previousTimeAnim >= 0.95*PRL_ANIMATION_FPS_CORRECTION_FACTOR/frameRate) // 0.95 is an additional safety factor
-                    timeHasArrived = true;
-            }
-            cpt++;
-        }
-    }
-    return 0;
-}
-
-void PRL_AnimationVideo :: startAnim()
-{
-    started = true;
-    paused = false;
-}
-
-void PRL_AnimationVideo :: restartAnim()
-{
-    started = true;
-    paused = false;
-    freeBuffer();
-    fillBuffer(1);
-}
-
-void PRL_AnimationVideo :: pauseAnim()
-{
-    paused = true;
-}
-
-void PRL_AnimationVideo :: stopAnim()
-{
-    started = paused = false;
-    freeBuffer();
-}
-
-bool PRL_AnimationVideo :: isStarted() const
-{
-    return started;
-}
-
-bool PRL_AnimationVideo :: isPaused() const
-{
-    return paused;
-}
-
-bool PRL_AnimationVideo :: isStopped() const
-{
-    return !started;
-}
-
-int PRL_AnimationVideo :: getCurrentFrame() const
-{
-    return currentFrame;
-}
-
-void PRL_AnimationVideo :: updateAnim()
-{
-    #if PRL_ANIMATION_CHECK_TIME_AT_UPDATE == 1
-    long long currentTime = timer_GLOBAL.us();
-    #endif // PRL_ANIMATION_CHECK_TIME_AT_UPDATE
-    if (!started) dspTexture = NULL;
-    else
-    {
-        #if PRL_ANIMATION_CHECK_TIME_AT_UPDATE == 1
-        if (!paused && currentTime - previousTimeAnim >= PRL_ANIMATION_FPS_CORRECTION_FACTOR/frameRate)
-        #else
-        if (!paused)
-        #endif // PRL_ANIMATION_CHECK_TIME_AT_UPDATE
-        {
-            #if PRL_ANIMATION_CHECK_TIME_AT_UPDATE == 1
-            previousTimeAnim = currentTime;
-            #endif // PRL_ANIMATION_CHECK_TIME_AT_UPDATE
-            if (currentFrame == framesNumber-1)
-            {
-                stopAnim();
-            }
-            else
-            {
-                if (dump_texture != NULL)
-                    SDL_DestroyTexture(dump_texture);
-                dspTexture = texture[0];
-                dspDst = {referenceFramePosition.x + (referenceFramePosition.w-rect[0].w)/2, referenceFramePosition.y + (referenceFramePosition.h-rect[0].h)/2, rect[0].w, rect[0].h};
-                dspSrc = {0, 0, rect[0].w, rect[0].h};
-
-                dump_texture = texture[0];
-
-                for (int i(0); i < bufferSz-1; i++) // reorganize the buffer
-                {
-                    texture[i] = texture[i+1];
-                    rect[i] = rect[i+1];
-                }
-                texture[bufferSz-1] = NULL;
-                rect[bufferSz-1] = {0};
-                framesReady--;
-
-                if (fillBuffAtUpdate) fillBuffer(framesFilledInBufferAtUpdate);
-
-                currentFrame++;
-                if (currentFrame == framesNumber-1)
-                {
-                    stopAnim();
-                }
-            }
-        }
-    }
-}
-
-#if PRL_ALLOW_FLOAT_FPS == 1
-float PRL_AnimationVideo :: getFrameRate() const
-#else
-int PRL_AnimationVideo :: getFrameRate() const
-#endif // PRL_ALLOW_FLOAT_FPS
-{
-    return frameRate;
-}
-
-bool PRL_AnimationVideo :: isLoaded() const
-{
-    return loaded;
-}
-
-void PRL_AnimationVideo :: fillBufferAtUpdate(bool fillAtUpdate, const int frames)
-{
-    fillBuffAtUpdate = fillAtUpdate;
-    framesFilledInBufferAtUpdate = frames;
-}
-
-void PRL_AnimationVideo :: fillBufferAtUpdate(bool fillAtUpdate)
-{
-    fillBuffAtUpdate = fillAtUpdate;
-    framesFilledInBufferAtUpdate = 1;
-}
-
-void PRL_AnimationVideo :: freeBuffer()
-{
-    for (int i(0); i<bufferSz; i++)
-    {
-        if (texture[i] != NULL)
-        {
-            SDL_DestroyTexture(texture[i]);
-            texture[i]=NULL;
-        }
-        rect[i] = {0};
-    }
-    framesReady = 0;
-    currentFrame = 0;
-}
-
-void PRL_AnimationVideo :: setPosition(int x, int y)
-{
-    if (!loaded)
-    {
-        #if PRL_USE_WARNINGS == 1
-        cout << __FILENAME__ << ", line " << __LINE__ << " In PRL_AnimationVideo, the position cannot be set before the loading occurs since setPosition() demands at least 1 frame loaded" << endl;
-        #endif // PRL_USE_WARNINGS
-    }
-    else
-    {
-        referenceFramePosition.x = x;
-        referenceFramePosition.y = y;
-        referenceFramePosition.w = rect[0].w;
-        referenceFramePosition.h = rect[0].h;
-        dspDst = {(float) x, (float) y, rect[0].w, rect[0].h};
-        dspSrc = {0.0, 0.0, rect[0].w, rect[0].h};
-    }
-}*/
 
