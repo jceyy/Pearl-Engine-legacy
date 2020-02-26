@@ -43,14 +43,14 @@ int PRL_TestZone()
 	PRL_FPoint wowpos(0.0, 0.0);
 
 	// Textbox test
-	SDL_Color color_white = {255, 128, 255, 64};
+	SDL_Color color_text = {255, 128, 255, 64};
 	int font_size = 180;
-    PRL_Font test_font("data/fonts/cooper.ttf", font_size, TTF_STYLE_ITALIC, color_white);
+    PRL_Font test_font("data/fonts/cooper.ttf", font_size, TTF_STYLE_ITALIC, color_text);
 	PRL_TextLabel* textLabelTest = handler.createTextLabel("Text box test", test_font);
 	textLabelTest->setPos(400, 500);
 
 	handler.printClassDiagnostics();
-
+    size_t temp_index(0);
 
 	while(!quit)
 	{
@@ -77,6 +77,16 @@ int PRL_TestZone()
             mario->toggleBoxDisplay();
             wowGuy->toggleBoxDisplay();
             textLabelTest->toggleBoxDisplay();
+        }
+
+        if (handler.input.isKeyPressedAndReset(SDL_SCANCODE_C)) // Change color of boxes
+        {
+            temp_index = (temp_index + 1) % 2;
+            // "temp" : temporary function, will be removed as collisions get completely implemented
+            background->tempSetIndex(temp_index);
+            mario->tempSetIndex(temp_index);
+            wowGuy->tempSetIndex(temp_index);
+            textLabelTest->tempSetIndex(temp_index);
         }
 
 		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))

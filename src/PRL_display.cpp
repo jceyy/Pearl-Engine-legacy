@@ -35,7 +35,7 @@ void _createBoxTexture(std::vector <SDL_Texture*>& createdTexture, SDL_Color& co
             PRL_SetError(std::string("Error creating displayable: ") + std::string(SDL_GetError()), true);
         }
     }
-    color1 = {128, 128, 128, 128}, color2 = {32, 192, 0, 128};
+    color1 = {192, 32, 0, 128}, color2 = {32, 192, 0, 128};
 }
 
 PRL_Displayable :: PRL_Displayable() :
@@ -259,6 +259,12 @@ void PRL_Displayable :: setBoxWidth(int width, PRL_Point refRend) noexcept
         dspRefRenderRes = refRend;
         dspBoxWidth = width;
     }
+}
+
+/// TEMPORARY, ONLY FOR DEBUG PURPOSES
+void PRL_Displayable :: tempSetIndex(size_t index)
+{
+    dspBoxTextureIndex = index;
 }
 
 // Collision

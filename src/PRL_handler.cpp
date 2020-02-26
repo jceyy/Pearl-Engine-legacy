@@ -12,16 +12,8 @@ int PRL_Handler :: getCount() noexcept
 PRL_Handler :: PRL_Handler() // add variables initialization
 {
     time.stopwatch.start();
-
-
-    for (size_t i(0); i < PRL_PLAN_MAX; ++i)
-    {
-        PRL_Displayer disp0;
-        PRL_Collider col0;
-        display.displayer.push_back(disp0);
-        collision.collider.push_back(col0);
-    }
-
+    display.displayer.resize(PRL_PLAN_MAX);
+    collision.collider.resize(PRL_PLAN_MAX);
     handlerCount++;
 }
 
@@ -35,12 +27,6 @@ void PRL_Handler :: freeall()
 {
 	;
 }
-
-/*void PRL_Handler :: _display :: setRenderDrawColor(SDL_Color const% color, size_t index) noexcept
-{
-    ;
-}*/
-
 
 PRL_Animation* PRL_Handler :: loadAnimation(const std::string& file_path)
 {
