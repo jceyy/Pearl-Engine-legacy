@@ -24,6 +24,7 @@
 class PRL_Displayable
 {
     friend class PRL_Displayer;
+    friend class PRL_Collider;
 
 	//! @internal Display related part @endinternal
 public:
@@ -39,6 +40,8 @@ public:
     void show() noexcept;
     //! @brief Stop the PRL_Displayable from being displayed on the screen.
     void hide() noexcept;
+    //! @brief Toggle the visibility of the PRL_Displayable.
+    void toggleDisplay() noexcept;
     //! @brief Tell whether the PRL_Displayable object is displayed on screen or not.
     bool isDisplayEnabled() const noexcept;
     //! @brief Set the display angle.
@@ -71,6 +74,32 @@ public:
     void setColorMode(SDL_Color const& color);
     void setColorMode(SDL_Color const& color, long long us);
 
+
+    void showBox() noexcept;
+    void hideBox() noexcept;
+    void toggleBoxDisplay() noexcept;
+    bool isBoxShown() const noexcept;
+    int setBoxColor(SDL_Color const& color1, SDL_Color const& color2);
+    void setBoxWidth(int width, PRL_Point refRender) noexcept;
+
+    //! @brief Enable collision.
+	void enableCol() noexcept;
+	//! @brief Disable collision.
+	void disableCol() noexcept;
+	//! @brief Tell whether collision is enabled or not.
+	bool isColEnabled() const noexcept;
+	//! @brief Tell if a collision is happening.
+	bool isColliding() const noexcept;
+	//! @brief Set the collision type.
+	void setColType(PRL_ColType type) noexcept;
+	//! @brief Set the collision group the collidable belongs to.
+	void setColGroup(PRL_ColGroup group) noexcept;
+	//! @brief Set collision priority.
+	void setColPriority(int priority) noexcept;
+
+
+	PRL_ColInfo colInfo; //!< Contains information on collisions concerning this collidable.
+
 protected:
 	std::vector <SDL_Texture*> dspTexture; //!< @brief Textures composing the displayable.
     std::vector <PRL_FRect> dspDst; //!< @brief Textures' destination rectangles.
@@ -80,11 +109,39 @@ protected:
     double dspRotAngle; //!< @brief Rotation angle in degrees.
     PRL_FPoint dspDesiredPos; /// USED in update displayable in animated (anchor point)
 
+    //! @brief Hit boxes composing the object.
+	//! @details Hit boxes are stored in a two dimensional array for animations.
+	std::vector /*<std::vector */<PRL_HitBox*>  colHitbox;
+	//! @brief Hit points composing the object.
+	//! @details Hit points are stored in a two dimensional array for animations.
+    std::vector /*<std::vector*/ <PRL_FPoint> colHitPoint;
+
+	bool colEnabled = true; //!< @brief Tell whether collision is enabled or not.
+	bool colIsColliding; //!< @brief  Tell if a collision is occurring.
+	PRL_ColType colType; //!< @brief  Collision type of the object.
+	PRL_ColGroup colGroup; //!< @brief  Collision group in which collisions are tested for this object.
+	int colPriority; //!< @brief Priority in a collision.
+
+	int addHitBox(PRL_HitBox* hb);
+	void addHitPoint(PRL_FPoint const& p);
+
 private:
-    //! @brief Used only by PRL_Displayer: address of the PRL_Displayable.
-    size_t dspDisplayerAddress;
-    //! @brief Tell whether the PRL_Displayable has been added to a PRL_Displayer or not.
-    bool dspDisplayerAdded;
+    //! @brief Whether to show a box around the PRL_Displayable or not.
+    bool dspShowBox;
+    //! @brief Textures of the box.
+    /*! @details In the current implementation, there are only two colors possible: idle and colliding.
+    They can be set using the setBoxColors() function, but are set to grey and green per default.*/
+    std::vector <SDL_Texture*> dspBoxTexture;
+    size_t dspBoxTextureIndex; //! @brief Index of the currently displaying box.
+    int dspBoxWidth; //!< @brief Width of the box.
+    PRL_Point dspRefRenderRes; //!< @brief Reference render resolution.
+
+    size_t dspDisplayerAddress; //!< @brief Used only by PRL_Displayer, address of the PRL_Displayable.
+    bool dspDisplayerAdded; //!< @brief Tell whether the PRL_Displayable has been added to a PRL_Displayer or not.
+
+    int colColliderAddress; //!< @brief Used only by PRL_Collider, address of the PRL_Displayable.
+    bool colColliderAdded; //!< @brief Tell if the PRL_Displayable has been added to a PRL_Collider.
+
     static int dspCount; //!< @brief Number of currently declared PRL_Displayable.
 
 
@@ -150,7 +207,7 @@ public:
 	/*!
 	@return 0 on success or a negative error code on failure, call PRL_GetError() for more information.
 	*/
-	int display() const;
+	int display(bool enableBoxes = true) const;
 
 	//! @brief NOT USED YET: Display using the current camera.
 	int displayWithCamera() const;
@@ -159,10 +216,17 @@ public:
 
     //! @brief Get how many PRL_Displayer are currently in use.
     //! @return PRL_Displayer count.
-	static int getDsprCount() noexcept;
+	static int getCount() noexcept;
 
 private:
-	std::vector <PRL_Displayable*> displayable; //!< Added objects.
+    //! @brief Compute the destination rectangles for the 4 sides of the box.
+    /*! @param[in] The destination rectangle for the PRL_Displayable to be displayed.
+        @param[out] A table of size 4 that will be filled with the calculated destination rectangles.
+        @param[in] The scaled width (in x and y directions) of the bar composing the box. */
+    //! @details This function does not check if the pointers are valid or not.
+    void computeBoxDest(const SDL_Rect* dst, SDL_Rect dstbox[], const PRL_Point* scaledWidth) const noexcept;
+
+	std::vector <PRL_Displayable*> displayable; //!< @brief Added objects.
 	PRL_Camera *camera; //!< NOT USED YET: camera.
 
 	static int dsprCount; //!< Count of PRL_Displayer currently in use.

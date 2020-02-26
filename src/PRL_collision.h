@@ -125,7 +125,7 @@ private:
 };
 
 
-class PRL_Collidable;
+class PRL_Displayable;
 
 //! @brief Class capable of storing informations about a specific collision.
 class PRL_ColInfo
@@ -141,7 +141,7 @@ public:
     */
     std::vector<int> involvedHitBox;
     //! @brief Vector containing all target collidables of the collision event involving the corresponding hit box.
-    std::vector<PRL_Collidable*> target;
+    std::vector<PRL_Displayable*> target;
 
     //! @brief Get the count of currently used PRL_ColInfo classes.
     static int getCount() noexcept;
@@ -152,6 +152,7 @@ private:
 	void clear() noexcept;
 };
 
+/*
 //! @brief Abstract class introducing the collision properties of objects.
 class PRL_Collidable
 {
@@ -185,10 +186,10 @@ public:
 protected:
 	//! @brief Hit boxes composing the collidable.
 	//! @details Hit boxes are stored in a two dimensional array for animations.
-	std::vector /*<std::vector */<PRL_HitBox*>  colHitbox;
+	std::vector <PRL_HitBox*>  colHitbox;
 	//! @brief Hit points composing the collidable.
 	//! @details Hit points are stored in a two dimensional array for animations.
-    std::vector /*<std::vector*/ <PRL_FPoint> colHitPoint;
+    std::vector <PRL_FPoint> colHitPoint;
 
 	bool colEnabled = true; //!< Tell whether collision is enabled or not.
 	bool colIsColliding; //!< Tell if a collision is occurring.
@@ -201,7 +202,7 @@ private:
 	static int colCount; //!< Count of collidables currently in use.
 
 	//std::vector <std::vector <PRL_HitBox*> > dspMaskHitbox; !< brief Mask textures' corresponding hit boxes.
-};
+};*/
 
 
 class PRL_Collider
@@ -212,10 +213,10 @@ public:
 
     //! @brief Add a collidable to the collider.
     //! @details Does nothing if the collidable has already been added.
-    void add(PRL_Collidable *collidable);
+    void add(PRL_Displayable *collidable);
     //! @brief Remove a collidable from the collider.
     //! @details Does nothing if the collidable has not been added.
-    void remove(PRL_Collidable *collidable);
+    void remove(PRL_Displayable *collidable);
     //! @brief Test the collisions between the different collidables added to the collider
     void testCollisions() const noexcept;
     //! @brief Get the count of PRL_Collider currently in use.
@@ -223,9 +224,9 @@ public:
 
 private:
 	//! @brief Vector containing all the added collidables.
-    std::vector <PRL_Collidable*> collidable;
+    std::vector <PRL_Displayable*> collidable;
     //! @brief Check whether the collidable is already added to the collider.
-    inline bool isAdded(PRL_Collidable *col) const noexcept;
+    inline bool isAdded(PRL_Displayable *col) const noexcept;
 
     static int colCount; //!< Number of colliders currently in use.
 };

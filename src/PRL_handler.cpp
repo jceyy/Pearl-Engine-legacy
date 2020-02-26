@@ -36,6 +36,12 @@ void PRL_Handler :: freeall()
 	;
 }
 
+/*void PRL_Handler :: _display :: setRenderDrawColor(SDL_Color const% color, size_t index) noexcept
+{
+    ;
+}*/
+
+
 PRL_Animation* PRL_Handler :: loadAnimation(const std::string& file_path)
 {
 	return loadAnimation(file_path, display.renderer[0]);
@@ -244,7 +250,7 @@ void PRL_Handler :: printClassDiagnostics() const noexcept
 	cout << "PRL_Handler: " << PRL_Handler::getCount() << endl;
 
 	cout << "PRL_Displayable: " << PRL_Displayable::getCount() << endl;
-	//cout << "PRL_Displayer: " << PRL_Displayer::getCount() << endl;
+	cout << "PRL_Displayer: " << PRL_Displayer::getCount() << endl;
 	cout << "PRL_Image: " << PRL_Image::getCount() << endl;
 	cout << "PRL_Sprite: " << PRL_Sprite::getCount() << endl;
 	cout << "PRL_Animation: " << PRL_Animation::getCount() << endl;
@@ -256,7 +262,6 @@ void PRL_Handler :: printClassDiagnostics() const noexcept
 	cout << "PRL_HitBox: " << PRL_HitBox::getCount() << endl;
 	cout << "PRL_HBRect: " << PRL_HBRect::getCount() << endl;
 	cout << "PRL_ColInfo: " << PRL_ColInfo::getCount() << endl;
-	cout << "PRL_Collidable: " << PRL_Collidable::getCount() << endl;
 	cout << "PRL_Collider: " << PRL_Collider::getCount() << endl;
 	cout << endl;
 }

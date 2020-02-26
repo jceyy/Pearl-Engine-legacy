@@ -27,6 +27,7 @@ public:
 	public:
 		std::vector <SDL_Renderer*> renderer;
 		std::vector <SDL_Window*> window;
+
 	private:
 		std::vector <PRL_Animation*> animation;
 		std::vector <PRL_Animated*> animated;

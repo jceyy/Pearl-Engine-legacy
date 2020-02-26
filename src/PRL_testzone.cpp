@@ -43,7 +43,7 @@ int PRL_TestZone()
 	PRL_FPoint wowpos(0.0, 0.0);
 
 	// Textbox test
-	SDL_Color color_white = {255, 128, 255, 25};
+	SDL_Color color_white = {255, 128, 255, 64};
 	int font_size = 180;
     PRL_Font test_font("data/fonts/cooper.ttf", font_size, TTF_STYLE_ITALIC, color_white);
 	PRL_TextLabel* textLabelTest = handler.createTextLabel("Text box test", test_font);
@@ -51,9 +51,6 @@ int PRL_TestZone()
 
 	handler.printClassDiagnostics();
 
-	background->hide();
-	mario->hide();
-	wowGuy->hide();
 
 	while(!quit)
 	{
@@ -64,6 +61,22 @@ int PRL_TestZone()
 		if (handler.input.isKeyPressed(SDL_SCANCODE_ESCAPE))
         {
             quit = true;
+        }
+
+        if (handler.input.isKeyPressedAndReset(SDL_SCANCODE_SPACE)) // hide or show object
+        {
+            background->toggleDisplay();
+            mario->toggleDisplay();
+            wowGuy->toggleDisplay();
+            textLabelTest->toggleDisplay();
+        }
+
+        if (handler.input.isKeyPressedAndReset(SDL_SCANCODE_B)) // hide or show box around object
+        {
+            background->toggleBoxDisplay();
+            mario->toggleBoxDisplay();
+            wowGuy->toggleBoxDisplay();
+            textLabelTest->toggleBoxDisplay();
         }
 
 		if (handler.input.isKeyPressed(SDL_SCANCODE_UP))

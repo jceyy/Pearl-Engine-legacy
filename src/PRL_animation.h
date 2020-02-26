@@ -323,7 +323,7 @@ private:
 /*                 PRL_Sprite	                 */
 /* ********************************************* */
 
-class PRL_Sprite : public PRL_Displayable, public PRL_Collidable
+class PRL_Sprite : public PRL_Displayable
 {
 public:
     PRL_Sprite();
@@ -451,7 +451,7 @@ private:
 /*                 PRL_Animated                  */
 /* ********************************************* */
 
-class PRL_Animated : public PRL_Displayable, public PRL_Collidable
+class PRL_Animated : public PRL_Displayable
 {
 public:
     PRL_Animated();

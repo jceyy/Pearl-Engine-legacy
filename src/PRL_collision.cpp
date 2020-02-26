@@ -139,82 +139,6 @@ void PRL_ColInfo :: clear() noexcept
 }
 
 
-/*! @internal
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_Collidable %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- @endinternal
-*/
-
-int PRL_Collidable :: colCount = 0;
-
-int PRL_Collidable :: getCount() noexcept
-{
-    return colCount;
-}
-
-PRL_Collidable :: PRL_Collidable() : colIsColliding(false), colType(PRL_COLTYPE_0),
-colGroup(PRL_COLTYPE_0), colPriority(0), collider_address(-1)
-{
-	colCount++;
-}
-
-PRL_Collidable :: ~PRL_Collidable()
-{
-	colCount--;
-}
-
-void PRL_Collidable :: enableCol() noexcept
-{
-	colEnabled = true;
-}
-
-void PRL_Collidable :: disableCol() noexcept
-{
-	colEnabled = false;
-}
-
-bool PRL_Collidable :: isColEnabled() const noexcept
-{
-	return colEnabled;
-}
-
-bool PRL_Collidable :: isColliding() const noexcept
-{
-	return colIsColliding;
-}
-
-void PRL_Collidable :: setColType(PRL_ColType type) noexcept
-{
-    colType = type;
-}
-
-void PRL_Collidable :: setColGroup(PRL_ColGroup group) noexcept
-{
-    colGroup = group;
-}
-
-void PRL_Collidable :: setColPriority(int p)
-{
-	colPriority = p;
-}
-
-int PRL_Collidable :: addHitBox(PRL_HitBox* hb)
-{
-	if (hb == nullptr)
-	{
-		PRL_SetError("Invalid hitbox");
-		return PRL_ERROR;
-	}
-    else
-	{
-		colHitbox.push_back(hb);
-		return 0;
-	}
-}
-
-void PRL_Collidable :: addHitPoint(PRL_FPoint const& p)
-{
-    colHitPoint.push_back(p);
-}
 
 bool PRL_TestCollision(PRL_HitBox const& hitbox1, PRL_HitBox const& hitbox2) noexcept
 {
@@ -275,30 +199,30 @@ PRL_Collider :: ~PRL_Collider()
     colCount--;
 }
 
-void PRL_Collider :: add(PRL_Collidable *newColl)
+void PRL_Collider :: add(PRL_Displayable *newColl)
 {
     if (!isAdded(newColl))
     {
         collidable.push_back(newColl);
-        newColl->collider_address = collidable.size() - 1;
+        newColl->colColliderAddress = collidable.size() - 1;
     }
 }
 
-void PRL_Collider :: remove(PRL_Collidable* rmColl)
+void PRL_Collider :: remove(PRL_Displayable* rmColl)
 {
     if (isAdded(rmColl))
     {
-        for (size_t i(rmColl->collider_address + 1); i < collidable.size(); ++i) // update addresses greater than the removed collidable
+        for (size_t i(rmColl->colColliderAddress + 1); i < collidable.size(); ++i) // update addresses greater than the removed collidable
         {
-            collidable[i]->collider_address--;
+            collidable[i]->colColliderAddress--;
         }
 
-        collidable.erase(collidable.begin() + rmColl->collider_address);
-        rmColl->collider_address = -1;
+        collidable.erase(collidable.begin() + rmColl->colColliderAddress);
+        rmColl->colColliderAddress = -1;
     }
 }
 
-bool PRL_Collider :: isAdded(PRL_Collidable *coll) const noexcept
+bool PRL_Collider :: isAdded(PRL_Displayable *coll) const noexcept
 {
     for (size_t i(0); i < collidable.size(); ++i)
     {

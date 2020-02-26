@@ -5,7 +5,7 @@
 
 void printAnimDiagnostics(PRL_Animation* anim);
 
-class TestClass : PRL_Displayable, PRL_Collidable
+class TestClass : PRL_Displayable
 {
 public:
     TestClass();
