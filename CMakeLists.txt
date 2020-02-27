@@ -4,7 +4,7 @@ project(PearlEngine)
 if(CMAKE_BUILD_TYPE MATCHES "debug")
 	set(CMAKE_BUILD_TYPE Debug)
 else(CMAKE_BUILD_TYPE MATCHES "debug")
-	set(CMAKE_BUILD_TYPE Release
+	set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
 message("\n")
