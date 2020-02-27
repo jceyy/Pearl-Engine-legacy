@@ -5,7 +5,7 @@ if(CMAKE_BUILD_TYPE MATCHES "debug")
 	set(CMAKE_BUILD_TYPE Debug)
 else(CMAKE_BUILD_TYPE MATCHES "debug")
 	set(CMAKE_BUILD_TYPE Release)
-endif(NOT CMAKE_BUILD_TYPE)
+endif(CMAKE_BUILD_TYPE MATCHES "debug")
 
 message("\n")
 message("Build type is ${CMAKE_BUILD_TYPE}")
