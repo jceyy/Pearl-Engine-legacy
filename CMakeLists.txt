@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 2.6)
 project(PearlEngine)
 
-if(NOT CMAKE_BUILD_TYPE) 
-    set(CMAKE_BUILD_TYPE Debug)
+if(CMAKE_BUILD_TYPE MATCHES "debug")
+	set(CMAKE_BUILD_TYPE Debug)
+else(CMAKE_BUILD_TYPE MATCHES "debug")
+	set(CMAKE_BUILD_TYPE Release
 endif(NOT CMAKE_BUILD_TYPE)
 
 message("\n")
-
 message("Build type is ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -pedantic -std=c++11")

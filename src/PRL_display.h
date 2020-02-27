@@ -97,7 +97,7 @@ public:
 	//! @brief Set collision priority.
 	void setColPriority(int priority) noexcept;
 
-	void tempSetIndex(size_t index);
+	void tempSetIndex(size_t index); //!< TO BE REMOVED
 
 	PRL_ColInfo colInfo; //!< Contains information on collisions concerning this collidable.
 
