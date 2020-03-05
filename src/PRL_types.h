@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <type_traits>
 #include <typeinfo>
+#include <vector>
 
 class PRL_FPoint;
 class PRL_DPoint;
@@ -20,7 +21,9 @@ public:
 	PRL_Point(PRL_DPoint const& point);
 	~PRL_Point();
 
-	void set(int x_, int y_);
+	void set(int x_, int y_) noexcept;
+	int norm2() const noexcept;
+	double norm() const noexcept;
 
     int x, y;
 };
@@ -37,7 +40,10 @@ public:
 	PRL_FPoint(PRL_DPoint const& point);
 	~PRL_FPoint();
 
-	void set(float x_, float y_);
+	void set(float x_, float y_) noexcept;
+	float norm2() const noexcept;
+	double norm() const noexcept;
+	void normalize() noexcept;
 
     float x, y;
 };
@@ -54,7 +60,10 @@ public:
 	PRL_DPoint(PRL_DPoint const& point);
 	~PRL_DPoint();
 
-	void set(double x_, double y_);
+	void set(double x_, double y_) noexcept;
+	double norm2() const noexcept;
+	double norm() const noexcept;
+	void normalize() noexcept;
 
     double x, y;
 };
@@ -68,19 +77,6 @@ S operator*(T q, S const& p) noexcept
 	return S(p.x * q, p.y * q);
 }
 
-/*template<typename T, typename S>
-S operator*(S const& p, T q) noexcept
-{
-	return q * p;
-}*/
-
-/*template<typename T, typename S>
-S operator/(S const& p, T q) noexcept
-{
-	static_assert(std::is_same<S, PRL_Point>::value || std::is_same<S, PRL_FPoint>::value || std::is_same<S, PRL_DPoint>::value, "At least one PRL point type is required");
-	static_assert(std::is_arithmetic<T>::value, "Arithmetic type is required");
-	return S(p.x / q, p.y / q);
-}*/
 
 PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept;
 PRL_Point const& operator+(PRL_Point const& p, PRL_Point const& q) noexcept;
@@ -141,7 +137,7 @@ public:
     can be used in drawing operations: it results in pixel interpolation.
     */
     float x, y;
-    //! Weight and height of the rectangle.
+    //! Width and height of the rectangle.
     /*!
     The variables w and h are kept as integers because in drawing operations they represents an area in pixels on the source or destination "image",
     which can not be parts of a pixel.
@@ -151,53 +147,129 @@ public:
 
 
 //! Class to store a circle made out of integer coordinates and radius.
-/*!
-\note In Pearl Engine it is mainly used for rendering purposes, so the center and radius are mostly expressed in pixels.
-*/
 class PRL_Circle
 {
 public:
-	PRL_Circle();
+	PRL_Circle(PRL_Point const& center, int r);
 	PRL_Circle(int x_, int y_, int r_);
-	PRL_Circle(PRL_Point const& center, int r_);
-	PRL_Circle(PRL_Circle const& circle);
+	PRL_Circle();
 	~PRL_Circle();
+
+	int x, y; //!< Center of the circle.
+	int r; //!< Radius.
 
 	//! Get the center of the circle.
 	/*!
 	\return Returns the center as a PRL_Point.
 	*/
-	PRL_Point getCenter() const;
+	PRL_Point getCenter() const noexcept;
+	PRL_Rect getRect() const noexcept;
+	void setCenter(PRL_Point const& center) noexcept;
 
-    int x, y; //!< Center of the circle.
-    int r; //!< Radius.
+	static int getCount() noexcept;
+
+private:
+	static int cirCount;
 };
 
+
 //! Class to store a circle made out of floating point coordinates and radius.
-/*!
-\note In Pearl Engine it is mainly used for rendering purposes, so the center and radius are mostly expressed in pixels.
-*/
 class PRL_FCircle
 {
 public:
-	PRL_FCircle();
+	PRL_FCircle(PRL_FPoint const& center, float r);
 	PRL_FCircle(float x_, float y_, float r_);
-	PRL_FCircle(PRL_FPoint const& center, float r_);
-	PRL_FCircle(PRL_FCircle const& fcircle);
+	PRL_FCircle();
 	~PRL_FCircle();
+
+	float x, y; //!< Center of the circle.
+	float r; //!< Radius.
 
 	//! Get the center of the circle.
 	/*!
-	\return Returns the center as a PRL_Point.
+	\return Returns the center as a PRL_FPoint.
 	*/
-	PRL_FPoint getCenter() const;
+	PRL_FPoint getCenter() const noexcept;
+	PRL_FRect getRect() const noexcept;
+	void setCenter(PRL_FPoint const& center) noexcept;
 
-    float x, y; //!< Center of the circle.
-    float r; //!< Radius.
+	static int getCount() noexcept;
+
+private:
+	static int cirCount;
 };
 
-inline int PRL_ScalarProduct(PRL_Point p, PRL_Point q) noexcept;
-inline float PRL_ScalarProduct(PRL_FPoint p, PRL_FPoint q) noexcept;
-inline double PRL_ScalarProduct(PRL_DPoint p, PRL_DPoint q) noexcept;
+
+//! @brief Class used to store and work with polygons.
+//! @details The minimal vertices count is 3.
+class PRL_Polygon
+{
+public:
+    //! @brief Constructor.
+    //! @details Setting less than 3 vertices will result in an exception throw.
+	PRL_Polygon(std::vector <PRL_FPoint> const& vertices_);
+	~PRL_Polygon();
+
+    //! @brief Get how many vertices there is in the polygon.
+	size_t vertexCount() const noexcept;
+    //! @brief Get a specific vertex (no bound check!).
+	PRL_FPoint getVertex(size_t which) const;
+	//! @brief Get a specific edge (no bound check!).
+	//! @details The edge 0 is defined as the edge from vertex 0 to vertex 1.
+	PRL_FPoint getEdge(size_t which) const;
+	//! @brief Get a specific normal (no bound check!).
+	//! @details The normal n is the normalized outside-pointing vector normal to the edge n.
+	PRL_FPoint getNormal(size_t which) const;
+	//! @brief Get the center of mass of the polygon.
+	PRL_FPoint getCenterOfMass() const noexcept;
+    //! @brief Get the smallest rectangle in which the whole polygon fits.
+	PRL_FRect getRectAround() const noexcept;
+    //! @brief Tells if the polygon is convex.
+	bool isConvex() const noexcept;
+	//! @brief Tells if the polygon is clockwise-oriented.
+	bool isClockwise() const noexcept;
+    //! @brief Change the vertices.
+    //! @details Setting less than 3 vertices will result in an exception throw.
+	void setVertices(std::vector <PRL_FPoint> const& vertices_);
+
+    //! @brief Convert a rectangle to a clockwise-oriented polygon.
+	static PRL_Polygon rect2poly(PRL_FRect const& rect) noexcept;
+	//! @brief Convert a rectangle to a clockwise-oriented polygon.
+	static PRL_Polygon rect2poly(PRL_Rect const& rect) noexcept;
+	//! @brief Get how many polygons are currently in use.
+	static int getCount() noexcept;
+
+private:
+	std::vector <PRL_FPoint> vertices;
+	std::vector <PRL_FPoint> edges;
+	std::vector <PRL_FPoint> normals;
+	PRL_FRect rectAround;
+	PRL_FPoint centerOfMass;
+	bool clockwise;
+	bool convex;
+
+	void computeNormals() noexcept;
+	void computeEdges() noexcept;
+	void computeRect() noexcept;
+	void computeCenterOfMass() noexcept;
+	void checkClockwise() noexcept;
+	void checkConvex() noexcept;
+	void computeAll() noexcept;
+
+	static int polyCount;
+};
+
+
+inline int PRL_ScalarProduct(PRL_Point const& p, PRL_Point const& q) noexcept;
+inline float PRL_ScalarProduct(PRL_FPoint const& p, PRL_FPoint const& q) noexcept;
+inline double PRL_ScalarProduct(PRL_DPoint const& p, PRL_DPoint const& q) noexcept;
+
+//! @brief Get the angle between two unnormalized vectors in a right-handed coordinate system.
+//! @details In numerical problems where the vertical axis is flipped, the angle has the opposite sign.
+inline double PRL_Angle(PRL_FPoint const& from, PRL_FPoint const& to) noexcept;
+
+//! @brief Get the angle between two normalized vectors in a right-handed coordinate system.
+//! @details In numerical problems where the vertical axis is flipped, the angle has the opposite sign.
+inline double PRL_AngleNorm(PRL_FPoint const& from, PRL_FPoint const& to) noexcept;
 
 #endif // PRL_TYPES_H_INCLUDED
