@@ -1,0 +1,52 @@
+[display]
+#FPS
+24
+#Default render
+1920x1080
+#frames
+frame1.png
+frame2.png
+frame3.png
+
+
+[mask]
+#number of masks
+1
+#mask
+mask1_1.png
+mask1_2.png
+mask1_3.png
+
+[rectangle-hb]
+#nb rect hitbox on each frame
+1 1 2
+#actual rects x y w h
+0.0 0.0 50.0 50.0
+0.0 0.0 40.0 60.0
+0.0 0.0 20.0 50.0
+20.0 0.0 30.0 50.0
+
+[circle-hb] # not implemented yet
+#nb circle hitbox on each frame
+1 1 0
+#actual circles x y r
+100.0 100.0 20.0
+
+[polygon-hb]
+#nb poly hitbox on each frame
+0 1 2
+#nb of points then points
+3 0.0 0.0 0.0 10.0 10.0 10.0
+3 4.5 12.0 17.0 9.0 12.0 29.0
+4 0.0 0.0 10.0 0.0 10.0 10.0 0.0 10.0
+
+[point]
+#nb of points on each frame
+0 0 1
+#actual points
+64.5 16.8
+
+[anchor]
+#3 frames so 3 anchors
+#x0 y0 x1 y1 x2 y2
+0.0 0.0 0.0 0.0 0.0 0.0
