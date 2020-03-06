@@ -195,6 +195,11 @@ void PRL_Handler :: update()
     collision.collider[0].testCollisions();
 	// text update here?
 
+    for (size_t i(0); i < display.animated.size(); ++i)
+    {
+        display.animated[i]->update();
+    }
+
     for (size_t i(0); i < display.renderer.size(); ++i)
     {
         SDL_RenderClear(display.renderer[i]);

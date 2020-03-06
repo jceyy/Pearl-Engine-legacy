@@ -459,7 +459,24 @@ void PRL_Polygon :: checkClockwise() noexcept
 
 void PRL_Polygon :: checkConvex() noexcept
 {
-    ;//for ()
+    double angle1(PRL_AngleNorm(normals[0], normals[1])), angle2(PRL_AngleNorm(normals[1], normals[2]));
+
+    for (size_t i(2); i < normals.size() - 1; ++i)
+    {
+        angle2 = PRL_AngleNorm(normals[i], normals[i + 1]);
+        if (angle1 * angle2 < 0.0)
+        {
+            convex = false;
+            break;
+        }
+        angle1 = angle2;
+    }
+
+    angle2 = PRL_AngleNorm(normals[normals.size() - 1], normals[0]);
+    if (angle2 * angle1 < 0)
+        convex = false;
+    else
+        convex = true;
 }
 
 
