@@ -81,7 +81,7 @@ PRL_Animated* PRL_Handler :: createAnimated(PRL_Animation* anim, int plan)
 	{
 		animd->setAnim(anim);
 		display.animated.push_back(animd);
-        display.displayer[0].add(animd); cout << "DEBUG HANDLER (plan) " + to_string(plan) << endl;
+        display.displayer[0].add(animd); //cout << "DEBUG HANDLER (plan) " + to_string(plan) << endl;
         collision.collider[0].add(animd);
 	}
 	else

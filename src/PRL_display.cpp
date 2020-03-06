@@ -303,7 +303,7 @@ void PRL_Displayable :: setColPriority(int p) noexcept
 	colPriority = p;
 }
 
-int PRL_Displayable :: addHitBox(PRL_HitBox* hb)
+/*int PRL_Displayable :: addHitBox(PRL_HitBox* hb)
 {
 	if (hb == nullptr)
 	{
@@ -320,7 +320,7 @@ int PRL_Displayable :: addHitBox(PRL_HitBox* hb)
 void PRL_Displayable :: addHitPoint(PRL_FPoint const& p)
 {
     colHitPoint.push_back(p);
-}
+}*/
 
 
 

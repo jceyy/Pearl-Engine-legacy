@@ -370,7 +370,7 @@ int PRL_Image :: load_CPU()
 		display.scalingRatio.y = 1.0f * handler.config.getRenderResolution().y / display.refRenderSize.y;
 		display.imgTrueSize[0].set(display.imgSurface[0]->w, display.imgSurface[0]->h);
 		display.imgScaledSize[0].set((int)(display.imgSurface[0]->w * display.scalingRatio.x), (int)(display.imgSurface[0]->h * display.scalingRatio.y));
-		cout << "Ok so far\n";
+
 		// Load masks
 		PRL_Point sz;
 		int current_mask(0);
@@ -597,10 +597,10 @@ int PRL_Sprite :: setImage(PRL_Image* image)
 	image->display.get(dspTexture, dspDst);
 
 	// Temporary
-	colHitbox.clear();
+	/**colHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, image->display.getSize().x, image->display.getSize().y);
     PRL_HBRect* hitbox = new PRL_HBRect(frect);
-	colHitbox.push_back(hitbox);
+	colHitbox.push_back(hitbox);**/
 
 	return 0;
 }
@@ -1018,10 +1018,10 @@ void PRL_Animated :: setAnim(PRL_Animation* anim)
 	updateDisplayable();
 
 	// Temporary
-	colHitbox.clear();
+	/**colHitbox.clear();
 	PRL_FRect frect(0.0f, 0.0f, anim->display.getSize(0).x, anim->display.getSize(0).y);
 	PRL_HBRect* hitbox = new PRL_HBRect(frect);
-	colHitbox.push_back(hitbox);
+	colHitbox.push_back(hitbox);**/
 
 }
 

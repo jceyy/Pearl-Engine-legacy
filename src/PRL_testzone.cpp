@@ -20,8 +20,8 @@ int PRL_TestZone()
 {
 	bool quit(false);
 
-	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.prl");
-	PRL_Animation* animWow = handler.loadAnimation("data/wow/wow2.prl");
+	PRL_Animation* animMario = handler.loadAnimation("data/mario/mario.prl"); cout << "Mario load\n";
+	PRL_Animation* animWow = handler.loadAnimation("data/wow/wow.prl");
 	PRL_Image* image = handler.loadImage("data/imgtest/img.prl");
 	if (animMario == nullptr || image == nullptr || animWow == nullptr) // error
 	{
@@ -55,13 +55,13 @@ int PRL_TestZone()
 	PRL_FPoint posRatio(conceptionRenderer.x/handler.config.renderResolution.x,
                      conceptionRenderer.y/handler.config.renderResolution.y);
 	//PRL_Image *im_sky = handler.loadImage("data/world_asset/sky.prl");
-	PRL_Image *im_sun = handler.loadImage("data/world_asset/sun.prl");
-	PRL_Image *im_flow1 = handler.loadImage("data/world_asset/flower1.prl");
+	PRL_Image *im_sun = handler.loadImage("data/world_asset/sun.prl"); cout << "Sun load\n";
+	PRL_Image *im_flow1 = handler.loadImage("data/world_asset/flower1.prl"); cout << "Flower load\n";
 	//PRL_Image *im_flow2 = handler.loadImage("data/world_asset/flower2.prl");
 	//PRL_Image *im_flow3 = handler.loadImage("data/world_asset/flower3.prl");
 	PRL_Image *im_grd1 = handler.loadImage("data/world_asset/ground1.prl");
 	PRL_Image *im_grd2 = handler.loadImage("data/world_asset/ground2.prl");
-	PRL_Image *im_grd3 = handler.loadImage("data/world_asset/ground3.prl");
+	PRL_Image *im_grd3 = handler.loadImage("data/world_asset/ground3.prl"); cout << "Ground3 load\n";
 
 	PRL_Sprite *sun = handler.createSprite(im_sun);
 	sun->setPos(1920, 270);
@@ -79,7 +79,6 @@ int PRL_TestZone()
         ground[i + 2]->setPos(x0 + 2.0 * im_grd2->display.getSize().x, y0);
     }
 
-    cout << "test size" << im_grd1->display.getSize().x << endl;
     std::vector <PRL_Sprite*> flower(4);
     for (size_t i(0); i < flower.size(); ++i)
     {

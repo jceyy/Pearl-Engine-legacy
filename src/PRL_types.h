@@ -206,6 +206,9 @@ class PRL_Polygon
 {
 public:
     //! @brief Constructor.
+    //! @details Creates the following polygon: (0.0, 0.0), (1.0, 0.0), (1.0, 1.0).
+	PRL_Polygon();
+	//! @brief Constructor.
     //! @details Setting less than 3 vertices will result in an exception throw.
 	PRL_Polygon(std::vector <PRL_FPoint> const& vertices_);
 	~PRL_Polygon();

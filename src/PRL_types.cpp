@@ -376,6 +376,17 @@ PRL_Polygon PRL_Polygon :: rect2poly(PRL_Rect const& rect) noexcept
     return PRL_Polygon(points);
 }
 
+PRL_Polygon :: PRL_Polygon()
+{
+    std::vector <PRL_FPoint> vert(3);
+    vert[0] = PRL_FPoint(0.0f, 0.0f);
+    vert[1] = PRL_FPoint(1.0f, 0.0f);
+    vert[2] = PRL_FPoint(1.0f, 1.0f);
+
+    computeAll();
+    polyCount++;
+}
+
 PRL_Polygon :: PRL_Polygon(std::vector <PRL_FPoint> const& vertices_)
 {
     if (vertices_.size() < 3)

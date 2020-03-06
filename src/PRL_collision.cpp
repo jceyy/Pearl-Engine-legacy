@@ -50,10 +50,6 @@ PRL_HBType PRL_HitBox :: getType() const noexcept
 	return type;
 }
 
-void PRL_HitBox :: computeCOM() noexcept
-{
-    ;
-}
 
 
 /*! @internal
@@ -74,7 +70,8 @@ PRL_HBRect :: PRL_HBRect(PRL_FRect const& rect)
     rectAround = rect;
 	hbRectCount++;
 
-	computeCOM();
+	centerOfMass.x = (rectAround.x + (float)rectAround.w)/2.0f;
+	centerOfMass.y = (rectAround.y + (float)rectAround.h)/2.0f;
 }
 
 PRL_HBRect :: ~PRL_HBRect()
@@ -82,15 +79,11 @@ PRL_HBRect :: ~PRL_HBRect()
 	hbRectCount--;
 }
 
-PRL_FRect const& PRL_HBRect :: getRectAround() const noexcept
-{
-	return rectAround;
-}
-
 void PRL_HBRect :: set(PRL_FRect const& rect) noexcept
 {
 	rectAround = rect;
-	computeCOM();
+	centerOfMass.x = (rectAround.x + (float)rectAround.w)/2.0f;
+	centerOfMass.y = (rectAround.y + (float)rectAround.h)/2.0f;
 }
 
 PRL_FRect const& PRL_HBRect :: get() const noexcept
@@ -98,17 +91,44 @@ PRL_FRect const& PRL_HBRect :: get() const noexcept
 	return rectAround;
 }
 
-PRL_FPoint const& PRL_HBRect :: getCenterOfMass() const noexcept
+
+/*! @internal
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_HBPoly %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ @endinternal
+*/
+
+int PRL_HBPoly :: hbPolyCount = 0;
+
+int PRL_HBPoly :: getCount() noexcept
 {
-	return centerOfMass;
+    return hbPolyCount;
 }
 
-void PRL_HBRect :: computeCOM() noexcept
+PRL_HBPoly :: PRL_HBPoly(PRL_Polygon const& poly)
 {
-	centerOfMass.x = (rectAround.x + (float)rectAround.w)/2.0f;
-	centerOfMass.y = (rectAround.y + (float)rectAround.h)/2.0f;
+    type = PRL_HBTYPE_POLY;
+    polygon = poly;
+    rectAround = poly.getRectAround();
+	centerOfMass = poly.getCenterOfMass();
+	hbPolyCount++;
 }
 
+PRL_HBPoly :: ~PRL_HBPoly()
+{
+	hbPolyCount--;
+}
+
+void PRL_HBPoly :: set(PRL_Polygon const& poly) noexcept
+{
+    polygon = poly;
+	rectAround = poly.getRectAround();
+	centerOfMass = poly.getCenterOfMass();
+}
+
+PRL_Polygon const& PRL_HBPoly :: get() const noexcept
+{
+	return polygon;
+}
 
 /*! @internal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PRL_CollInfo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,8 +154,9 @@ PRL_ColInfo :: ~PRL_ColInfo()
 
 void PRL_ColInfo :: clear() noexcept
 {
-	involvedHitBox.clear();
-	target.clear();
+	hitboxToHitbox.clear();
+	hitboxToPoint.clear();
+	pointToHitbox.clear();
 }
 
 
@@ -244,7 +265,19 @@ void PRL_Collider :: testCollisions() const noexcept
 	{
 		for (size_t j(i + 1); j < collidable.size(); ++j)
 		{
-			size_t sz_i(collidable[i]->colHitbox.size());
+		    /// HB i to HB j
+            /**for (size_t k(0); k < collidable[i].colHitbox->size(); ++k)
+            {
+                for (size_t n(0); n < collidable[j].colHitbox->size(); ++n)
+                {
+                    ;
+                }
+            }**/
+		    /// HB i to HP j
+
+		    /// HP i to HB j
+
+			/*size_t sz_i(collidable[i]->colHitbox.size());
 			size_t sz_j(collidable[j]->colHitbox.size());
 
 			for (size_t k(0); k < sz_i; ++k) // k loops over hit boxes of i
@@ -265,7 +298,7 @@ void PRL_Collider :: testCollisions() const noexcept
 						collidable[j]->colIsColliding = true;
 					}
 				}
-			}
+			}*/
 		}
 	}
 }
@@ -1447,56 +1480,4 @@ void PRL_Collider :: testCollisionsBetween(int i, int j) // without any concern 
             break; // quit the for loop
         }
     }
-}
-
-
-* ********************************************* *
-*                PRL_Movable                    *
-* ********************************************* *
-
-float PRL_Movable :: time_coeff = 0.0;
-int PRL_Movable :: movable_count = 0;
-
-PRL_Movable :: PRL_Movable(PRL_FRect* display_dst_rect) : previous_time(0), current_time(0)
-{
-	PRL_FPoint p(0.0, 0.0);
-	pxlsPerSec_ = p;
-	previousDisplacement_ = p;
-    display_dst_copy = display_dst_rect;
-    movable_count++;
-}
-
-PRL_Movable :: ~PRL_Movable()
-{
-    movable_count--;
-}
-
-void PRL_Movable :: setVelocityVector(PRL_FPoint const& pxlsPerSec)
-{
-    pxlsPerSec_ = pxlsPerSec;
-}
-
-PRL_FPoint PRL_Movable :: getVelocityVector() const
-{
-    return pxlsPerSec_;
-}
-
-void PRL_Movable :: applyDisplacement()
-{
-    current_time = handler.time.getTimeUpdated();
-    time_coeff = 1.0 * (current_time - previous_time) / 1000000;
-    previousDisplacement_ = {pxlsPerSec_.x * time_coeff, pxlsPerSec_.y * time_coeff};
-
-    display_dst_copy->x += previousDisplacement_.x;
-    display_dst_copy->y += previousDisplacement_.y;
-
-    previous_time = current_time;
-}
-
-int PRL_Movable :: getMvbCount()
-{
-    return movable_count;
-}
-*/
-
-
+}*/

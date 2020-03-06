@@ -10,6 +10,7 @@
 
 
 // CLASSES //
+class PRL_Displayable;
 
 //! @brief Collision types (flags).
 /*! @details Types can be used in a custom way, as int32_t WALL = PRL_COLLTYPE_0,
@@ -77,9 +78,9 @@ public:
     virtual ~PRL_HitBox() = 0;
 
     //! @brief Get the smallest rectangle surrounding the hit box.
-    virtual PRL_FRect const& getRectAround() const noexcept;
+    PRL_FRect const& getRectAround() const noexcept;
     //! @brief Get the center of mass of the hit box (in local coordinates).
-    virtual PRL_FPoint const& getCenterOfMass() const noexcept;
+    PRL_FPoint const& getCenterOfMass() const noexcept;
     //! @brief Get the type of the hit box.
     PRL_HBType getType() const noexcept;
     //! @brief Get the count of currently used hit boxes (of any type).
@@ -92,9 +93,6 @@ protected:
 
 private:
     //! @brief Compute the center of mass of the hit box.
-    /*! @details Can be used only internally to update the center of mass when the hit box is updated,
-    for instance when points are added to a polygon hit box or simply when the hit box has been changed.*/
-	virtual void computeCOM() noexcept;
 	static int hbCount; //!< Count of hit boxes, without distinction.
 };
 
@@ -104,28 +102,46 @@ public:
 	PRL_HBRect(PRL_FRect const& rect);
 	~PRL_HBRect();
 
-	//! @brief Simply return the rectangle, same function as get().
-    PRL_FRect const& getRectAround() const noexcept override;
-    //! @brief Set a new rectangle hit box.
+    //! @brief Set a new rectangle th the hit box.
     //! @details This will automatically result in a calculation of the new center of mass.
     void set(PRL_FRect const& rect) noexcept;
     //! @brief Get the rectangle.
     PRL_FRect const& get() const noexcept;
-    //! @brief Get the center of mass of the rectangle (in local coordinates).
-    PRL_FPoint const& getCenterOfMass() const noexcept override;
 
     //! @brief Get the count of currently used rectangle hit boxes.
     static int getCount() noexcept;
 
 private:
-    //! @brief Compute the center of mass of the rectangle.
-    //! @details This is only called when a new hit box is set and in the constructor.
-	void computeCOM() noexcept override;
 	static int hbRectCount; //!< Count of rectangle hit boxes.
 };
 
+class PRL_HBPoly : public PRL_HitBox
+{
+public:
+	PRL_HBPoly(PRL_Polygon const& poly);
+	~PRL_HBPoly();
 
-class PRL_Displayable;
+    //! @brief Set a new polygon to the hit box.
+    //! @details This will automatically result in a calculation of the new center of mass.
+    void set(PRL_Polygon const& poly) noexcept;
+    //! @brief Get the polygon.
+    PRL_Polygon const& get() const noexcept;
+
+    //! @brief Get the count of currently used rectangle hit boxes.
+    static int getCount() noexcept;
+
+private:
+    PRL_Polygon polygon;//!< The polygon composing the hit box.
+	static int hbPolyCount; //!< Count of rectangle hit boxes.
+};
+
+//! @brief Gather useful information for a collision.
+/*! @details The fist element corresponds to the involved hit box's (or hit point's) index, the PRL_Displayable*
+corresponds to the object with which the collision occurred and the last element corresponds to the hit box's (or hit point's)
+index within the other involved PRL_Displayable.
+*/
+typedef std::tuple <size_t, PRL_Displayable*, size_t>  PRL_ColEvent;
+
 
 //! @brief Class capable of storing informations about a specific collision.
 class PRL_ColInfo
@@ -135,13 +151,12 @@ public:
     PRL_ColInfo();
     ~PRL_ColInfo();
 
-    //! @brief Vector containing all the hit boxes of a collidable that collided.
-    /*! @details It can contain the same hit box several times, since every element corresponds to an element of
-    the target vector.
-    */
-    std::vector<int> involvedHitBox;
-    //! @brief Vector containing all target collidables of the collision event involving the corresponding hit box.
-    std::vector<PRL_Displayable*> target;
+    //! @brief Link for the hit box - hit box collisions.
+    std::vector <PRL_ColEvent> hitboxToHitbox;
+    //! @brief Link for the hit box - point collisions.
+    std::vector <PRL_ColEvent> hitboxToPoint;
+    //! @brief Link for the point - hit box collisions.
+    std::vector <PRL_ColEvent> pointToHitbox;
 
     //! @brief Get the count of currently used PRL_ColInfo classes.
     static int getCount() noexcept;

@@ -30,7 +30,7 @@ class PRL_Displayable
 public:
 	PRL_Displayable();
     PRL_Displayable(SDL_Texture *texture, SDL_Renderer *renderer);
-    ~PRL_Displayable();
+    virtual ~PRL_Displayable() = 0;
 
     //! @brief Set a texture alongside with its renderer.
     int set(SDL_Texture *texture, SDL_Renderer *renderer) noexcept;
@@ -112,10 +112,10 @@ protected:
 
     //! @brief Hit boxes composing the object.
 	//! @details Hit boxes are stored in a two dimensional array for animations.
-	std::vector /*<std::vector */<PRL_HitBox*>  colHitbox;
+	std::vector <PRL_HitBox*> *colHitbox;
 	//! @brief Hit points composing the object.
 	//! @details Hit points are stored in a two dimensional array for animations.
-    std::vector /*<std::vector*/ <PRL_FPoint> colHitPoint;
+    std::vector <PRL_FPoint> *colHitPoint;
 
 	bool colEnabled = true; //!< @brief Tell whether collision is enabled or not.
 	bool colIsColliding; //!< @brief  Tell if a collision is occurring.
@@ -123,8 +123,8 @@ protected:
 	PRL_ColGroup colGroup; //!< @brief  Collision group in which collisions are tested for this object.
 	int colPriority; //!< @brief Priority in a collision.
 
-	int addHitBox(PRL_HitBox* hb);
-	void addHitPoint(PRL_FPoint const& p);
+	///int addHitBox(PRL_HitBox* hb); /// TO BE REMOVED? In progress
+	///void addHitPoint(PRL_FPoint const& p);
 
 private:
     //! @brief Whether to show a box around the PRL_Displayable or not.
